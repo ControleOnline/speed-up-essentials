@@ -10,6 +10,7 @@ This software aims to be engaged in any system and without any additional line p
 * Unify Javascript
 * LazyLoad Images
 * Spritify CSS Images
+* Remove (Unify) CSS Imports
 
 ## Installation ##
 ### Composer ###
