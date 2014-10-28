@@ -19,7 +19,7 @@ Add these lines to your composer.json:
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/luizkim/speed-up-essentials"
+            "url": "https://github.com/ControleOnline/speed-up-essentials"
         },
         {
             "type": "vcs",
