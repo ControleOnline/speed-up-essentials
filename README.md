@@ -102,7 +102,7 @@ return array(
 
 
 
-## To use whitout Zend ##
+## To use without Zend ##
 
 ** Send your HTML **
 ```
