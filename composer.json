@@ -11,10 +11,10 @@
     ],
     "autoload": {
         "psr-4": {
-            "SpeedUpEssentials\\": "module/SpeedUpEssentials/src/SpeedUpEssentials"
+            "SpeedUpEssentials\\": "src/SpeedUpEssentials"
         },
         "classmap": [
-            "module/SpeedUpEssentials/Module.php"
+            "Module.php"
         ]
     },
     "config": {
@@ -27,10 +27,6 @@
         "tubalmartin/cssmin": "*"
     },
     "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@bitbucket.org:controleonline/speed-up-essentials.git"
-        },
         {
             "type": "vcs",
             "url": "https://github.com/tubalmartin/YUI-CSS-compressor-PHP-port"
