@@ -48,14 +48,15 @@ class SpeedUpEssentials {
         $config['JavascriptIntegrate'] = (isset($config['JavascriptIntegrate']) ? $config['JavascriptIntegrate'] : ($env == 'development' ? false : true));
         $config['JavascriptCDNIntegrate'] = (isset($config['JavascriptIntegrate']) ? $config['JavascriptIntegrate'] : true);
         $config['JavascriptMinify'] = (isset($config['JavascriptMinify']) ? $config['JavascriptMinify'] : ($env == 'development' ? false : true));
-        $config['JsMinifiedFilePath'] = (isset($config['JsMinifiedFilePath']) ? $config['JsMinifiedFilePath'] : 'js/vendor/ControleOnline/');        
+        $config['JsMinifiedFilePath'] = (isset($config['JsMinifiedFilePath']) ? $config['JsMinifiedFilePath'] : 'js/vendor/ControleOnline/');
 
         /*
          * Css Minify
          */
-        $config['CssIntegrate'] = (isset($config['CssIntegrate']) ? $config['CssIntegrate'] : ($env == 'development' ? false : true));        
-        $config['CssMinify'] = (isset($config['CssMinify']) ? $config['CssMinify'] : ($env == 'development' ? false : true));        
+        $config['CssIntegrate'] = (isset($config['CssIntegrate']) ? $config['CssIntegrate'] : ($env == 'development' ? false : true));
+        $config['CssMinify'] = (isset($config['CssMinify']) ? $config['CssMinify'] : ($env == 'development' ? false : true));
         $config['CssMinifiedFilePath'] = (isset($config['CssMinifiedFilePath']) ? $config['CssMinifiedFilePath'] : 'css/vendor/ControleOnline/');
+        $config['CssRemoveImports'] = (isset($config['CssRemoveImports']) ? $config['CssRemoveImports'] : true);
 
         return $config;
     }

@@ -62,7 +62,8 @@ $config = array(
         'JsMinifiedFilePath' => 'js/vendor/ControleOnline/',
         'CssIntegrate' => true, //Only in Production
         'CssMinify' => true, //Only in Production
-        'CssMinifiedFilePath' => 'css/vendor/ControleOnline/'
+        'CssMinifiedFilePath' => 'css/vendor/ControleOnline/',
+        'CssRemoveImports' => true
 );
 ```
 ### Zend 2 ###

@@ -12,6 +12,7 @@ class CSSIntegrate {
     protected $completeFilePath;
     protected $htmlHeaders;
     protected $csss;
+    protected $cssImported;
 
     public function __construct($config) {
         $this->config = $config;
@@ -108,13 +109,33 @@ class CSSIntegrate {
         }
         if (!$data) {
             $data = '/*File: (' . $url . ') not found*/';
+        } else {
+            $data = $this->fixUrl($data, $cssUrl);
+            $data = $this->removeImports($data, $cssUrl);
         }
-        $data = $this->makeUrl($data, $cssUrl);
         return $data;
     }
 
-    protected function makeUrl($data, $cssUrl) {
+    protected function removeImports($data, $cssUrl) {
+        $sBaseUrl = dirname($cssUrl) . '/';
+        return preg_replace_callback(
+                '/@import url\(([^)]+)\);/', function($aMatches) use ($sBaseUrl) {
+            $url = str_replace(array('"', '\''), '', trim($aMatches[1]));
+            if (is_file($this->config['PublicBasePath'] . $url)) {
+                $newUrl = $this->config['PublicBasePath'] . $url;
+                if (!isset($this->$cssImported[md5($newUrl)])) {
+                    $content = file_get_contents($newUrl);
+                    $this->cssImported[md5($newUrl)] = $newUrl;
+                }
+                return $content;
+            } else {
+                return '@import url("' . $url . '")';
+            }
+        }, $data
+        );
+    }
 
+    protected function fixUrl($data, $cssUrl) {
         $sBaseUrl = dirname($cssUrl) . '/';
         return preg_replace_callback(
                 '|url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]\s*\)|', function($aMatches) use ($sBaseUrl) {
