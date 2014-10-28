@@ -65,36 +65,10 @@ $config = array(
         'CssMinifiedFilePath' => 'css/vendor/ControleOnline/'
 );
 ```
-## Using ##
-
-```
-
-<?php
-
-$config = array(); // If you do not use any configuration, all will be enabled.
-
-$SpeedUpEssentials = new \SpeedUpEssentials($config);
-echo  $SpeedUpEssentials->render('<html>.....</html>');
-```
-## Taking the buffer ##
-```
-
-<?php
-ob_start();
-
-/*
-* You code here (including echo)
-*/
-
-$config = array(); // If you do not use any configuration, all will be enabled.
-$SpeedUpEssentials = new \SpeedUpEssentials($config);
-echo  $SpeedUpEssentials->render(ob_get_contents());
-```
 ### Zend 2 ###
 In your config/application.config.php confiruração add the following:
 
 ```
-
 <?php
 $modules = array(
     'SpeedUpEssentials'
@@ -124,4 +98,36 @@ return array(
                 //Configs of SpeedUpEssentials here
          )
 );
+```
+
+
+
+## To use whitout Zend ##
+
+** Send your HTML **
+```
+<?php
+
+$config = array(); // If you do not use any configuration, all will be enabled.
+
+$SpeedUpEssentials = new \SpeedUpEssentials($config);
+echo  $SpeedUpEssentials->render('<html>.....</html>');
+```
+
+**OR**
+
+
+** Taking the buffer **
+```
+
+<?php
+ob_start();
+
+/*
+* You code here (including echo)
+*/
+
+$config = array(); // If you do not use any configuration, all will be enabled.
+$SpeedUpEssentials = new \SpeedUpEssentials($config);
+echo  $SpeedUpEssentials->render(ob_get_contents());
 ```
