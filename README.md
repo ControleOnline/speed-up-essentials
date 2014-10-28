@@ -9,7 +9,7 @@ This software aims to be engaged in any system and without any additional line p
 * Minify JavaScript
 * Unify Javascript
 * LazyLoad Images
-* Spritify CSS Imags
+* Spritify CSS Images
 
 ## Installation ##
 ### Composer ###
@@ -19,7 +19,7 @@ Add these lines to your composer.json:
     "repositories": [
         {
             "type": "vcs",
-            "url": "git@bitbucket.org:controleonline/speed-up-essentials.git"
+            "url": "https://github.com/luizkim/speed-up-essentials"
         },
         {
             "type": "vcs",
@@ -38,7 +38,6 @@ Add these lines to your composer.json:
 
 **Default settings**
 ```
-#!php
 <?php
 $config = array(
         'APP_ENV' => 'production', //Default configs to production or development
@@ -69,7 +68,7 @@ $config = array(
 ## Using ##
 
 ```
-#!php
+
 <?php
 
 $config = array(); // If you do not use any configuration, all will be enabled.
@@ -79,7 +78,7 @@ echo  $SpeedUpEssentials->render('<html>.....</html>');
 ```
 ## Taking the buffer ##
 ```
-#!php
+
 <?php
 ob_start();
 
@@ -95,7 +94,7 @@ echo  $SpeedUpEssentials->render(ob_get_contents());
 In your config/application.config.php confiruração add the following:
 
 ```
-#!php
+
 <?php
 $modules = array(
     'SpeedUpEssentials'
@@ -116,7 +115,7 @@ return array(
 In your module.config.php file:
 
 ```
-#!php
+
 <?php
 namespace YourNameSpace;
 
