@@ -14,7 +14,3 @@ data/cache/
 data/sessions/
 data/tmp/
 temp/
-
-# Legacy ZF1
-demos/
-extras/documentation
