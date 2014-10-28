@@ -96,6 +96,7 @@ class CSSIntegrate {
 
     protected function get_data($url) {
 
+        $cssUrl = $url;
         if (is_file($this->config['PublicBasePath'] . $url)) {
             $url = $this->config['PublicBasePath'] . $url;
         }
@@ -106,9 +107,26 @@ class CSSIntegrate {
             
         }
         if (!$data) {
-            $data .= '/*File: (' . $url . ') not found*/';
+            $data = '/*File: (' . $url . ') not found*/';
         }
+        $data = $this->makeUrl($data, $cssUrl);
         return $data;
+    }
+
+    protected function makeUrl($data, $cssUrl) {
+
+        $sBaseUrl = dirname($cssUrl) . '/';
+        return preg_replace_callback(
+                '|url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]\s*\)|', function($aMatches) use ($sBaseUrl) {
+            $url = trim($aMatches[1]);
+            if ($url['0'] != '/' && !preg_match("^http(s)?://", $url)) {
+                $newUrl = $sBaseUrl . $url;
+            } else {
+                $newUrl = $url;
+            }
+            return 'url("' . $newUrl . '")';
+        }, $data
+        );
     }
 
     protected function makeFilePath($filename) {
