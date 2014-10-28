@@ -3,6 +3,7 @@
     "description": "HTML Validator. Beaultify your HTML on Dev and Compress on Production",
     "license": "BSD-3-Clause",
     "homepage": "http://controleonline.com/",
+    "type": "library",
     "keywords": [
         "html",
         "compress",
