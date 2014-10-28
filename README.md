@@ -19,11 +19,11 @@ Add these lines to your composer.json:
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/ControleOnline/speed-up-essentials"
+            "url": "git@github.com:ControleOnline/speed-up-essentials.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/tubalmartin/YUI-CSS-compressor-PHP-port"
+            "url": "git@github.com:tubalmartin/YUI-CSS-compressor-PHP-port.git"
         }
     ],
     "require": {

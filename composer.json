@@ -29,7 +29,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/tubalmartin/YUI-CSS-compressor-PHP-port"
+            "url": "git@github.com:tubalmartin/YUI-CSS-compressor-PHP-port.git"
         }
     ]
 }
