@@ -8,10 +8,10 @@ class Module {
 
     public function onBootstrap(\Zend\Mvc\MvcEvent $e) {
         $app = $e->getTarget();
-        $app->getEventManager()->attach('finish', array($this, 'minifyHtml'), 100);
+        $app->getEventManager()->attach('finish', array($this, 'speedUp'), 100);
     }
 
-    public function minifyHtml(\Zend\Mvc\MvcEvent $e) {
+    public function speedUp(\Zend\Mvc\MvcEvent $e) {
         $response = $e->getResponse();
         $this->sm = $e->getApplication()->getServiceManager();
         $config = $this->sm->get('config');

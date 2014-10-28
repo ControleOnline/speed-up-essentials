@@ -150,7 +150,7 @@ class HtmlFormating {
                 if (!file_exists($file)) {
                     try {
                         mkdir($this->config['PublicBasePath'] . $this->config['LazyLoadJsFilePath'], 0777, true);
-                        copy('vendor/controleonline/speed-up-essentials/public/js/vendor/ControleOnline/lazyload.js', $file);
+                        copy('vendor/controleonline/speed-up-essentials/public/js/LazyLoad.js', $file);
                     } catch (Exception $ex) {
                         
                     }
@@ -169,7 +169,7 @@ class HtmlFormating {
                 if (!file_exists($file)) {
                     try {
                         mkdir($this->config['PublicBasePath'] . $this->config['LazyLoadCssFilePath'], 0777, true);
-                        copy('vendor/controleonline/speed-up-essentials/public/css/vendor/ControleOnline/LazyLoad.css', $file);
+                        copy('vendor/controleonline/speed-up-essentials/public/css/LazyLoad.css', $file);
                     } catch (Exception $ex) {
                         
                     }
