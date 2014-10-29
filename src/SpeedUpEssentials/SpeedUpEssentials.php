@@ -61,7 +61,18 @@ class SpeedUpEssentials {
         /*
          * Cache
          */
-        $config['cacheId'] = (isset($config['cacheId']) ? $config['cacheId'] : is_file('.version') ? file_get_contents('.version') . '/' : date('Y/m/d/H/'));
+        if (!isset($config['cacheId'])) {
+            if (is_file('.version')) {
+                $version = file_get_contents('.version');
+                if (empty($version)) {
+                    $config['cacheId'] = date('Y/m/d/H/');
+                } else {
+                    $config['cacheId'] = $version . '/';
+                }
+            } else {
+                $config['cacheId'] = date('Y/m/d/H/');
+            }
+        }
         return $config;
     }
 
