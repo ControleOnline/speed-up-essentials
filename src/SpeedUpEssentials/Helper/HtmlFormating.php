@@ -202,7 +202,7 @@ class HtmlFormating {
             $x = new \DOMXPath($dom);
             foreach ($x->query("//img") as $node) {
                 $img_attrs = array(
-                    'src' => $node->getAttribute('src'),
+                    'src' => Url::normalizeUrl($node->getAttribute('src')),
                     'class' => $node->getAttribute('class')
                 );
                 if ($img_attrs['src']) {
@@ -211,6 +211,7 @@ class HtmlFormating {
                         foreach ($node->attributes as $attr) {
                             $img->setAttribute($attr->nodeName, $attr->nodeValue);
                         }
+                        $img->setAttribute('src', $img_attrs['src']);
                     }
                     $node->setAttribute('class', rtrim(($this->config['LazyLoadClass']) . ' ' . $img_attrs['class']));
                     $node->setAttribute('data-src', $img_attrs['src']);

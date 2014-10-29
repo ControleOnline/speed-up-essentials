@@ -31,6 +31,12 @@ class Url {
             } else {
                 $url = '//' . self::$staticDomain . self::$baseUri . $url;
             }
+        } elseif (preg_match('#^https?://' . $_SERVER['HTTP_HOST'] . '#', $url)) {
+            $url = preg_replace('#^https?://' . $_SERVER['HTTP_HOST'] . '#', '//' . self::$staticDomain, $url);
+        }
+
+        if (self::$staticDomain == $_SERVER['HTTP_HOST']) {
+            $url = preg_replace('#^//' . $_SERVER['HTTP_HOST'] . '#', '', $url);
         }
         return preg_replace('#^https?://#', '//', $url);
     }

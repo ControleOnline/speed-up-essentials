@@ -92,7 +92,7 @@ class SpeedUpEssentials {
         );
         DOMHtml::getInstance($this->config['charset']);
         Url::setStaticDomain($this->config['CookieLessDomain']);
-        Url::setBaseUri($this->config['URIBasePath']);        
+        Url::setBaseUri($this->config['URIBasePath']);
     }
 
     public function addHtmlHeaders() {
