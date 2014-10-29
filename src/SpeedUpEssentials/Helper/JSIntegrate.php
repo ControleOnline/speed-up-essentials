@@ -61,7 +61,8 @@ class JSIntegrate {
                         $this->config['PublicCacheDir'] . $this->config['cacheId'] .
                         $this->config['JsMinifiedFilePath'] .
                         $this->filename,
-                        'type' => 'text/javascript'
+                        'type' => 'text/javascript',
+                        'async' => 'async'
                     )
                 )
         );

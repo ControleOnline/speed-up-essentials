@@ -160,7 +160,8 @@ class HtmlFormating {
                 $htmlHeaders->addJs(
                         array(
                             'src' => $path . $this->config['LazyLoadJsFilePath'] . 'lazyload.js',
-                            'type' => 'text/javascript'
+                            'type' => 'text/javascript',
+                            'async' => 'async'
                         )
                 );
             }
