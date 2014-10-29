@@ -3,7 +3,8 @@
 namespace SpeedUpEssentials;
 
 use SpeedUpEssentials\Model\DOMHtml,
-    SpeedUpEssentials\Helper\HtmlFormating;
+    SpeedUpEssentials\Helper\HtmlFormating,
+    SpeedUpEssentials\Helper\Url;
 
 class SpeedUpEssentials {
 
@@ -11,6 +12,12 @@ class SpeedUpEssentials {
 
     public function getConfig($config) {
         $env = isset($config['APP_ENV']) ? $config['APP_ENV'] : (getenv('APP_ENV') ? : 'production');
+
+        /*
+         * CookielessDomain
+         */
+        $config['CookieLessDomain'] = (isset($config['CookieLessDomain']) ? $config['CookieLessDomain'] : 'static.' . $_SERVER['HTTP_HOST']);
+
         /*
          * Encoding
          */
@@ -50,7 +57,6 @@ class SpeedUpEssentials {
         $config['JavascriptMinify'] = (isset($config['JavascriptMinify']) ? $config['JavascriptMinify'] : ($env == 'development' ? false : true));
         $config['JsMinifiedFilePath'] = (isset($config['JsMinifiedFilePath']) ? $config['JsMinifiedFilePath'] : 'js/vendor/ControleOnline/');
         $config['JsAllAsync'] = (isset($config['JsAllAsync']) ? $config['JsAllAsync'] : false);
-        $config['JsAllAsync'] = true;
 
         /*
          * Css Minify
@@ -85,6 +91,8 @@ class SpeedUpEssentials {
                 (isset($config) ? $config : array())
         );
         DOMHtml::getInstance($this->config['charset']);
+        Url::setStaticDomain($this->config['CookieLessDomain']);
+        Url::setBaseUri($this->config['URIBasePath']);        
     }
 
     public function addHtmlHeaders() {

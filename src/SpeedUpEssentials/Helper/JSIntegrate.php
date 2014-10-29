@@ -23,7 +23,7 @@ class JSIntegrate {
     private function setJsFileName() {
         $js = '';
         foreach ($this->jss as $item) {
-            $js .= $item['src'];
+            $js .= Url::normalizeUrl($item['src']);
         }
         $this->filename = md5($js) . '.js';
     }
@@ -43,9 +43,9 @@ class JSIntegrate {
                             $this->content = $this->get_data(realpath($this->config['PublicBasePath']) . '/' . $js['src']);
                             $this->writeJsFile();
                         }
-                        $j[$key]['src'] = $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $js['src'];
+                        $j[$key]['src'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $js['src']);
                     } else {
-                        $j[$key]['src'] = $js['src'];
+                        $j[$key]['src'] = Url::normalizeUrl($js['src']);
                     }
                 }
                 $this->htmlHeaders->setJs($j);
@@ -56,10 +56,10 @@ class JSIntegrate {
     protected function integrateAllJs() {
         $this->setJsFileName();
         $element = (isset($this->config['JsAllAsync']) ? array('async' => 'async') : false);
-        $element['src'] = $this->config['URIBasePath'] .
+        $element['src'] = Url::normalizeUrl($this->config['URIBasePath'] .
                 $this->config['PublicCacheDir'] . $this->config['cacheId'] .
                 $this->config['JsMinifiedFilePath'] .
-                $this->filename;
+                $this->filename);
         $element['type'] = 'text/javascript';
         $this->htmlHeaders->setJs(array($element));
         $this->filename = $this->config['PublicBasePath'] .

@@ -4,7 +4,8 @@ namespace SpeedUpEssentials\Helper;
 
 use SpeedUpEssentials\Model\DOMHtml,
     SpeedUpEssentials\Model\HtmlHeaders,
-    SpeedUpEssentials\Helper\JSIntegrate;
+    SpeedUpEssentials\Helper\JSIntegrate,
+    SpeedUpEssentials\Helper\Url;
 
 class HtmlFormating {
 
@@ -109,7 +110,12 @@ class HtmlFormating {
         return $html;
     }
 
+    private function sentHeaders() {
+        headers_sent() ? : header('Content-Type: text/html; charset=' . $this->config['charset']);
+    }
+
     public function format() {
+        $this->sentHeaders();
         $this->organizeHeaderOrder();
         $this->removeMetaCharset();
         $this->imgLazyLoad();

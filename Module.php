@@ -15,7 +15,7 @@ class Module {
         $response = $e->getResponse();
         $this->sm = $e->getApplication()->getServiceManager();
         $config = $this->sm->get('config');
-        $SpeedUpEssentials = new SpeedUpEssentials($config['SpeedUpEssentials']);
+        $SpeedUpEssentials = new SpeedUpEssentials(isset($config['SpeedUpEssentials']) ? $config['SpeedUpEssentials'] : false);
         $response->setContent(
                 $SpeedUpEssentials->render(
                         $response->getBody()

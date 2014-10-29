@@ -23,7 +23,7 @@ class CSSIntegrate {
     private function setCssFileName() {
         $css = '';
         foreach ($this->csss as $item) {
-            $css .= $item['href'];
+            $css .= Url::normalizeUrl($item['href']);
         }
         $this->filename = md5($css) . '.css';
     }
@@ -43,9 +43,9 @@ class CSSIntegrate {
                             $this->content = $this->get_data(realpath($this->config['PublicBasePath']) . '/' . $css['href']);
                             $this->writeCssFile();
                         }
-                        $j[$key]['href'] = $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href'];
+                        $j[$key]['href'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href']);
                     } else {
-                        $j[$key]['href'] = $css['href'];
+                        $j[$key]['href'] = Url::normalizeUrl($css['href']);
                     }
                 }
                 $this->htmlHeaders->setCss($j);
@@ -59,10 +59,10 @@ class CSSIntegrate {
                 array(
                     array(
                         'href' =>
-                        $this->config['URIBasePath'] .
-                        $this->config['PublicCacheDir'] . $this->config['cacheId'] .
-                        $this->config['CssMinifiedFilePath'] .
-                        $this->filename,
+                        Url::normalizeUrl($this->config['URIBasePath'] .
+                                $this->config['PublicCacheDir'] . $this->config['cacheId'] .
+                                $this->config['CssMinifiedFilePath'] .
+                                $this->filename),
                         'type' => 'text/css',
                         'rel' => 'stylesheet',
                         'media' => 'screen'

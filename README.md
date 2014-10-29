@@ -48,6 +48,7 @@ Add these lines to your composer.json:
 <?php
 $config = array(
         'APP_ENV' => 'production', //Default configs to production or development
+        'CookieLessDomain' => 'static.'.$_SERVER['HTTP_HOST'],
         'charset' => 'utf-8',
         'RemoveMetaCharset' =>true,
         'URIBasePath' => '/',
