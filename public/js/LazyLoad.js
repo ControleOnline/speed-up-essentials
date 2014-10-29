@@ -122,7 +122,7 @@ var lazyLoad = function () {
         }
     }
     lazyLoader.init();
-};
+}();
 
 if (document.addEventListener) {
     document.addEventListener("DOMContentLoaded", function () {

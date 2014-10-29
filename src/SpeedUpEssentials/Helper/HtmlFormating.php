@@ -4,8 +4,7 @@ namespace SpeedUpEssentials\Helper;
 
 use SpeedUpEssentials\Model\DOMHtml,
     SpeedUpEssentials\Model\HtmlHeaders,
-    SpeedUpEssentials\Helper\JSIntegrate,
-    SpeedUpEssentials\Helper\Cache;
+    SpeedUpEssentials\Helper\JSIntegrate;
 
 class HtmlFormating {
 
@@ -147,7 +146,7 @@ class HtmlFormating {
         if ($this->config['LazyLoadJsFile'] || $this->config['LazyLoadFadeIn']) {
             $path = $this->config['URIBasePath'];
             if ($this->config['LazyLoadJsFile']) {
-                $file = $this->config['PublicBasePath'] . $this->config['LazyLoadJsFilePath'] . 'lazyload.js';
+                $file = $this->config['PublicBasePath'] . $this->config['LazyLoadJsFilePath'] . 'Lazyload.js';
                 if (!file_exists($file)) {
                     try {
                         mkdir($this->config['PublicBasePath'] . $this->config['LazyLoadJsFilePath'], 0777, true);
@@ -159,7 +158,7 @@ class HtmlFormating {
                 $htmlHeaders = HtmlHeaders::getInstance();
                 $htmlHeaders->addJs(
                         array(
-                            'src' => $path . $this->config['LazyLoadJsFilePath'] . 'lazyload.js',
+                            'src' => $path . $this->config['LazyLoadJsFilePath'] . 'Lazyload.js',
                             'type' => 'text/javascript',
                             'async' => 'async'
                         )
