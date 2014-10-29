@@ -31,5 +31,10 @@
             "type": "vcs",
             "url": "git@github.com:tubalmartin/YUI-CSS-compressor-PHP-port.git"
         }
-    ]
+    ],
+    "scripts": {
+        "post-update-cmd": [
+            "git describe --abbrev=0 --tags > .version"
+        ]
+    }
 }

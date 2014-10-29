@@ -30,6 +30,11 @@ Add these lines to your composer.json:
     "require": {
         "controleonline/speed-up-essentials": "*",
         "tubalmartin/cssmin": "*"
+    },
+    "scripts": {
+        "post-update-cmd": [
+            "git describe --abbrev=0 --tags > .version"
+        ]
     }
 
 ```
@@ -65,6 +70,7 @@ $config = array(
         'CssMinify' => true, //Only in Production
         'CssMinifiedFilePath' => 'css/vendor/ControleOnline/',
         'CssRemoveImports' => true
+        'CacheId' (is_file('.version')) ? file_get_contents('.version'). '/' : date('Y/m/d/H/'));
 );
 ```
 ### Zend 2 ###

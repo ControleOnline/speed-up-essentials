@@ -58,6 +58,10 @@ class SpeedUpEssentials {
         $config['CssMinifiedFilePath'] = (isset($config['CssMinifiedFilePath']) ? $config['CssMinifiedFilePath'] : 'css/vendor/ControleOnline/');
         $config['CssRemoveImports'] = (isset($config['CssRemoveImports']) ? $config['CssRemoveImports'] : true);
 
+        /*
+         * Cache
+         */
+        $config['cacheId'] = (isset($config['cacheId']) ? $config['cacheId'] : is_file('.version') ? file_get_contents('.version') . '/' : date('Y/m/d/H/'));
         return $config;
     }
 

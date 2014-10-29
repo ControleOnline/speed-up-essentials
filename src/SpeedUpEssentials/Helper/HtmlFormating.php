@@ -4,7 +4,8 @@ namespace SpeedUpEssentials\Helper;
 
 use SpeedUpEssentials\Model\DOMHtml,
     SpeedUpEssentials\Model\HtmlHeaders,
-    SpeedUpEssentials\Helper\JSIntegrate;
+    SpeedUpEssentials\Helper\JSIntegrate,
+    SpeedUpEssentials\Helper\Cache;
 
 class HtmlFormating {
 

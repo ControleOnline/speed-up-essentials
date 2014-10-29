@@ -23,7 +23,7 @@ class CSSIntegrate {
     private function setCssFileName() {
         $css = '';
         foreach ($this->csss as $item) {
-            $css .= $this->config['PublicBasePath'] . $item['href'];
+            $css .= $item['href'];
         }
         $this->filename = md5($css) . '.css';
     }
@@ -38,12 +38,12 @@ class CSSIntegrate {
                     $j[$key]['rel'] = 'stylesheet';
                     $j[$key]['media'] = 'screen';
                     if (is_file(realpath($this->config['PublicBasePath']) . '/' . $css['href'])) {
-                        $this->filename = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $css['href'];
+                        $this->filename = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href'];
                         if (!is_file($this->filename)) {
                             $this->content = $this->get_data(realpath($this->config['PublicBasePath']) . '/' . $css['href']);
                             $this->writeCssFile();
                         }
-                        $j[$key]['href'] = $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $css['href'];
+                        $j[$key]['href'] = $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href'];
                     } else {
                         $j[$key]['href'] = $css['href'];
                     }
@@ -60,7 +60,7 @@ class CSSIntegrate {
                     array(
                         'href' =>
                         $this->config['URIBasePath'] .
-                        $this->config['PublicCacheDir'] .
+                        $this->config['PublicCacheDir'] . $this->config['cacheId'] .
                         $this->config['CssMinifiedFilePath'] .
                         $this->filename,
                         'type' => 'text/css',
@@ -70,7 +70,7 @@ class CSSIntegrate {
                 )
         );
         $this->filename = $this->config['PublicBasePath'] .
-                $this->config['PublicCacheDir'] .
+                $this->config['PublicCacheDir'] . '/' . '/' . $this->config['cacheId'] .
                 $this->config['CssMinifiedFilePath'] . $this->filename;
         $this->makeFilePath($this->filename);
         if (!file_exists($this->completeFilePath)) {

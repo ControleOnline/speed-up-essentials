@@ -23,7 +23,7 @@ class JSIntegrate {
     private function setJsFileName() {
         $js = '';
         foreach ($this->jss as $item) {
-            $js .= $this->config['PublicBasePath'] . $item['src'];
+            $js .= $item['src'];
         }
         $this->filename = md5($js) . '.js';
     }
@@ -36,12 +36,12 @@ class JSIntegrate {
                 foreach ($this->jss as $key => $js) {
                     $j[$key]['type'] = 'text/javascript';
                     if (is_file(realpath($this->config['PublicBasePath']) . '/' . $js['src'])) {
-                        $this->filename = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $js['src'];
+                        $this->filename = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $js['src'];
                         if (!is_file($this->filename)) {
                             $this->content = $this->get_data(realpath($this->config['PublicBasePath']) . '/' . $js['src']);
                             $this->writeJsFile();
                         }
-                        $j[$key]['src'] = $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $js['src'];
+                        $j[$key]['src'] = $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $js['src'];
                     } else {
                         $j[$key]['src'] = $js['src'];
                     }
@@ -58,7 +58,7 @@ class JSIntegrate {
                     array(
                         'src' =>
                         $this->config['URIBasePath'] .
-                        $this->config['PublicCacheDir'] .
+                        $this->config['PublicCacheDir'] . $this->config['cacheId'] .
                         $this->config['JsMinifiedFilePath'] .
                         $this->filename,
                         'type' => 'text/javascript'
@@ -66,7 +66,7 @@ class JSIntegrate {
                 )
         );
         $this->filename = $this->config['PublicBasePath'] .
-                $this->config['PublicCacheDir'] .
+                $this->config['PublicCacheDir'] . $this->config['cacheId'] .
                 $this->config['JsMinifiedFilePath'] . $this->filename;
         $this->makeFilePath($this->filename);
         if (!file_exists($this->completeFilePath)) {
