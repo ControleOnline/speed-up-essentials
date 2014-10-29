@@ -140,7 +140,7 @@ class CSSIntegrate {
         return preg_replace_callback(
                 '|url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]\s*\)|', function($aMatches) use ($sBaseUrl) {
             $url = trim($aMatches[1]);
-            if ($url['0'] != '/' && !preg_match("^http(s)?://", $url)) {
+            if ($url['0'] != '/' && !preg_match('#^https?://#', $url)) {
                 $newUrl = $sBaseUrl . $url;
             } else {
                 $newUrl = $url;

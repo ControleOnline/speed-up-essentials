@@ -11,6 +11,7 @@ This software aims to be engaged in any system and without any additional line p
 * LazyLoad Images
 * Spritify CSS Images
 * Remove (Unify) CSS Imports
+* Static files on cookieless domain
 
 ## Installation ##
 ### Composer ###
