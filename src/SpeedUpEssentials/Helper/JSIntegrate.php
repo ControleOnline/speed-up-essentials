@@ -29,11 +29,13 @@ class JSIntegrate {
     }
 
     public function integrate() {
+        $async = (isset($this->config['JsAllAsync']) ? array('async' => 'async') : false);
         if ($this->jss) {
             if ($this->config['JavascriptIntegrate']) {
                 $this->integrateAllJs();
             } elseif ($this->config['JavascriptMinify']) {
                 foreach ($this->jss as $key => $js) {
+                    $j[$key] = $async;
                     $j[$key]['type'] = 'text/javascript';
                     if (is_file(realpath($this->config['PublicBasePath']) . '/' . $js['src'])) {
                         $this->filename = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $js['src'];
@@ -53,19 +55,13 @@ class JSIntegrate {
 
     protected function integrateAllJs() {
         $this->setJsFileName();
-        $this->htmlHeaders->setJs(
-                array(
-                    array(
-                        'src' =>
-                        $this->config['URIBasePath'] .
-                        $this->config['PublicCacheDir'] . $this->config['cacheId'] .
-                        $this->config['JsMinifiedFilePath'] .
-                        $this->filename,
-                        'type' => 'text/javascript',
-                        'async' => 'async'
-                    )
-                )
-        );
+        $element = (isset($this->config['JsAllAsync']) ? array('async' => 'async') : false);
+        $element['src'] = $this->config['URIBasePath'] .
+                $this->config['PublicCacheDir'] . $this->config['cacheId'] .
+                $this->config['JsMinifiedFilePath'] .
+                $this->filename;
+        $element['type'] = 'text/javascript';
+        $this->htmlHeaders->setJs(array($element));
         $this->filename = $this->config['PublicBasePath'] .
                 $this->config['PublicCacheDir'] . $this->config['cacheId'] .
                 $this->config['JsMinifiedFilePath'] . $this->filename;

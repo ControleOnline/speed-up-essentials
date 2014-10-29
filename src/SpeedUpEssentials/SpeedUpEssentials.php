@@ -49,6 +49,8 @@ class SpeedUpEssentials {
         $config['JavascriptCDNIntegrate'] = (isset($config['JavascriptIntegrate']) ? $config['JavascriptIntegrate'] : true);
         $config['JavascriptMinify'] = (isset($config['JavascriptMinify']) ? $config['JavascriptMinify'] : ($env == 'development' ? false : true));
         $config['JsMinifiedFilePath'] = (isset($config['JsMinifiedFilePath']) ? $config['JsMinifiedFilePath'] : 'js/vendor/ControleOnline/');
+        $config['JsAllAsync'] = (isset($config['JsAllAsync']) ? $config['JsAllAsync'] : false);
+        $config['JsAllAsync'] = true;
 
         /*
          * Css Minify
