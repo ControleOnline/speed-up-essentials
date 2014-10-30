@@ -61,12 +61,6 @@ class Spritify {
             }
         }, $cssContent
         );
-
-        /*
-         * @todo Adicionar o posicionamento do CSS
-         */
-        print_r($cssContent);
-        die();
         return $cssContent;
     }
 
@@ -151,8 +145,8 @@ class Spritify {
         foreach ($this->images as $image) {
             if ($image["id"] == $id) {
                 $css .= "background-position: " . ($image["width"] - $total["width"]) . "px " . ($top - $total["height"]) . "px; ";
-                $css .= "width: " . $image['width'] . "px; ";
-                $css .= "height: " . $image['height'] . "px; ";
+                //$css .= "width: " . $image['width'] . "px; ";
+                //$css .= "height: " . $image['height'] . "px; ";
             }
             $top -= $image["height"];
         }
