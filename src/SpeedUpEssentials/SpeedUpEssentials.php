@@ -65,6 +65,7 @@ class SpeedUpEssentials {
         $config['CssMinify'] = (isset($config['CssMinify']) ? $config['CssMinify'] : ($env == 'development' ? false : true));
         $config['CssMinifiedFilePath'] = (isset($config['CssMinifiedFilePath']) ? $config['CssMinifiedFilePath'] : 'css/vendor/ControleOnline/');
         $config['CssRemoveImports'] = (isset($config['CssRemoveImports']) ? $config['CssRemoveImports'] : true);
+        $config['CssSpritify'] = (isset($config['CssSpritify']) ? $config['CssSpritify'] : true);
 
         /*
          * Cache

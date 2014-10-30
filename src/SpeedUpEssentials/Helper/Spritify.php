@@ -17,16 +17,61 @@ namespace SpeedUpEssentials\Helper;
 
 class Spritify {
 
+    private $config;
     //image type to save as (for possible future modifications)
     private $image_type = "png";
     //array to contain images and image informations
     private $images = array();
     //array for errors
     private $errors = array();
+    private $spritePath;
+    private $spriteFilename;
+
+    public function __construct($config) {
+        $this->config = $config;
+        $this->spritePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . '/img/' . $this->config['cacheId'];
+        if (!is_dir(realpath($this->spritePath))) {
+            mkdir($this->spritePath, 0777, true);
+        }
+    }
 
     //gets errors
     public function get_errors() {
         return $this->errors;
+    }
+
+    public function run($cssContent) {
+        $regex = '/(background|background-image):url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]\s*\)/';
+
+        preg_match_all($regex, $cssContent, $matches);
+        if ($matches[2]) {
+            foreach ($matches[2] as $key => $img) {
+                $this->add_image(realpath($this->config['PublicBasePath'] . $img), $this->getImgId($img));
+            }
+        }
+        $this->setSpriteFilename();
+        $this->makeSprite($this->spritePath, $this->spriteFilename);
+
+        $cssContent = preg_replace_callback(
+                $regex, function($img) {
+            if (file_exists($this->config['PublicBasePath'] . $img[2])) {
+                return $this->getCss($this->getImgId($img[2])) . 'background:url("' . $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . 'img/' . $this->config['cacheId'] . $this->spriteFilename . '")';
+            } else {
+                return 'background:url("' . $img[2] . '")';
+            }
+        }, $cssContent
+        );
+
+        /*
+         * @todo Adicionar o posicionamento do CSS
+         */
+        print_r($cssContent);
+        die();
+        return $cssContent;
+    }
+
+    private function getImgId($imgPath) {
+        return md5($imgPath);
     }
 
     /*
@@ -35,7 +80,7 @@ class Spritify {
      * second parameter (optiona) - ID of element fro css code generation
      */
 
-    public function add_image($image_path, $id = "elem") {
+    public function add_image($image_path, $id) {
         if (file_exists($image_path)) {
             $info = getimagesize($image_path);
             if (is_array($info)) {
@@ -67,6 +112,16 @@ class Spritify {
         return $arr;
     }
 
+    private function setSpriteFilename() {
+        $name = '';
+        if ($this->images) {
+            foreach ($this->images as $key => $img) {
+                $name .= $img['path'];
+            }
+        }
+        $this->spriteFilename = md5($name);
+    }
+
     //creates sprite image resource
     private function create_image() {
         $total = $this->total_size();
@@ -89,21 +144,16 @@ class Spritify {
      * $path parameter (optional) - takes path to already generated css_sprite file or uses default file for pseudo code generation
      */
 
-    public function getCss($path = "/css_sprite.png") {
+    public function getCss($id) {
         $total = $this->total_size();
         $top = $total["height"];
         $css = "";
         foreach ($this->images as $image) {
-            if (strpos($image["id"], "#") === false) {
-                $css .= "#" . $image["id"] . " { ";
-            } else {
-                $css .= $image["id"] . " { ";
+            if ($image["id"] == $id) {
+                $css .= "background-position: " . ($image["width"] - $total["width"]) . "px " . ($top - $total["height"]) . "px; ";
+                $css .= "width: " . $image['width'] . "px; ";
+                $css .= "height: " . $image['height'] . "px; ";
             }
-            $css .= "background-image: url(" . $path . "); ";
-            $css .= "background-position: " . ($image["width"] - $total["width"]) . "px " . ($top - $total["height"]) . "px; ";
-            $css .= "width: " . $image['width'] . "px; ";
-            $css .= "height: " . $image['height'] . "px; ";
-            $css .= "}\n";
             $top -= $image["height"];
         }
         return $css;
@@ -113,10 +163,11 @@ class Spritify {
      * saves image to path
      */
 
-    public function makeSprite($path) {
+    public function makeSprite($path, $file) {
         $sprite = $this->create_image();
         $func = "image" . $this->image_type;
-        $func($sprite, $path);
+        $func($sprite, $path . $file . '.' . $this->image_type);
+        $this->spriteFilename = $file . '.' . $this->image_type;
         ImageDestroy($sprite);
     }
 

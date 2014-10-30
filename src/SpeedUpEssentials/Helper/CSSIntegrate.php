@@ -70,7 +70,7 @@ class CSSIntegrate {
                 )
         );
         $this->filename = $this->config['PublicBasePath'] .
-                $this->config['PublicCacheDir'] . '/' . '/' . $this->config['cacheId'] .
+                $this->config['PublicCacheDir'] . '/' . $this->config['cacheId'] .
                 $this->config['CssMinifiedFilePath'] . $this->filename;
         $this->makeFilePath($this->filename);
         if (!file_exists($this->completeFilePath)) {
@@ -90,6 +90,10 @@ class CSSIntegrate {
             if ($this->config['CssMinify']) {
                 $cssmin = new \CSSmin();
                 $this->content = $cssmin->run($this->content);
+            }
+            if ($this->config['CssSpritify']) {
+                $spritify = new Spritify($this->config);
+                $this->content = $spritify->run($this->content);
             }
             file_put_contents($this->completeFilePath, $this->content);
         }
@@ -119,11 +123,11 @@ class CSSIntegrate {
     protected function removeImports($data, $cssUrl) {
         $sBaseUrl = dirname($cssUrl) . '/';
         return preg_replace_callback(
-                '/@import url\(([^)]+)\);/', function($aMatches) use ($sBaseUrl) {
+                '/@import url\(([^)]+)\)/', function($aMatches) use ($sBaseUrl) {
             $url = str_replace(array('"', '\''), '', trim($aMatches[1]));
             if (is_file($this->config['PublicBasePath'] . $url)) {
                 $newUrl = $this->config['PublicBasePath'] . $url;
-                if (!isset($this->$cssImported[md5($newUrl)])) {
+                if (!isset($this->cssImported[md5($newUrl)])) {
                     $content = file_get_contents($newUrl);
                     $this->cssImported[md5($newUrl)] = $newUrl;
                 }
