@@ -104,7 +104,7 @@ In your module.config.php file:
 namespace YourNameSpace;
 
 return array(
-        'SpeedUpEssentials' => array(
+        'speed_up_essentials' => array(
                 //Configs of SpeedUpEssentials here
          )
 );
