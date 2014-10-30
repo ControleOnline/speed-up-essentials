@@ -29,7 +29,7 @@ class Spritify {
 
     public function __construct($config) {
         $this->config = $config;
-        $this->spritePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . '/img/' . $this->config['cacheId'];
+        $this->spritePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . 'img/';
         if (!is_dir(realpath($this->spritePath))) {
             mkdir($this->spritePath, 0777, true);
         }
@@ -55,7 +55,7 @@ class Spritify {
         $cssContent = preg_replace_callback(
                 $regex, function($img) {
             if (file_exists($this->config['PublicBasePath'] . $img[2])) {
-                return $this->getCss($this->getImgId($img[2])) . 'background:url("' . $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . 'img/' . $this->config['cacheId'] . $this->spriteFilename . '")';
+                return $this->getCss($this->getImgId($img[2])) . 'background:url("' . $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . 'img/' . $this->spriteFilename . '")';
             } else {
                 return 'background:url("' . $img[2] . '")';
             }
