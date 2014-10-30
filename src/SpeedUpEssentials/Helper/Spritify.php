@@ -41,7 +41,7 @@ class Spritify {
     }
 
     public function run($cssContent) {
-        $regex = '/(background|background-image):url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]\s*\)/';
+        $regex = '/(background|background-image):url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]\s*\)(.*?)(;|})/';
 
         preg_match_all($regex, $cssContent, $matches);
         if ($matches[2]) {
@@ -55,9 +55,20 @@ class Spritify {
         $cssContent = preg_replace_callback(
                 $regex, function($img) {
             if (file_exists($this->config['PublicBasePath'] . $img[2])) {
-                return $this->getCss($this->getImgId($img[2])) . 'background:url("' . $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . 'img/' . $this->spriteFilename . '")';
+                $return .= 'background-image:url("' . $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . 'img/' . $this->spriteFilename . '");';
+                $return .= $this->getCss($this->getImgId($img[2]));
+                if ($img[3]) {
+                    /*
+                     * @todo Descobrir o que fazer com isto
+                     */
+                    //$return.= 'background:' . $img[3];
+                }
+                if ($img[4]) {
+                    $return.= $img[4];
+                }
+                return $return;
             } else {
-                return 'background:url("' . $img[2] . '")';
+                return $img[0];
             }
         }, $cssContent
         );
@@ -78,14 +89,14 @@ class Spritify {
         if (file_exists($image_path)) {
             $info = getimagesize($image_path);
             if (is_array($info)) {
-                $new = sizeof($this->images);
-                $this->images[$new]["path"] = $image_path;
-                $this->images[$new]["width"] = $info[0];
-                $this->images[$new]["height"] = $info[1];
-                $this->images[$new]["mime"] = $info["mime"];
+                //$new = sizeof($this->images);
+                $this->images[$id]["path"] = $image_path;
+                $this->images[$id]["width"] = $info[0];
+                $this->images[$id]["height"] = $info[1];
+                $this->images[$id]["mime"] = $info["mime"];
                 $type = explode("/", $info['mime']);
-                $this->images[$new]["type"] = $type[1];
-                $this->images[$new]["id"] = $id;
+                $this->images[$id]["type"] = $type[1];
+                $this->images[$id]["id"] = $id;
             } else {
                 $this->errors[] = "Provided file \"" . $image_path . "\" isn't correct image format";
             }
@@ -144,7 +155,8 @@ class Spritify {
         $css = "";
         foreach ($this->images as $image) {
             if ($image["id"] == $id) {
-                $css .= "background-position: " . ($image["width"] - $total["width"]) . "px " . ($top - $total["height"]) . "px; ";
+                $css .= "background-position:" . ($image["width"] - $total["width"]) . "px " . ($top - $total["height"]) . "px;";
+                $css .= "background-repeat:no-repeat;";
                 //$css .= "width: " . $image['width'] . "px; ";
                 //$css .= "height: " . $image['height'] . "px; ";
             }

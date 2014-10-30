@@ -123,7 +123,7 @@ class CSSIntegrate {
     protected function removeImports($data, $cssUrl) {
         $sBaseUrl = dirname($cssUrl) . '/';
         return preg_replace_callback(
-                '/@import url\(([^)]+)\)/', function($aMatches) use ($sBaseUrl) {
+                '/@import url\(([^)]+)\)(;?)/', function($aMatches) use ($sBaseUrl) {
             $url = str_replace(array('"', '\''), '', trim($aMatches[1]));
             if (is_file($this->config['PublicBasePath'] . $url)) {
                 $newUrl = $this->config['PublicBasePath'] . $url;
