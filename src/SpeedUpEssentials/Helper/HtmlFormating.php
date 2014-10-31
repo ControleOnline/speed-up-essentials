@@ -39,6 +39,9 @@ class HtmlFormating {
                 if ($item->getAttribute('src') && $item->getAttribute('type') == 'text/javascript') {
                     $attributes = array();
                     foreach ($item->attributes as $attribute_name => $attribute_node) {
+                        if ($attribute_name == 'data-main') {
+                            $htmlHeaders->setMainJsScript($attribute_node);
+                        }
                         $attributes[$attribute_name] = $attribute_node->nodeValue;
                     }
                     $htmlHeaders->addJs($attributes);
@@ -46,6 +49,10 @@ class HtmlFormating {
                 }
             }
         }
+    }
+
+    public function addDataMain($url) {
+        
     }
 
     public function prepareHtml(&$html) {

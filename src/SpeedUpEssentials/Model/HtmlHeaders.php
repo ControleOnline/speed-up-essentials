@@ -7,16 +7,25 @@ class HtmlHeaders {
     private static $instance;
     private $css;
     private $js;
+    private $mainJsScript;
 
     private function __construct() {
         
     }
 
-    function setCss($css) {
+    public function getMainJsScript() {
+        return $this->mainJsScript;
+    }
+
+    public function setMainJsScript($mainJsScript) {
+        $this->mainJsScript = $mainJsScript;
+    }
+
+    public function setCss($css) {
         $this->css = $css;
     }
 
-    function setJs($js) {
+    public function setJs($js) {
         $this->js = $js;
     }
 

@@ -57,10 +57,16 @@ class JSIntegrate {
         $this->setJsFileName();
         $element = (isset($this->config['JsAllAsync']) ? array('async' => 'async') : false);
         $element['src'] = Url::normalizeUrl($this->config['URIBasePath'] .
-                $this->config['PublicCacheDir'] . $this->config['cacheId'] .
-                $this->config['JsMinifiedFilePath'] .
-                $this->filename);
+                        $this->config['PublicCacheDir'] . $this->config['cacheId'] .
+                        $this->config['JsMinifiedFilePath'] .
+                        $this->filename);
         $element['type'] = 'text/javascript';
+        $mainJsScript = $this->htmlHeaders->getMainJsScript();
+
+        if ($mainJsScript) {
+            $element['data-main'] = $mainJsScript;
+        }
+
         $this->htmlHeaders->setJs(array($element));
         $this->filename = $this->config['PublicBasePath'] .
                 $this->config['PublicCacheDir'] . $this->config['cacheId'] .
