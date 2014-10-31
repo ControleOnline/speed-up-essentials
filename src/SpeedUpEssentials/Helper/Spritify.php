@@ -55,16 +55,18 @@ class Spritify {
         $cssContent = preg_replace_callback(
                 $regex, function($img) {
             if (file_exists($this->config['PublicBasePath'] . $img[2])) {
-                $return .= 'background-image:url("' . $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . 'img/' . $this->spriteFilename . '");';
-                $return .= $this->getCss($this->getImgId($img[2]));
-                if ($img[3]) {
-                    /*
-                     * @todo Descobrir o que fazer com isto
-                     */
-                    //$return.= 'background:' . $img[3];
-                }
-                if ($img[4]) {
-                    $return.= $img[4];
+                $return = '';
+                /*
+                 * @todo Descobrir como resolver o problema de imagens com divs não exclusivas
+                 */
+                if (trim($img[3])) {
+                    $return .= $img[0];
+                } else {
+                    $return .= 'background-image:url("' . $this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . 'img/' . $this->spriteFilename . '");';
+                    $return .= $this->getCss($this->getImgId($img[2]));
+                    if ($img[4]) {
+                        $return.= $img[4];
+                    }
                 }
                 return $return;
             } else {
