@@ -62,7 +62,6 @@ class JSIntegrate {
                         $this->filename);
         $element['type'] = 'text/javascript';
         $mainJsScript = $this->htmlHeaders->getMainJsScript();
-
         if ($mainJsScript) {
             $element['data-main'] = $mainJsScript;
         }
