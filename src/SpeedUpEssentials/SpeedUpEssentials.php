@@ -10,7 +10,7 @@ class SpeedUpEssentials {
 
     protected $config;
 
-    public function getConfig($config) {
+    public function getConfig($config, $baseUri) {
         $env = isset($config['APP_ENV']) ? $config['APP_ENV'] : (getenv('APP_ENV') ? : 'production');
 
         /*
@@ -27,7 +27,8 @@ class SpeedUpEssentials {
         /*
          * Url Configs
          */
-        $config['URIBasePath'] = (isset($config['URIBasePath']) ? $config['URIBasePath'] : '/');
+
+        $config['URIBasePath'] = (isset($config['URIBasePath']) ? $config['URIBasePath'] : $baseUri);
         $config['PublicBasePath'] = realpath(isset($config['PublicBasePath']) ? $config['PublicBasePath'] : 'public/') . DIRECTORY_SEPARATOR;
         $config['PublicCacheDir'] = (isset($config['PublicCacheDir']) ? $config['PublicCacheDir'] : 'cache/');
 
@@ -90,11 +91,11 @@ class SpeedUpEssentials {
         return $config;
     }
 
-    public function __construct($config) {
+    public function __construct($config, $baseUri) {
         $this->env = getenv('APP_ENV') ? : 'production';
 
         $this->config = $this->getConfig(
-                (isset($config) ? $config : array())
+                (isset($config) ? $config : array()), $baseUri
         );
         DOMHtml::getInstance($this->config['charset']);
         Url::setStaticDomain($this->config['CookieLessDomain']);

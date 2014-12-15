@@ -38,6 +38,7 @@ class Url {
         if (self::$staticDomain == $_SERVER['HTTP_HOST']) {
             $url = preg_replace('#^//' . $_SERVER['HTTP_HOST'] . '#', '', $url);
         }
+        print_r($url);
         return preg_replace('#^https?://#', '//', $url);
     }
 

@@ -21,11 +21,8 @@
         "preferred-install": "dist",
         "component-dir": "public/components"
     },
-    "require-dev": {
-        "ext-tidy": "*"
-    },
     "require": {
-        "php": ">=5.5",
+        "php": ">=5.3.3",
         "zendframework/zendframework": "~2.0",
         "tubalmartin/cssmin": "*"
     },
