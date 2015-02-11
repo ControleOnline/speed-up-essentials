@@ -16,10 +16,9 @@ class Module {
         $this->sm = $e->getApplication()->getServiceManager();
         $config = $this->sm->get('config');
         $SpeedUpEssentials = new SpeedUpEssentials(isset($config['speed_up_essentials']) ? $config['speed_up_essentials'] : false, $this->sm->get('Request')->getBasePath() . '/');
+        $html = $response->getBody();
         $response->setContent(
-                $SpeedUpEssentials->render(
-                        $response->getBody()
-                )
+                $SpeedUpEssentials->render($html)
         );
     }
 

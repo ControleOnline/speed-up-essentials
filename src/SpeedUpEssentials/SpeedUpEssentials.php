@@ -75,8 +75,8 @@ class SpeedUpEssentials {
             if (is_file('.version')) {
                 $contents = file_get_contents('.version');
                 if ($contents) {
-                    $version = array_shift(array_values(preg_split('/\r\n|\r|\n/', $contents, 2)));
-                    if (empty(trim($version))) {
+                    $version = trim(array_shift(array_values(preg_split('/\r\n|\r|\n/', $contents, 2))));
+                    if (empty($version)) {
                         $config['cacheId'] = date('Y/m/d/H/');
                     } else {
                         $config['cacheId'] = $version . '/';
