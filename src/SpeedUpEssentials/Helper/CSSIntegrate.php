@@ -100,16 +100,14 @@ class CSSIntegrate {
     }
 
     protected function get_data($url) {
-
         $cssUrl = $url;
         if (is_file($this->config['PublicBasePath'] . $url)) {
             $url = $this->config['PublicBasePath'] . $url;
-        }
-
-        try {
-            $data = file_get_contents($url);
-        } catch (Exception $ex) {
-            
+            try {
+                $data = @file_get_contents($url);
+            } catch (Exception $ex) {
+                
+            }
         }
         if (!$data) {
             $data = '/*File: (' . $url . ') not found*/';
