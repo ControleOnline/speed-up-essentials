@@ -117,7 +117,10 @@ class SpeedUpEssentials {
                     foreach ($css as $key => $value) {
                         $link->setAttribute($key, $value);
                     }
-                    $dom->getElementsByTagName('head')->item(0)->appendChild($link);
+                    $head = $dom->getElementsByTagName('head')->item(0);
+                    if ($head) {
+                        $head->appendChild($link);
+                    }
                 }
             }
             if ($jss) {
@@ -127,7 +130,10 @@ class SpeedUpEssentials {
                     foreach ($js as $key => $value) {
                         $script->setAttribute($key, $value);
                     }
-                    $dom->getElementsByTagName('head')->item(0)->appendChild($script);
+                    $head = $dom->getElementsByTagName('head')->item(0);
+                    if ($head) {
+                        $head->appendChild($script);
+                    }
                 }
             }
         }
