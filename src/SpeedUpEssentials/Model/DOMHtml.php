@@ -35,8 +35,9 @@ class DOMHtml {
     public static function render() {
         if (!self::$as_html) {
             $content = self::$dom->firstChild->firstChild->childNodes;
-            for ($i = 1; $i < $content->length; $i++) {
-                self::$dom->appendChild($content->item($i));
+            $length =  $content->length;            
+            for ($i = 0; $i < $length; $i++) {                
+                self::$dom->appendChild($content->item(0));
             }
             self::$dom->removeChild(self::$dom->firstChild);
         }
