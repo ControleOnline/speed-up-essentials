@@ -103,14 +103,14 @@ class HtmlFormating {
     public function htmlCompress(&$html) {
 
         $search = array(
-            '/\>[^\S ]+/s', //strip whitespaces after tags, except space
-            '/[^\S ]+\</s', //strip whitespaces before tags, except space
-                //'/(\s)+/s'  // shorten multiple whitespace sequences (Broken <pre></pre>)
+            '/\>[^\S]+/s', //strip whitespaces after tags, except space
+            '/[^\S]+\</s', //strip whitespaces before tags, except space
+            //'/(\s)+/s'  // shorten multiple whitespace sequences (Broken <pre></pre>)
         );
         $replace = array(
             '>',
             '<',
-                //'\\1'
+            //'\\1'
         );
         $html = str_replace('> <', '><', preg_replace($search, $replace, $html));
         return $html;
