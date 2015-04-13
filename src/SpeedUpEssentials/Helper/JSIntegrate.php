@@ -13,11 +13,13 @@ class JSIntegrate {
     protected $completeFilePath;
     protected $htmlHeaders;
     protected $jss;
+    protected $jss_inline;
 
     public function __construct($config) {
         $this->config = $config;
         $this->htmlHeaders = HtmlHeaders::getInstance();
         $this->jss = $this->htmlHeaders->getJs();
+        $this->jss_inline = $this->htmlHeaders->getJsInline();
     }
 
     private function setJsFileName() {
@@ -33,18 +35,18 @@ class JSIntegrate {
         if ($this->jss) {
             if ($this->config['JavascriptIntegrate']) {
                 $this->integrateAllJs();
-            } elseif ($this->config['JavascriptMinify']) {
+            } else {
                 foreach ($this->jss as $key => $js) {
                     $j[$key] = $async;
                     $j[$key]['type'] = 'text/javascript';
-                    if (is_file(realpath($this->config['PublicBasePath']) . '/' . $js['src'])) {
+                    if ($this->config['JavascriptMinify'] && is_file(realpath($this->config['PublicBasePath']) . '/' . $js['src'])) {
                         $this->filename = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $js['src'];
                         if (!is_file($this->filename)) {
                             $this->content = $this->get_data(realpath($this->config['PublicBasePath']) . '/' . $js['src']);
                             $this->writeJsFile();
                         }
                         $j[$key]['src'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $js['src']);
-                    } else {
+                    } elseif ($js['src']) {
                         $j[$key]['src'] = Url::normalizeUrl($js['src']);
                     }
                 }
@@ -55,7 +57,7 @@ class JSIntegrate {
 
     protected function integrateAllJs() {
         $this->setJsFileName();
-        $element = (isset($this->config['JsAllAsync']) ? array('async' => 'async') : false);
+        $element = ((isset($this->config['JsAllAsync']) && $this->config['JsAllAsync']) ? array('async' => 'async') : false);
         $element['src'] = Url::normalizeUrl($this->config['URIBasePath'] .
                         $this->config['PublicCacheDir'] . $this->config['cacheId'] .
                         $this->config['JsMinifiedFilePath'] .
@@ -75,6 +77,9 @@ class JSIntegrate {
             foreach ($this->jss as $item) {
                 $this->content .= $this->get_data($item['src']);
             }
+            foreach ($this->jss_inline as $item) {
+                $this->content .= md5($item['value']);
+            }
             $this->writeJsFile();
         }
     }
@@ -93,9 +98,8 @@ class JSIntegrate {
     }
 
     protected function get_data($url) {
-
-        if (is_file($this->config['PublicBasePath'] . $url)) {
-            $url = $this->config['PublicBasePath'] . $url;
+        if (is_file($this->config['PublicBasePath'] . Url::normalizeUrl($url))) {
+            $url = $this->config['PublicBasePath'] . Url::normalizeUrl($url);
             try {
                 $data = @file_get_contents($url);
             } catch (Exception $ex) {

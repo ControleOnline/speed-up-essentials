@@ -13,11 +13,13 @@ class CSSIntegrate {
     protected $htmlHeaders;
     protected $csss;
     protected $cssImported;
+    protected $csss_inline;
 
     public function __construct($config) {
         $this->config = $config;
         $this->htmlHeaders = HtmlHeaders::getInstance();
         $this->csss = $this->htmlHeaders->getCss();
+        $this->csss_inline = $this->htmlHeaders->getCssInline();
     }
 
     private function setCssFileName() {
@@ -32,19 +34,19 @@ class CSSIntegrate {
         if ($this->csss) {
             if ($this->config['CssIntegrate']) {
                 $this->integrateAllCss();
-            } elseif ($this->config['CssMinify']) {
+            } else {
                 foreach ($this->csss as $key => $css) {
                     $j[$key]['type'] = 'text/css';
                     $j[$key]['rel'] = 'stylesheet';
                     $j[$key]['media'] = 'screen';
-                    if (is_file(realpath($this->config['PublicBasePath']) . '/' . $css['href'])) {
+                    if ($this->config['CssMinify'] && is_file(realpath($this->config['PublicBasePath']) . '/' . $css['href'])) {
                         $this->filename = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href'];
                         if (!is_file($this->filename)) {
                             $this->content = $this->get_data(realpath($this->config['PublicBasePath']) . '/' . $css['href']);
                             $this->writeCssFile();
                         }
                         $j[$key]['href'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href']);
-                    } else {
+                    } elseif ($css['href']) {
                         $j[$key]['href'] = Url::normalizeUrl($css['href']);
                     }
                 }
@@ -77,6 +79,9 @@ class CSSIntegrate {
             foreach ($this->csss as $item) {
                 $this->content .= $this->get_data($item['href']);
             }
+            foreach ($this->csss_inline as $item) {
+                $this->content .= md5($item['value']);
+            }
             $this->writeCssFile();
         }
     }
@@ -101,10 +106,10 @@ class CSSIntegrate {
 
     protected function get_data($url) {
         $cssUrl = $url;
-        if (is_file($this->config['PublicBasePath'] . $url)) {
-            $url = $this->config['PublicBasePath'] . $url;
+        if (is_file($this->config['PublicBasePath'] . Url::normalizeUrl($url))) {
+            $url = $this->config['PublicBasePath'] . Url::normalizeUrl($url);
             try {
-                $data = @file_get_contents($url);
+                $data = @file_get_contents(Url::normalizeUrl($url));
             } catch (Exception $ex) {
                 
             }

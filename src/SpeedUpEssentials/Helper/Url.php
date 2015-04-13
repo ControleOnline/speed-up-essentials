@@ -23,7 +23,7 @@ class Url {
         self::$baseUri = $baseUri;
     }
 
-    public static function normalizeUrl($url) {
+    public static function normalizeUrl($url, $remove_host = false) {
 
         if (substr($url, 0, 5) != 'data:' && substr($url, 0, 2) != '//' && !preg_match('#^https?://#', $url)) {
             if ($url['0'] == '/') {
@@ -38,7 +38,14 @@ class Url {
         if (self::$staticDomain == $_SERVER['HTTP_HOST']) {
             $url = preg_replace('#^//' . $_SERVER['HTTP_HOST'] . '#', '', $url);
         }
-        return preg_replace('#^https?://#', '//', $url);
+        $return = preg_replace('#^https?://#', '//', $url);
+        if ($remove_host) {
+            $return = str_replace('//' . self::$staticDomain, '', $return);
+        }
+
+        $return = explode('?', $return);
+
+        return $return[0];
     }
 
 }

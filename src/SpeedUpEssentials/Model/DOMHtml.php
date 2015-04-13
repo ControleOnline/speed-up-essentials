@@ -25,7 +25,8 @@ class DOMHtml {
     public function setContent($content) {
         if (!isset(self::$content)) {
             libxml_use_internal_errors(true);
-            self::$content = self::$dom->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            //self::$content = self::$dom->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            self::$content = self::$dom->loadHTML($content);
             $compair = strtolower(mb_substr(trim($content), 0, 5));
             self::$as_html = ($compair == '<html' || $compair == '<!doc') ? true : false;
             libxml_use_internal_errors(false);

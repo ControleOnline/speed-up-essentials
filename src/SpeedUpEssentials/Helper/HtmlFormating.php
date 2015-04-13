@@ -19,24 +19,36 @@ class HtmlFormating {
         $htmlHeaders = HtmlHeaders::getInstance();
         $DOMHtml = DOMHtml::getInstance();
         $dom = $DOMHtml->getDom();
+        $this->organizeCSS($htmlHeaders, $dom);
+        $this->organizeJS($htmlHeaders, $dom);
+    }
+
+    private function organizeCSS($htmlHeaders, $dom) {
         $x = new \DOMXPath($dom);
         if ($x) {
             foreach ($x->query("//link") as $item) {
-                if ($item->getAttribute('href') && $item->getAttribute('type') == 'text/css') {
+                if ($item->getAttribute('type') == 'text/css') {
                     $attributes = array();
                     foreach ($item->attributes as $attribute_name => $attribute_node) {
                         $attributes[$attribute_name] = $attribute_node->nodeValue;
                     }
-                    $htmlHeaders->addCss($attributes);
+                    if ($item->getAttribute('href')) {
+                        $htmlHeaders->addCss($attributes);
+                    } else {
+                        $attributes['value'] = $item->nodeValue;
+                        $htmlHeaders->addCSSInline($attributes);
+                    }
                     $item->parentNode->removeChild($item);
                 }
             }
         }
+    }
 
+    private function organizeJS($htmlHeaders, $dom) {
         $s = new \DOMXPath($dom);
         if ($s) {
             foreach ($s->query("//script") as $item) {
-                if ($item->getAttribute('src') && $item->getAttribute('type') == 'text/javascript') {
+                if ($item->getAttribute('type') == 'text/javascript') {
                     $attributes = array();
                     foreach ($item->attributes as $attribute_name => $attribute_node) {
                         if ($attribute_name == 'data-main') {
@@ -44,7 +56,12 @@ class HtmlFormating {
                         }
                         $attributes[$attribute_name] = $attribute_node->nodeValue;
                     }
-                    $htmlHeaders->addJs($attributes);
+                    if ($item->getAttribute('src')) {
+                        $htmlHeaders->addJs($attributes);
+                    } else {
+                        $attributes['value'] = $item->nodeValue;
+                        $htmlHeaders->addJsInline($attributes);
+                    }
                     $item->parentNode->removeChild($item);
                 }
             }
@@ -105,12 +122,12 @@ class HtmlFormating {
         $search = array(
             '/\>[^\S]+/s', //strip whitespaces after tags, except space
             '/[^\S]+\</s', //strip whitespaces before tags, except space
-            //'/(\s)+/s'  // shorten multiple whitespace sequences (Broken <pre></pre>)
+                //'/(\s)+/s'  // shorten multiple whitespace sequences (Broken <pre></pre>)
         );
         $replace = array(
             '>',
             '<',
-            //'\\1'
+                //'\\1'
         );
         $html = str_replace('> <', '><', preg_replace($search, $replace, $html));
         return $html;
@@ -156,13 +173,14 @@ class HtmlFormating {
 
     private function lazyLoadHead() {
         if ($this->config['LazyLoadJsFile'] || $this->config['LazyLoadFadeIn']) {
+            $base = dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../public/';
             $path = $this->config['URIBasePath'];
             if ($this->config['LazyLoadJsFile']) {
                 $file = $this->config['PublicBasePath'] . $this->config['LazyLoadJsFilePath'] . 'Lazyload.js';
                 if (!file_exists($file)) {
                     try {
                         mkdir($this->config['PublicBasePath'] . $this->config['LazyLoadJsFilePath'], 0777, true);
-                        copy('vendor/controleonline/speed-up-essentials/public/js/LazyLoad.js', $file);
+                        copy($base . 'js/LazyLoad.js', $file);
                     } catch (Exception $ex) {
                         
                     }
@@ -182,7 +200,7 @@ class HtmlFormating {
                 if (!file_exists($file)) {
                     try {
                         mkdir($this->config['PublicBasePath'] . $this->config['LazyLoadCssFilePath'], 0777, true);
-                        copy('vendor/controleonline/speed-up-essentials/public/css/LazyLoad.css', $file);
+                        copy($base . 'css/LazyLoad.css', $file);
                     } catch (Exception $ex) {
                         
                     }

@@ -75,8 +75,8 @@ $config = array(
         'CssIntegrate' => true, //Only in Production
         'CssMinify' => true, //Only in Production
         'CssMinifiedFilePath' => 'css/vendor/ControleOnline/',
-        'CssRemoveImports' => true
-        'CacheId' (is_file('.version')) ? file_get_contents('.version'). '/' : date('Y/m/d/H/'));
+        'CssRemoveImports' => true,
+        'CacheId' => (is_file('.version')) ? file_get_contents('.version') . '/' : date('Y/m/d/H/')
 );
 ```
 ### Zend 2 ###

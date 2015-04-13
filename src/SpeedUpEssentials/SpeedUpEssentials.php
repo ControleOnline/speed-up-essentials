@@ -4,7 +4,8 @@ namespace SpeedUpEssentials;
 
 use SpeedUpEssentials\Model\DOMHtml,
     SpeedUpEssentials\Helper\HtmlFormating,
-    SpeedUpEssentials\Helper\Url;
+    SpeedUpEssentials\Helper\Url,
+    SpeedUpEssentials\Helper\JSMin;
 
 class SpeedUpEssentials {
 
@@ -103,40 +104,106 @@ class SpeedUpEssentials {
         Url::setBaseUri($this->config['URIBasePath']);
     }
 
-    public function addHtmlHeaders() {
+    private function addJsHeaders() {
         $htmlHeaders = Model\HtmlHeaders::getInstance();
-        $csss = $htmlHeaders->getCss();
         $jss = $htmlHeaders->getJs();
-        if ($csss || $jss) {
+        if ($jss) {
             $DOMHtml = DOMHtml::getInstance();
             $dom = $DOMHtml->getDom();
-            if ($csss) {
-                foreach ($csss as $css) {
-                    $link = $dom->createElement('link');
-                    krsort($css);
-                    foreach ($css as $key => $value) {
-                        $link->setAttribute($key, $value);
-                    }
-                    $head = $dom->getElementsByTagName('head')->item(0);
-                    if ($head) {
-                        $head->appendChild($link);
-                    }
+            foreach ($jss as $js) {
+                $script = $dom->createElement('script');
+                krsort($js);
+                foreach ($js as $key => $value) {
+                    $script->setAttribute($key, $value);
                 }
-            }
-            if ($jss) {
-                foreach ($jss as $js) {
-                    $script = $dom->createElement('script');
-                    krsort($js);
-                    foreach ($js as $key => $value) {
-                        $script->setAttribute($key, $value);
-                    }
-                    $head = $dom->getElementsByTagName('head')->item(0);
-                    if ($head) {
-                        $head->appendChild($script);
-                    }
+                $head = $dom->getElementsByTagName('head')->item(0);
+                if ($head) {
+                    $head->appendChild($script);
                 }
             }
         }
+    }
+
+    private function addJsHeadersInline() {
+        $htmlHeaders = Model\HtmlHeaders::getInstance();
+        $jss = $htmlHeaders->getJsInline();
+        if ($jss) {
+            $DOMHtml = DOMHtml::getInstance();
+            $dom = $DOMHtml->getDom();
+            foreach ($jss as $js) {
+                $script = $dom->createElement('script');
+                krsort($js);
+                foreach ($js as $key => $value) {
+                    if ($key != 'value') {
+                        $script->setAttribute($key, $value);
+                    } else {
+                        if ($this->config['JavascriptMinify']) {
+                            $value = JSMin::minify($value);
+                        }
+                        $script->nodeValue = $value;
+                    }
+                }
+                $head = $dom->getElementsByTagName('head')->item(0);
+                if ($head) {
+                    $head->appendChild($script);
+                }
+            }
+        }
+    }
+
+    private function addCssHeaders() {
+        $htmlHeaders = Model\HtmlHeaders::getInstance();
+        $csss = $htmlHeaders->getCss();
+        if ($csss) {
+            $DOMHtml = DOMHtml::getInstance();
+            $dom = $DOMHtml->getDom();
+            foreach ($csss as $css) {
+                $link = $dom->createElement('link');
+                krsort($css);
+                foreach ($css as $key => $value) {
+                    $link->setAttribute($key, $value);
+                }
+                $head = $dom->getElementsByTagName('head')->item(0);
+                if ($head) {
+                    $head->appendChild($link);
+                }
+            }
+        }
+    }
+
+    private function addCssHeadersInline() {
+        $htmlHeaders = Model\HtmlHeaders::getInstance();
+        $csss = $htmlHeaders->getCssInline();
+        if ($csss) {
+            $DOMHtml = DOMHtml::getInstance();
+            $dom = $DOMHtml->getDom();
+            foreach ($csss as $css) {
+                $link = $dom->createElement('link');
+                krsort($css);
+                foreach ($css as $key => $value) {
+                    if ($key != 'value') {
+                        $link->setAttribute($key, $value);
+                    } else {
+                        if ($this->config['CssMinify']) {
+                            $cssmin = new \CSSmin();
+                            $this->content = $cssmin->run($this->content);
+                        }
+                        $link->nodeValue = $value;
+                    }
+                }
+                $head = $dom->getElementsByTagName('head')->item(0);
+                if ($head) {
+                    $head->appendChild($link);
+                }
+            }
+        }
+    }
+
+    public function addHtmlHeaders() {
+        $this->addCssHeaders();
+        $this->addJsHeaders();
+        $this->addCssHeadersInline();
+        $this->addJsHeadersInline();
     }
 
     public function render(&$html) {
