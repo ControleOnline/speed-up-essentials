@@ -319,7 +319,7 @@ class JSMin {
             }
         }
 
-        return $this->output;
+        return str_replace('+++', '+ ++', $this->output);
     }
 
     /**

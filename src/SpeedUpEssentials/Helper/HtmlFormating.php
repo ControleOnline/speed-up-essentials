@@ -34,14 +34,65 @@ class HtmlFormating {
                     }
                     if ($item->getAttribute('href')) {
                         $htmlHeaders->addCss($attributes);
+                        $item->parentNode->removeChild($item);
                     } else {
                         $attributes['value'] = $item->nodeValue;
-                        $htmlHeaders->addCSSInline($attributes);
+                        $this->addCssInline($htmlHeaders, $item, $attributes);
                     }
-                    $item->parentNode->removeChild($item);
                 }
             }
         }
+    }
+
+    private function jsAwaysInline($content) {
+        return strpos($content, 'document.write');
+    }
+
+    private function addJsInline($htmlHeaders, $item, $attributes) {
+        if (!$this->jsAwaysInline($attributes['value'])) {
+            $file = 'js' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.js';
+            $completeFilePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $file;
+
+            if (!file_exists($completeFilePath)) {
+                if (!is_dir(dirname($completeFilePath))) {
+                    mkdir(dirname($completeFilePath), 0777, true);
+                }
+                if ($this->config['JavascriptMinify']) {
+                    $attributes['value'] = JSMin::minify($attributes['value']);
+                }
+                file_put_contents($completeFilePath, $attributes['value']);
+            }
+
+            $attributes['src'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $file);
+            unset($attributes['value']);
+            $htmlHeaders->addJs($attributes);
+            $item->parentNode->removeChild($item);
+        }
+    }
+
+    private function addCssInline($htmlHeaders, $item, $attributes) {
+
+        $file = 'css' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.css';
+        $completeFilePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $file;
+
+        if (!file_exists($completeFilePath)) {
+            if (!is_dir(dirname($completeFilePath))) {
+                mkdir(dirname($completeFilePath), 0777, true);
+            }
+            if ($this->config['CssMinify']) {
+                $cssmin = new \CSSmin();
+                $attributes['value'] = $cssmin->run($attributes['value']);
+            }
+            if ($this->config['CssSpritify']) {
+                $spritify = new Spritify($this->config);
+                $attributes['value'] = $spritify->run($attributes['value']);
+            }
+            file_put_contents($completeFilePath, $attributes['value']);
+        }
+        $attributes['href'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $file);
+        unset($attributes['value']);
+        $htmlHeaders->addCss($attributes);
+        $item->parentNode->removeChild($item);
     }
 
     private function organizeJS($htmlHeaders, $dom) {
@@ -58,11 +109,11 @@ class HtmlFormating {
                     }
                     if ($item->getAttribute('src')) {
                         $htmlHeaders->addJs($attributes);
+                        $item->parentNode->removeChild($item);
                     } else {
                         $attributes['value'] = $item->nodeValue;
-                        $htmlHeaders->addJsInline($attributes);
+                        $this->addJsInline($htmlHeaders, $item, $attributes);
                     }
-                    $item->parentNode->removeChild($item);
                 }
             }
         }

@@ -2,7 +2,8 @@
 
 namespace SpeedUpEssentials\Helper;
 
-use SpeedUpEssentials\Model\HtmlHeaders;
+use SpeedUpEssentials\Model\HtmlHeaders,
+    SpeedUpEssentials\Helper\Url;
 
 class CSSIntegrate {
 
@@ -13,13 +14,11 @@ class CSSIntegrate {
     protected $htmlHeaders;
     protected $csss;
     protected $cssImported;
-    protected $csss_inline;
 
     public function __construct($config) {
         $this->config = $config;
         $this->htmlHeaders = HtmlHeaders::getInstance();
         $this->csss = $this->htmlHeaders->getCss();
-        $this->csss_inline = $this->htmlHeaders->getCssInline();
     }
 
     private function setCssFileName() {
@@ -79,9 +78,6 @@ class CSSIntegrate {
             foreach ($this->csss as $item) {
                 $this->content .= $this->get_data($item['href']);
             }
-            foreach ($this->csss_inline as $item) {
-                $this->content .= md5($item['value']);
-            }
             $this->writeCssFile();
         }
     }
@@ -109,16 +105,17 @@ class CSSIntegrate {
         if (is_file($this->config['PublicBasePath'] . Url::normalizeUrl($url))) {
             $url = $this->config['PublicBasePath'] . Url::normalizeUrl($url);
             try {
-                $data = @file_get_contents(Url::normalizeUrl($url));
+                $data = Url::get_content(Url::normalizeUrl($url));
             } catch (Exception $ex) {
                 
             }
+        } else {
+            $data = Url::get_content($url);
         }
         if (!$data) {
             $data = '/*File: (' . $url . ') not found*/';
         } else {
-            $data = $this->fixUrl($data, $cssUrl);
-            $data = $this->removeImports($data, $cssUrl);
+            $data = $this->removeImports($this->fixUrl($data, $cssUrl), $cssUrl);
         }
         return $data;
     }
@@ -131,7 +128,7 @@ class CSSIntegrate {
             if (is_file($this->config['PublicBasePath'] . $url)) {
                 $newUrl = $this->config['PublicBasePath'] . $url;
                 if (!isset($this->cssImported[md5($newUrl)])) {
-                    $content = file_get_contents($newUrl);
+                    $content = Url::get_content($newUrl);
                     $this->cssImported[md5($newUrl)] = $newUrl;
                 }
                 return $content;

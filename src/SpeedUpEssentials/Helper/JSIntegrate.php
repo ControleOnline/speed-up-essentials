@@ -3,7 +3,8 @@
 namespace SpeedUpEssentials\Helper;
 
 use SpeedUpEssentials\Helper\JSMin,
-    SpeedUpEssentials\Model\HtmlHeaders;
+    SpeedUpEssentials\Model\HtmlHeaders,
+    SpeedUpEssentials\Helper\Url;
 
 class JSIntegrate {
 
@@ -12,14 +13,12 @@ class JSIntegrate {
     protected $content;
     protected $completeFilePath;
     protected $htmlHeaders;
-    protected $jss;
-    protected $jss_inline;
+    protected $jss;    
 
     public function __construct($config) {
         $this->config = $config;
         $this->htmlHeaders = HtmlHeaders::getInstance();
-        $this->jss = $this->htmlHeaders->getJs();
-        $this->jss_inline = $this->htmlHeaders->getJsInline();
+        $this->jss = $this->htmlHeaders->getJs();        
     }
 
     private function setJsFileName() {
@@ -55,6 +54,7 @@ class JSIntegrate {
         }
     }
 
+
     protected function integrateAllJs() {
         $this->setJsFileName();
         $element = ((isset($this->config['JsAllAsync']) && $this->config['JsAllAsync']) ? array('async' => 'async') : false);
@@ -77,9 +77,6 @@ class JSIntegrate {
             foreach ($this->jss as $item) {
                 $this->content .= $this->get_data($item['src']);
             }
-            foreach ($this->jss_inline as $item) {
-                $this->content .= md5($item['value']);
-            }
             $this->writeJsFile();
         }
     }
@@ -101,10 +98,12 @@ class JSIntegrate {
         if (is_file($this->config['PublicBasePath'] . Url::normalizeUrl($url))) {
             $url = $this->config['PublicBasePath'] . Url::normalizeUrl($url);
             try {
-                $data = @file_get_contents($url);
+                $data = Url::get_content($url);
             } catch (Exception $ex) {
                 
             }
+        } else {
+            $data = Url::get_content($url);
         }
         if (!$data) {
             $data .= '/*File: (' . $url . ') not found*/';

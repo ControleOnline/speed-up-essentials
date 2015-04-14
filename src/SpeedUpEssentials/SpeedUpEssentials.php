@@ -74,7 +74,7 @@ class SpeedUpEssentials {
          */
         if (!isset($config['cacheId'])) {
             if (is_file('.version')) {
-                $contents = file_get_contents('.version');
+                $contents = Url::get_content('.version');
                 if ($contents) {
                     $content = array_values(preg_split('/\r\n|\r|\n/', $contents, 2));
                     $version = trim(array_shift($content));
@@ -124,33 +124,6 @@ class SpeedUpEssentials {
         }
     }
 
-    private function addJsHeadersInline() {
-        $htmlHeaders = Model\HtmlHeaders::getInstance();
-        $jss = $htmlHeaders->getJsInline();
-        if ($jss) {
-            $DOMHtml = DOMHtml::getInstance();
-            $dom = $DOMHtml->getDom();
-            foreach ($jss as $js) {
-                $script = $dom->createElement('script');
-                krsort($js);
-                foreach ($js as $key => $value) {
-                    if ($key != 'value') {
-                        $script->setAttribute($key, $value);
-                    } else {
-                        if ($this->config['JavascriptMinify']) {
-                            $value = JSMin::minify($value);
-                        }
-                        $script->nodeValue = $value;
-                    }
-                }
-                $head = $dom->getElementsByTagName('head')->item(0);
-                if ($head) {
-                    $head->appendChild($script);
-                }
-            }
-        }
-    }
-
     private function addCssHeaders() {
         $htmlHeaders = Model\HtmlHeaders::getInstance();
         $csss = $htmlHeaders->getCss();
@@ -171,39 +144,9 @@ class SpeedUpEssentials {
         }
     }
 
-    private function addCssHeadersInline() {
-        $htmlHeaders = Model\HtmlHeaders::getInstance();
-        $csss = $htmlHeaders->getCssInline();
-        if ($csss) {
-            $DOMHtml = DOMHtml::getInstance();
-            $dom = $DOMHtml->getDom();
-            foreach ($csss as $css) {
-                $link = $dom->createElement('link');
-                krsort($css);
-                foreach ($css as $key => $value) {
-                    if ($key != 'value') {
-                        $link->setAttribute($key, $value);
-                    } else {
-                        if ($this->config['CssMinify']) {
-                            $cssmin = new \CSSmin();
-                            $this->content = $cssmin->run($this->content);
-                        }
-                        $link->nodeValue = $value;
-                    }
-                }
-                $head = $dom->getElementsByTagName('head')->item(0);
-                if ($head) {
-                    $head->appendChild($link);
-                }
-            }
-        }
-    }
-
     public function addHtmlHeaders() {
         $this->addCssHeaders();
         $this->addJsHeaders();
-        $this->addCssHeadersInline();
-        $this->addJsHeadersInline();
     }
 
     public function render(&$html) {

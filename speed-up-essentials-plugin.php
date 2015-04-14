@@ -53,7 +53,7 @@ add_action('shutdown', function() {
 add_filter('final_output', function($output) {
     $config = array(
         'APP_ENV' => 'production', //Default configs to production or development
-        'CookieLessDomain' => 'www.' . str_replace('www.', '', $_SERVER['HTTP_HOST']),
+        'CookieLessDomain' => str_replace('www.', '', $_SERVER['HTTP_HOST']),
         'charset' => 'utf-8',
         'RemoveMetaCharset' => true,
         'URIBasePath' => '/',
