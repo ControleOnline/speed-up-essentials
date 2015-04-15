@@ -59,7 +59,7 @@ class SpeedUpEssentials {
         $config['JavascriptMinify'] = (isset($config['JavascriptMinify']) ? $config['JavascriptMinify'] : ($env == 'development' ? false : true));
         $config['JsMinifiedFilePath'] = (isset($config['JsMinifiedFilePath']) ? $config['JsMinifiedFilePath'] : 'js/vendor/ControleOnline/');
         $config['JsAllAsync'] = (isset($config['JsAllAsync']) ? $config['JsAllAsync'] : false);
-
+        $config['JavascriptOnFooter'] = (isset($config['JavascriptOnFooter']) ? $config['JavascriptOnFooter'] : true);
         /*
          * Css Minify
          */
@@ -116,9 +116,14 @@ class SpeedUpEssentials {
                 foreach ($js as $key => $value) {
                     $script->setAttribute($key, $value);
                 }
-                $head = $dom->getElementsByTagName('head')->item(0);
-                if ($head) {
-                    $head->appendChild($script);
+                if ($this->config['JavascriptOnFooter']) {
+                    $child = 'body';
+                } else {
+                    $child = 'head';
+                }
+                $element = $dom->getElementsByTagName($child)->item(0);
+                if ($element) {
+                    $element->appendChild($script);
                 }
             }
         }

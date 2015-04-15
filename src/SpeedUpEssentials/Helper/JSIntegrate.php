@@ -13,12 +13,12 @@ class JSIntegrate {
     protected $content;
     protected $completeFilePath;
     protected $htmlHeaders;
-    protected $jss;    
+    protected $jss;
 
     public function __construct($config) {
         $this->config = $config;
         $this->htmlHeaders = HtmlHeaders::getInstance();
-        $this->jss = $this->htmlHeaders->getJs();        
+        $this->jss = $this->htmlHeaders->getJs();
     }
 
     private function setJsFileName() {
@@ -53,7 +53,6 @@ class JSIntegrate {
             }
         }
     }
-
 
     protected function integrateAllJs() {
         $this->setJsFileName();
@@ -103,7 +102,11 @@ class JSIntegrate {
                 
             }
         } else {
-            $data = Url::get_content($url);
+            if (is_file($this->config['PublicBasePath'] . $url)) {
+                $data = Url::get_content($this->config['PublicBasePath'] . $url);
+            } else {
+                $data = Url::get_content($url);
+            }
         }
         if (!$data) {
             $data .= '/*File: (' . $url . ') not found*/';

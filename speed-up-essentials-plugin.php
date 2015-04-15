@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name: Speed Up Essentials
  * Plugin URI: http://www.controleonline.com
@@ -53,7 +52,7 @@ add_action('shutdown', function() {
 add_filter('final_output', function($output) {
     $config = array(
         'APP_ENV' => 'production', //Default configs to production or development
-        'CookieLessDomain' => str_replace('www.', '', $_SERVER['HTTP_HOST']),
+        'CookieLessDomain' => 'estatico.'.str_replace('www.', '', $_SERVER['HTTP_HOST']),
         'charset' => 'utf-8',
         'RemoveMetaCharset' => true,
         'URIBasePath' => '/',
@@ -69,13 +68,14 @@ add_filter('final_output', function($output) {
         'HtmlMinify' => true, //Only in Production
         'JavascriptIntegrate' => true, //Only in Production
         'JavascriptCDNIntegrate' => true,
-        'JavascriptMinify' => true, //Only on Production        
+        'JavascriptMinify' => true, //Only on Production
+        'JavascriptOnFooter' => true, 
         'CssIntegrate' => true, //Only in Production
         'CssMinify' => true, //Only in Production        
         'CssRemoveImports' => true,
         'CacheId' => (is_file('.version')) ? file_get_contents('.version') . '/' : date('Y/m/d/H/'),
         'CssSpritify' => false,
-        'JsAllAsync' => false
+        'JsAllAsync' => true
     );
 
 

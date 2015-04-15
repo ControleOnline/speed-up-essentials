@@ -105,12 +105,16 @@ class CSSIntegrate {
         if (is_file($this->config['PublicBasePath'] . Url::normalizeUrl($url))) {
             $url = $this->config['PublicBasePath'] . Url::normalizeUrl($url);
             try {
-                $data = Url::get_content(Url::normalizeUrl($url));
+                $data = Url::get_content($url);
             } catch (Exception $ex) {
                 
             }
         } else {
-            $data = Url::get_content($url);
+            if (is_file($this->config['PublicBasePath'] . $url)) {
+                $data = Url::get_content($this->config['PublicBasePath'] . $url);
+            } else {
+                $data = Url::get_content($url);
+            }
         }
         if (!$data) {
             $data = '/*File: (' . $url . ') not found*/';

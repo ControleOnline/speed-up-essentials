@@ -26,18 +26,21 @@ class HtmlFormating {
     private function organizeCSS($htmlHeaders, $dom) {
         $x = new \DOMXPath($dom);
         if ($x) {
-            foreach ($x->query("//link") as $item) {
-                if ($item->getAttribute('type') == 'text/css') {
-                    $attributes = array();
-                    foreach ($item->attributes as $attribute_name => $attribute_node) {
-                        $attributes[$attribute_name] = $attribute_node->nodeValue;
-                    }
-                    if ($item->getAttribute('href')) {
-                        $htmlHeaders->addCss($attributes);
-                        $item->parentNode->removeChild($item);
-                    } else {
-                        $attributes['value'] = $item->nodeValue;
-                        $this->addCssInline($htmlHeaders, $item, $attributes);
+            $types = array("//link", "//style");
+            foreach ($types as $t) {
+                foreach ($x->query($t) as $item) {
+                    if ($item->getAttribute('type') == 'text/css') {
+                        $attributes = array();
+                        foreach ($item->attributes as $attribute_name => $attribute_node) {
+                            $attributes[$attribute_name] = $attribute_node->nodeValue;
+                        }
+                        if ($item->getAttribute('href')) {
+                            $htmlHeaders->addCss($attributes);
+                            $item->parentNode->removeChild($item);
+                        } else {
+                            $attributes['value'] = $item->nodeValue;
+                            $this->addCssInline($htmlHeaders, $item, $attributes);
+                        }
                     }
                 }
             }
@@ -231,7 +234,7 @@ class HtmlFormating {
                 if (!file_exists($file)) {
                     try {
                         mkdir($this->config['PublicBasePath'] . $this->config['LazyLoadJsFilePath'], 0777, true);
-                        copy($base . 'js/LazyLoad.js', $file);
+                        copy($base . $this->config['LazyLoadJsFilePath'] . 'LazyLoad.js', $file);
                     } catch (Exception $ex) {
                         
                     }
@@ -251,12 +254,11 @@ class HtmlFormating {
                 if (!file_exists($file)) {
                     try {
                         mkdir($this->config['PublicBasePath'] . $this->config['LazyLoadCssFilePath'], 0777, true);
-                        copy($base . 'css/LazyLoad.css', $file);
+                        copy($base . $this->config['LazyLoadCssFilePath'] . 'LazyLoad.css', $file);
                     } catch (Exception $ex) {
                         
                     }
                 }
-
                 $htmlHeaders = HtmlHeaders::getInstance();
                 $htmlHeaders->addCss(
                         array(
