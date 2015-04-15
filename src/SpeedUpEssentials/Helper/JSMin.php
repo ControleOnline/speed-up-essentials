@@ -86,7 +86,7 @@ class JSMin {
      *
      * @param string $input Javascript to be minified
      */
-    public function __construct($input) {        
+    public function __construct($input) {
         $this->input = str_replace("\r\n", "\n", $input);
         $this->inputLength = strlen($this->input);
     }
@@ -128,7 +128,7 @@ class JSMin {
                         }
 
                         if (ord($this->a) <= self::ORD_LF) {
-                            throw new JSMinException('Unterminated string literal.');
+                            //throw new JSMinException('Unterminated string literal.');
                         }
 
                         if ($this->a === '\\') {
@@ -168,7 +168,7 @@ class JSMin {
                                     $this->output .= $this->a;
                                     $this->a = $this->get();
                                 } elseif (ord($this->a) <= self::ORD_LF) {
-                                    throw new JSMinException('Unterminated regular expression set in regex literal.');
+                                    //throw new JSMinException('Unterminated regular expression set in regex literal.');
                                 }
                             }
                         } elseif ($this->a === '/') {
@@ -177,7 +177,7 @@ class JSMin {
                             $this->output .= $this->a;
                             $this->a = $this->get();
                         } elseif (ord($this->a) <= self::ORD_LF) {
-                            throw new JSMinException('Unterminated regular expression literal.');
+                            //throw new JSMinException('Unterminated regular expression literal.');
                         }
 
                         $this->output .= $this->a;
@@ -358,7 +358,7 @@ class JSMin {
                                 break;
 
                             case null:
-                                throw new JSMinException('Unterminated comment.');
+                            //throw new JSMinException('Unterminated comment.');
                         }
                     }
 
@@ -383,7 +383,6 @@ class JSMin {
 
 }
 
-// -- Exceptions ---------------------------------------------------------------
 class JSMinException extends \Exception {
     
 }

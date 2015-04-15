@@ -40,6 +40,13 @@ require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEP
 //    register_setting('my-plugin-settings-group', 'accountant_email');
 //}
 
+/*
+ * @todo
+ * Arrumar erro bizarro Javascript
+ * Arrumar caminho relativo das imagens no CSS
+ * Arrumar os "throw" na classe JSMin
+ */
+
 ob_start();
 
 add_action('shutdown', function() {
