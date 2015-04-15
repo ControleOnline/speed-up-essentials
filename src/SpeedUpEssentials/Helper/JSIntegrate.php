@@ -74,7 +74,8 @@ class JSIntegrate {
         $this->makeFilePath($this->filename);
         if (!file_exists($this->completeFilePath)) {
             foreach ($this->jss as $item) {
-                $this->content .= $this->get_data($item['src']);
+                $this->content .= '/*File: (' . $item['src'] . ')*/' . PHP_EOL;
+                $this->content .= $this->get_data($item['src']) . PHP_EOL;
             }
             $this->writeJsFile();
         }

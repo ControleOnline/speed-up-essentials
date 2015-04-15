@@ -76,7 +76,8 @@ class CSSIntegrate {
         $this->makeFilePath($this->filename);
         if (!file_exists($this->completeFilePath)) {
             foreach ($this->csss as $item) {
-                $this->content .= $this->get_data($item['href']);
+                $this->content .= '/*File: (' . $item['href'] . ')*/' . PHP_EOL;
+                $this->content .= $this->get_data($item['href']) . PHP_EOL;
             }
             $this->writeCssFile();
         }
