@@ -7,7 +7,7 @@ use \Patchwork\JSqueeze;
 class JSMin {
 
     public static function Minify($jsCode) {
-        return self::simpleMinify($jsCode);
+        return str_replace('+++', '+ ++', self::simpleMinify($jsCode));
     }
 
     public static function JSqueeze($jsCode) {
