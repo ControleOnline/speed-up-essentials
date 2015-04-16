@@ -7,7 +7,14 @@ use \Patchwork\JSqueeze;
 class JSMin {
 
     public static function Minify($jsCode) {
-        return str_replace('+++', '+ ++', self::simpleMinify($jsCode));
+
+        return self::JSMinPHP($jsCode);
+
+        //return str_replace('+++', '+ ++', self::simpleMinify($jsCode));
+    }
+
+    public static function JSMinPHP($buffer) {
+        return \Rgrove\JSMin::mminify($buffer);
     }
 
     public static function JSqueeze($jsCode) {

@@ -66,6 +66,16 @@ class JSMin {
 
     // -- Public Static Methods --------------------------------------------------
 
+    function minify($buffer) {
+        /* remove comments */
+        $buffer = preg_replace("/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\/\/.*))/", "", $buffer);
+        /* remove tabs, spaces, newlines, etc. */
+        $buffer = str_replace(array("\r\n", "\r", "\t", "\n", '  ', '    ', '     '), '', $buffer);
+        /* remove other spaces before/after ) */
+        $buffer = preg_replace(array('(( )+\))', '(\)( )+)'), ')', $buffer);
+        return $buffer;
+    }
+
     /**
      * Minify Javascript
      *
@@ -74,7 +84,7 @@ class JSMin {
      * @param string $js Javascript to be minified
      * @return string
      */
-    public static function minify($js) {
+    public static function mminify($js) {
         $jsmin = new JSMin($js);
         return $jsmin->min();
     }
@@ -128,7 +138,7 @@ class JSMin {
                         }
 
                         if (ord($this->a) <= self::ORD_LF) {
-                            throw new JSMinException('Unterminated string literal.');
+                            //throw new JSMinException('Unterminated string literal.');
                         }
 
                         if ($this->a === '\\') {
@@ -168,7 +178,7 @@ class JSMin {
                                     $this->output .= $this->a;
                                     $this->a = $this->get();
                                 } elseif (ord($this->a) <= self::ORD_LF) {
-                                    throw new JSMinException('Unterminated regular expression set in regex literal.');
+                                    //throw new JSMinException('Unterminated regular expression set in regex literal.');
                                 }
                             }
                         } elseif ($this->a === '/') {
@@ -177,7 +187,7 @@ class JSMin {
                             $this->output .= $this->a;
                             $this->a = $this->get();
                         } elseif (ord($this->a) <= self::ORD_LF) {
-                            throw new JSMinException('Unterminated regular expression literal.');
+                            //throw new JSMinException('Unterminated regular expression literal.');
                         }
 
                         $this->output .= $this->a;
@@ -319,7 +329,7 @@ class JSMin {
             }
         }
 
-        return $this->output;
+        return trim(str_replace('+++', '+ ++', $this->output));
     }
 
     /**
@@ -358,7 +368,7 @@ class JSMin {
                                 break;
 
                             case null:
-                                throw new JSMinException('Unterminated comment.');
+                            //throw new JSMinException('Unterminated comment.');
                         }
                     }
 
@@ -383,7 +393,6 @@ class JSMin {
 
 }
 
-// -- Exceptions ---------------------------------------------------------------
-class JSMinException extends Exception {
+class JSMinException extends \Exception {
     
 }
