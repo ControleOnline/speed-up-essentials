@@ -25,7 +25,7 @@
         "php": ">=5.3.3",
         "zendframework/zendframework": "~2.0",
         "tubalmartin/cssmin": "*",
-        "tedivm/jshrink": "~1.0"
+        "patchwork/jsqueeze": "~2.0"
     },
     "repositories": [
         {
