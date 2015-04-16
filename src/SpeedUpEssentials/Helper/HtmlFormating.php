@@ -26,7 +26,9 @@ class HtmlFormating {
     private function organizeCSS($htmlHeaders, $dom) {
         $x = new \DOMXPath($dom);
         if ($x) {
-            $types = array("//link", "//style");
+            $types = array(
+                "//link", //"//style"
+            );
             foreach ($types as $t) {
                 foreach ($x->query($t) as $item) {
                     if ($item->getAttribute('type') == 'text/css') {
@@ -37,7 +39,7 @@ class HtmlFormating {
                         if ($item->getAttribute('href')) {
                             $htmlHeaders->addCss($attributes);
                             $item->parentNode->removeChild($item);
-                        } else {
+                        } elseif ($this->config['CssIntegrateInline']) {
                             $attributes['value'] = $item->nodeValue;
                             $this->addCssInline($htmlHeaders, $item, $attributes);
                         }
@@ -53,7 +55,7 @@ class HtmlFormating {
 
     private function addJsInline($htmlHeaders, $item, $attributes) {
         if (!$this->jsAwaysInline($attributes['value'])) {
-            $file = 'js_inline' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.js';
+            $file = 'inline' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.js';
             $completeFilePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $file;
 
             if (!file_exists($completeFilePath)) {
@@ -75,7 +77,7 @@ class HtmlFormating {
 
     private function addCssInline($htmlHeaders, $item, $attributes) {
 
-        $file = 'css_inline' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.css';
+        $file = 'inline' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.css';
         $completeFilePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $file;
 
         if (!file_exists($completeFilePath)) {
@@ -94,6 +96,11 @@ class HtmlFormating {
         }
         $attributes['href'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $file);
         unset($attributes['value']);
+        /*
+          $css = $htmlHeaders->getCss();
+          array_unshift($css, $attributes);
+          $htmlHeaders->setCss($css);
+         */
         $htmlHeaders->addCss($attributes);
         $item->parentNode->removeChild($item);
     }
@@ -113,7 +120,7 @@ class HtmlFormating {
                     if ($item->getAttribute('src')) {
                         $htmlHeaders->addJs($attributes);
                         $item->parentNode->removeChild($item);
-                    } else {
+                    } elseif ($this->config['JavascriptIntegrateInline']) {
                         $attributes['value'] = $item->nodeValue;
                         $this->addJsInline($htmlHeaders, $item, $attributes);
                     }
@@ -130,7 +137,9 @@ class HtmlFormating {
         if ($this->config['HtmlRemoveComments']) {
             $this->removeHtmlComments($html);
         }
-        $this->htmlCompress($html);
+        if ($this->config['HtmlMinify']) {
+            $this->htmlCompress($html);
+        }
         return $html;
     }
 
@@ -196,8 +205,12 @@ class HtmlFormating {
         $this->organizeHeaderOrder();
         $this->removeMetaCharset();
         $this->imgLazyLoad();
-        $this->javascriptIntegrate();
-        $this->cssIntegrate();
+        if ($this->config['JavascriptIntegrate']) {
+            $this->javascriptIntegrate();
+        }
+        if ($this->config['CssIntegrate']) {
+            $this->cssIntegrate();
+        }
     }
 
     private function cssIntegrate() {

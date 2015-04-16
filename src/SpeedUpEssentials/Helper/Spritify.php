@@ -41,7 +41,7 @@ class Spritify {
     }
 
     public function run($cssContent) {
-        $regex = '/(background|background-image):url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]\s*\)(.*?)(;|})/';
+        $regex = '/(background|background-image):url\s*\(\s*[\'\"]?([^\'\"\)]+)[\'\"]\s*\)(.*?)(\;|\})/';
 
         preg_match_all($regex, $cssContent, $matches);
         if ($matches[2]) {

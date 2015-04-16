@@ -14,6 +14,7 @@ class CSSIntegrate {
     protected $htmlHeaders;
     protected $csss;
     protected $cssImported;
+    protected $font_extensions = array('eot', 'ttf', 'woff');
 
     public function __construct($config) {
         $this->config = $config;
@@ -77,10 +78,32 @@ class CSSIntegrate {
         if (!file_exists($this->completeFilePath)) {
             foreach ($this->csss as $item) {
                 $this->content .= '/*File: (' . $item['href'] . ')*/' . PHP_EOL;
-                $this->content .= $this->get_data($item['href']) . PHP_EOL;
+                $this->content .= $this->fixUrlImages($this->get_data($item['href']), Url::normalizeUrl($item['href'])) . PHP_EOL;
             }
             $this->writeCssFile();
         }
+    }
+
+    protected function fixUrlImages($cssContent, $url) {
+        $regex = '/url\s*\(\s*[\'\"]?([^\'\"\)]+)[\'\"]?\s*\)(.*?)(\))/';
+        $css_dir = explode($this->config['CookieLessDomain'], $url);
+        $options['relative_url'] = dirname($css_dir[1]? : $css_dir[0]) . '/';
+        $options['font_extensions'] = $this->font_extensions;
+        return preg_replace_callback(
+                $regex, function($img) use($options) {
+            $relative_url = $options['relative_url'];
+            if (substr($img[1], 0, 5) != 'data:' && substr($img[1], 0, 2) != '//' && !preg_match('#^https?://#', $img[1])) {
+                $ext = pathinfo($img[1], PATHINFO_EXTENSION);
+                if (in_array($ext, $options['font_extensions'])) {
+                    $relative_url = '//' . $_SERVER['HTTP_HOST'] . $relative_url;
+                }
+                $url_img = $relative_url . $img[1];
+                return 'url("' . $url_img . '")' . $img[2] . $img[3];
+            } else {
+                return $img[0];
+            }
+        }, $cssContent
+        );
     }
 
     protected function writeCssFile() {

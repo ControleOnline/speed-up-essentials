@@ -12,8 +12,8 @@ class SpeedUpEssentials {
     protected $config;
 
     public function getConfig($config, $baseUri) {
-        $env = isset($config['APP_ENV']) ? $config['APP_ENV'] : (getenv('APP_ENV') ? : 'production');
 
+        $env = isset($config['APP_ENV']) ? $config['APP_ENV'] : (getenv('APP_ENV') ? : 'production');
         /*
          * CookielessDomain
          */
@@ -58,8 +58,10 @@ class SpeedUpEssentials {
         $config['JavascriptCDNIntegrate'] = (isset($config['JavascriptIntegrate']) ? $config['JavascriptIntegrate'] : true);
         $config['JavascriptMinify'] = (isset($config['JavascriptMinify']) ? $config['JavascriptMinify'] : ($env == 'development' ? false : true));
         $config['JsMinifiedFilePath'] = (isset($config['JsMinifiedFilePath']) ? $config['JsMinifiedFilePath'] : 'js/vendor/ControleOnline/');
-        $config['JsAllAsync'] = (isset($config['JsAllAsync']) ? $config['JsAllAsync'] : false);
-        $config['JavascriptOnFooter'] = (isset($config['JavascriptOnFooter']) ? $config['JavascriptOnFooter'] : true);
+        $config['JsAllAsync'] = (isset($config['JsAllAsync']) ? $config['JsAllAsync'] : true);
+        $config['JavascriptOnFooter'] = (isset($config['JavascriptOnFooter']) ? $config['JavascriptOnFooter'] : false);
+        $config['JavascriptIntegrateInline'] = (isset($config['JavascriptIntegrateInline']) ? $config['JavascriptIntegrateInline'] : true);
+
         /*
          * Css Minify
          */
@@ -68,6 +70,7 @@ class SpeedUpEssentials {
         $config['CssMinifiedFilePath'] = (isset($config['CssMinifiedFilePath']) ? $config['CssMinifiedFilePath'] : 'css/vendor/ControleOnline/');
         $config['CssRemoveImports'] = (isset($config['CssRemoveImports']) ? $config['CssRemoveImports'] : true);
         $config['CssSpritify'] = (isset($config['CssSpritify']) ? $config['CssSpritify'] : true);
+        $config['CssIntegrateInline'] = (isset($config['CssIntegrateInline']) ? $config['CssIntegrateInline'] : true);
 
         /*
          * Cache

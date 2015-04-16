@@ -41,10 +41,9 @@ require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEP
 //}
 
 /*
- * @todo
- * Arrumar erro bizarro Javascript
- * Arrumar caminho relativo das imagens no CSS
+ * @todo  
  * Arrumar os "throw" na classe JSMin
+ * Arrumar HTML com scripts estranhos passando pelo DOM
  */
 
 ob_start();
@@ -60,20 +59,16 @@ add_action('shutdown', function() {
 add_filter('final_output', function($output) {
     $config = array(
         'APP_ENV' => 'production', //Default configs to production or development
-        'CookieLessDomain' => 'estatico.' . str_replace('www.', '', $_SERVER['HTTP_HOST']),
+        'CookieLessDomain' => str_replace('www.', '', $_SERVER['HTTP_HOST']),
         'charset' => 'utf-8',
         'RemoveMetaCharset' => true,
         'URIBasePath' => '/',
         'PublicBasePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../',
         'PublicCacheDir' => 'wp-content/cache/',
-        'HtmlIndentation' => true, //Only in development
-        'HtmlMinify' => true, //Only in Production
-        'JavascriptIntegrate' => true, //Only in Production
-        'JavascriptCDNIntegrate' => true,
-        'JavascriptMinify' => true, //Only on Production
+        'JsAllAsync' => false,
         'JavascriptOnFooter' => true,
-        'CssSpritify' => false,
-        'JsAllAsync' => false
+        'JavascriptIntegrateInline' => true,
+        'CssIntegrateInline' => true,
     );
 
 

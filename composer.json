@@ -24,7 +24,8 @@
     "require": {
         "php": ">=5.3.3",
         "zendframework/zendframework": "~2.0",
-        "tubalmartin/cssmin": "*"
+        "tubalmartin/cssmin": "*",
+        "tedivm/jshrink": "~1.0"
     },
     "repositories": [
         {
