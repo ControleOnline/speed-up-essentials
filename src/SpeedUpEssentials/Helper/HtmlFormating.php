@@ -330,8 +330,7 @@ class HtmlFormating {
                         $node->parentNode->insertBefore($noscript, $node);
                     }
                 }
-                $content = $dom->saveHTML();
-                unset($dom);
+                $content = $dom->saveHTML();                
                 return preg_replace('~<(?:!DOCTYPE|/?(?:\?xml|html|head|body))[^>]*>\s*~i', '', $content);
             }, $htmlContent
             );
