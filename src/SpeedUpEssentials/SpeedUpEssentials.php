@@ -112,21 +112,19 @@ class SpeedUpEssentials {
         $jss = $htmlHeaders->getJs();
         if ($jss) {
             $DOMHtml = DOMHtml::getInstance();
-            $dom = new \DOMDocument();
-            libxml_use_internal_errors(true);
             foreach ($jss as $js) {
-                $script = $dom->createElement('script');
                 krsort($js);
+                $c = '<script';
                 foreach ($js as $key => $value) {
-                    $script->setAttribute($key, $value);
+                    $c .= ' ' . $key . '="' . $value . '"';
                 }
+                $c .='></script>';
                 if ($this->config['JavascriptOnFooter']) {
                     $child = 'body';
                 } else {
                     $child = 'head';
                 }
-                $dom->appendChild($script);
-                $new_html = preg_replace('~<(?:!DOCTYPE|/?(?:\?xml|html|head|body))[^>]*>\s*~i', '', $dom->saveHTML());
+                $new_html = preg_replace('~<(?:!DOCTYPE|/?(?:\?xml|html|head|body))[^>]*>\s*~i', '', $c);
                 $DOMHtml->setContent(str_replace('</' . $child . '>', $new_html . '</' . $child . '>', $DOMHtml->getContent()));
             }
         }
@@ -137,17 +135,15 @@ class SpeedUpEssentials {
         $csss = $htmlHeaders->getCss();
         if ($csss) {
             $DOMHtml = DOMHtml::getInstance();
-            $dom = new \DOMDocument();
-            libxml_use_internal_errors(true);
             foreach ($csss as $css) {
-                $link = $dom->createElement('link');
                 krsort($css);
+                $c = '<link';
                 foreach ($css as $key => $value) {
-                    $link->setAttribute($key, $value);
+                    $c .= ' ' . $key . '="' . $value . '"';
                 }
+                $c .='>';
                 $child = 'head';
-                $dom->appendChild($link);
-                $new_html = preg_replace('~<(?:!DOCTYPE|/?(?:\?xml|html|head|body))[^>]*>\s*~i', '', $dom->saveHTML());
+                $new_html = preg_replace('~<(?:!DOCTYPE|/?(?:\?xml|html|head|body))[^>]*>\s*~i', '', $c);
                 $DOMHtml->setContent(str_replace('</' . $child . '>', $new_html . '</' . $child . '>', $DOMHtml->getContent()));
             }
         }

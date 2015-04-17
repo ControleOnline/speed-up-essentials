@@ -36,6 +36,7 @@ class HtmlFormating {
             $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
             $dom->loadHTML($link[0]);
+            libxml_use_internal_errors(false);
             $x = new \DOMXPath($dom);
             foreach ($x->query("//link") as $item) {
                 if ($item->getAttribute('type') == 'text/css') {
@@ -115,6 +116,7 @@ class HtmlFormating {
             $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
             $dom->loadHTML($script[0]);
+            libxml_use_internal_errors(false);
             $x = new \DOMXPath($dom);
             foreach ($x->query("//script") as $item) {
                 if ($item->getAttribute('type') == 'text/javascript') {
@@ -132,7 +134,7 @@ class HtmlFormating {
                         $self->addJsInline($htmlHeaders, $attributes);
                     }
                 }
-            }            
+            }
             return;
         }, $htmlContent
         );
@@ -307,7 +309,15 @@ class HtmlFormating {
                 $dom = new \DOMDocument();
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($script[0]);
+                libxml_use_internal_errors(false);
                 $x = new \DOMXPath($dom);
+
+                $regex = '/(\S+)=["\']?((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']?/';
+                preg_match_all($regex, $script[2], $matches);
+                print_r($matches[0]);
+
+                //die();
+
                 foreach ($x->query("//img") as $node) {
                     $img_attrs = array(
                         'src' => Url::normalizeUrl($node->getAttribute('src')),
@@ -330,7 +340,8 @@ class HtmlFormating {
                         $node->parentNode->insertBefore($noscript, $node);
                     }
                 }
-                $content = $dom->saveHTML();                
+                $content = $dom->saveHTML();
+                unset($dom);
                 return preg_replace('~<(?:!DOCTYPE|/?(?:\?xml|html|head|body))[^>]*>\s*~i', '', $content);
             }, $htmlContent
             );
