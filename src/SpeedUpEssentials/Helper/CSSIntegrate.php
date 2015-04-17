@@ -3,7 +3,8 @@
 namespace SpeedUpEssentials\Helper;
 
 use SpeedUpEssentials\Model\HtmlHeaders,
-    SpeedUpEssentials\Helper\Url;
+    SpeedUpEssentials\Helper\Url,
+    SpeedUpEssentials\Helper\File;
 
 class CSSIntegrate {
 
@@ -120,7 +121,7 @@ class CSSIntegrate {
                 $spritify = new Spritify($this->config);
                 $this->content = $spritify->run($this->content);
             }
-            file_put_contents($this->completeFilePath, $this->content);
+            File::put_content($this->completeFilePath, $this->content);
         }
     }
 
@@ -129,15 +130,15 @@ class CSSIntegrate {
         if (is_file($this->config['PublicBasePath'] . Url::normalizeUrl($url))) {
             $url = $this->config['PublicBasePath'] . Url::normalizeUrl($url);
             try {
-                $data = Url::get_content($url);
+                $data = File::get_content($url);
             } catch (Exception $ex) {
                 
             }
         } else {
             if (is_file($this->config['PublicBasePath'] . $url)) {
-                $data = Url::get_content($this->config['PublicBasePath'] . $url);
+                $data = File::get_content($this->config['PublicBasePath'] . $url);
             } else {
-                $data = Url::get_content($url);
+                $data = File::get_content($url);
             }
         }
         if (!$data) {
@@ -156,7 +157,7 @@ class CSSIntegrate {
             if (is_file($this->config['PublicBasePath'] . $url)) {
                 $newUrl = $this->config['PublicBasePath'] . $url;
                 if (!isset($this->cssImported[md5($newUrl)])) {
-                    $content = Url::get_content($newUrl);
+                    $content = File::get_content($newUrl);
                     $this->cssImported[md5($newUrl)] = $newUrl;
                 }
                 return $content;

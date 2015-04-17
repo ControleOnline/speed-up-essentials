@@ -8,13 +8,19 @@ class JSMin {
 
     public static function Minify($jsCode) {
 
-        return self::JSMinPHP($jsCode);
+        return $jsCode;
+        //return self::JSMinPHP($jsCode);
+        //return self::simpleMinify($jsCode);
+        //return self::a($jsCode);
+        //return self::JSqueeze($jsCode);
+    }
 
-        //return str_replace('+++', '+ ++', self::simpleMinify($jsCode));
+    public static function a($js) {
+        return \JShrink\Minifier::minify($js);
     }
 
     public static function JSMinPHP($buffer) {
-        return \Rgrove\JSMin::mminify($buffer);
+        return \Rgrove\JSMin::minify($buffer);
     }
 
     public static function JSqueeze($jsCode) {

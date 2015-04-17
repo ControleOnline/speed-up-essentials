@@ -65,17 +65,6 @@ class JSMin {
     protected $output = '';
 
     // -- Public Static Methods --------------------------------------------------
-
-    function minify($buffer) {
-        /* remove comments */
-        $buffer = preg_replace("/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\/\/.*))/", "", $buffer);
-        /* remove tabs, spaces, newlines, etc. */
-        $buffer = str_replace(array("\r\n", "\r", "\t", "\n", '  ', '    ', '     '), '', $buffer);
-        /* remove other spaces before/after ) */
-        $buffer = preg_replace(array('(( )+\))', '(\)( )+)'), ')', $buffer);
-        return $buffer;
-    }
-
     /**
      * Minify Javascript
      *
@@ -84,7 +73,7 @@ class JSMin {
      * @param string $js Javascript to be minified
      * @return string
      */
-    public static function mminify($js) {
+    public static function minify($js) {
         $jsmin = new JSMin($js);
         return $jsmin->min();
     }

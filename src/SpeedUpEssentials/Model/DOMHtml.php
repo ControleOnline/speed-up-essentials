@@ -15,6 +15,7 @@ class DOMHtml {
 
     private function __construct($charset = 'utf-8') {
         self::$dom = new \DOMDocument('1.0', $charset);
+        self::$dom->recover = true;
         self::$dom->formatOutput = false;
         self::$dom->preserveWhiteSpace = true;
         self::$charset = $charset;

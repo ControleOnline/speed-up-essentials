@@ -4,7 +4,8 @@ namespace SpeedUpEssentials\Helper;
 
 use SpeedUpEssentials\Helper\JSMin,
     SpeedUpEssentials\Model\HtmlHeaders,
-    SpeedUpEssentials\Helper\Url;
+    SpeedUpEssentials\Helper\Url,
+    SpeedUpEssentials\Helper\File;
 
 class JSIntegrate {
 
@@ -90,7 +91,7 @@ class JSIntegrate {
             if ($this->config['JavascriptMinify']) {
                 $this->content = JSMin::minify($this->content);
             }
-            file_put_contents($this->completeFilePath, $this->content);
+            File::put_content($this->completeFilePath, $this->content);
         }
     }
 
@@ -98,15 +99,15 @@ class JSIntegrate {
         if (is_file($this->config['PublicBasePath'] . Url::normalizeUrl($url))) {
             $url = $this->config['PublicBasePath'] . Url::normalizeUrl($url);
             try {
-                $data = Url::get_content($url);
+                $data = File::get_content($url);
             } catch (Exception $ex) {
                 
             }
         } else {
             if (is_file($this->config['PublicBasePath'] . $url)) {
-                $data = Url::get_content($this->config['PublicBasePath'] . $url);
+                $data = File::get_content($this->config['PublicBasePath'] . $url);
             } else {
-                $data = Url::get_content($url);
+                $data = File::get_content($url);
             }
         }
         if (!$data) {

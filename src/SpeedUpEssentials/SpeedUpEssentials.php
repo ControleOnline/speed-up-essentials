@@ -5,7 +5,7 @@ namespace SpeedUpEssentials;
 use SpeedUpEssentials\Model\DOMHtml,
     SpeedUpEssentials\Helper\HtmlFormating,
     SpeedUpEssentials\Helper\Url,
-    SpeedUpEssentials\Helper\JSMin;
+    SpeedUpEssentials\Helper\File;
 
 class SpeedUpEssentials {
 
@@ -77,7 +77,7 @@ class SpeedUpEssentials {
          */
         if (!isset($config['cacheId'])) {
             if (is_file('.version')) {
-                $contents = Url::get_content('.version');
+                $contents = File::get_content('.version');
                 if ($contents) {
                     $content = array_values(preg_split('/\r\n|\r|\n/', $contents, 2));
                     $version = trim(array_shift($content));

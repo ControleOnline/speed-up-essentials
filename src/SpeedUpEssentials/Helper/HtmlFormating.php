@@ -65,7 +65,7 @@ class HtmlFormating {
                 if ($this->config['JavascriptMinify']) {
                     $attributes['value'] = JSMin::minify($attributes['value']);
                 }
-                file_put_contents($completeFilePath, $attributes['value']);
+                File::put_content($completeFilePath, $attributes['value']);
             }
 
             $attributes['src'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $file);
@@ -92,7 +92,7 @@ class HtmlFormating {
                 $spritify = new Spritify($this->config);
                 $attributes['value'] = $spritify->run($attributes['value']);
             }
-            file_put_contents($completeFilePath, $attributes['value']);
+            File::put_content($completeFilePath, $attributes['value']);
         }
         $attributes['href'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $file);
         unset($attributes['value']);

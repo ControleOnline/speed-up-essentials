@@ -12,6 +12,7 @@
 require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'tubalmartin' . DIRECTORY_SEPARATOR . 'cssmin' . DIRECTORY_SEPARATOR . 'cssmin.php');
 require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'patchwork' . DIRECTORY_SEPARATOR . 'jsqueeze' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'JSqueeze.php');
+require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'tedivm' . DIRECTORY_SEPARATOR . 'jshrink' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'JShrink' . DIRECTORY_SEPARATOR . 'Minifier.php');
 require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'rgrove' . DIRECTORY_SEPARATOR . 'jsmin-php' . DIRECTORY_SEPARATOR . 'jsmin.php');
 
 
