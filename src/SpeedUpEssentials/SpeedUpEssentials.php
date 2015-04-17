@@ -112,7 +112,8 @@ class SpeedUpEssentials {
         $jss = $htmlHeaders->getJs();
         if ($jss) {
             $DOMHtml = DOMHtml::getInstance();
-            $dom = $DOMHtml->getDom();
+            $dom = new \DOMDocument();
+            libxml_use_internal_errors(true);
             foreach ($jss as $js) {
                 $script = $dom->createElement('script');
                 krsort($js);
@@ -124,10 +125,9 @@ class SpeedUpEssentials {
                 } else {
                     $child = 'head';
                 }
-                $element = $dom->getElementsByTagName($child)->item(0);
-                if ($element) {
-                    $element->appendChild($script);
-                }
+                $dom->appendChild($script);
+                $new_html = preg_replace('~<(?:!DOCTYPE|/?(?:\?xml|html|head|body))[^>]*>\s*~i', '', $dom->saveHTML());
+                $DOMHtml->setContent(str_replace('</' . $child . '>', $new_html . '</' . $child . '>', $DOMHtml->getContent()));
             }
         }
     }
@@ -137,17 +137,18 @@ class SpeedUpEssentials {
         $csss = $htmlHeaders->getCss();
         if ($csss) {
             $DOMHtml = DOMHtml::getInstance();
-            $dom = $DOMHtml->getDom();
+            $dom = new \DOMDocument();
+            libxml_use_internal_errors(true);
             foreach ($csss as $css) {
                 $link = $dom->createElement('link');
                 krsort($css);
                 foreach ($css as $key => $value) {
                     $link->setAttribute($key, $value);
                 }
-                $head = $dom->getElementsByTagName('head')->item(0);
-                if ($head) {
-                    $head->appendChild($link);
-                }
+                $child = 'head';
+                $dom->appendChild($link);
+                $new_html = preg_replace('~<(?:!DOCTYPE|/?(?:\?xml|html|head|body))[^>]*>\s*~i', '', $dom->saveHTML());
+                $DOMHtml->setContent(str_replace('</' . $child . '>', $new_html . '</' . $child . '>', $DOMHtml->getContent()));
             }
         }
     }

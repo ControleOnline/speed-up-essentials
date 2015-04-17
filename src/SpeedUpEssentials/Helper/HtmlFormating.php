@@ -11,49 +11,57 @@ class HtmlFormating {
 
     protected $config;
 
+    /**
+     * @var \SpeedUpEssentials\Model\DOMHtml
+     */
+    protected $DOMHtml;
+
     public function __construct($config = null) {
         $this->config = $config;
     }
 
     private function organizeHeaderOrder() {
         $htmlHeaders = HtmlHeaders::getInstance();
-        $DOMHtml = DOMHtml::getInstance();
-        $dom = $DOMHtml->getDom();
-        $this->organizeCSS($htmlHeaders, $dom);
-        $this->organizeJS($htmlHeaders, $dom);
+        $this->DOMHtml = DOMHtml::getInstance();
+        $this->organizeCSS($htmlHeaders);
+        $this->organizeJS($htmlHeaders);
     }
 
-    private function organizeCSS($htmlHeaders, $dom) {
-        $x = new \DOMXPath($dom);
-        if ($x) {
-            $types = array(
-                "//link", //"//style"
-            );
-            foreach ($types as $t) {
-                foreach ($x->query($t) as $item) {
-                    if ($item->getAttribute('type') == 'text/css') {
-                        $attributes = array();
-                        foreach ($item->attributes as $attribute_name => $attribute_node) {
-                            $attributes[$attribute_name] = $attribute_node->nodeValue;
-                        }
-                        if ($item->getAttribute('href')) {
-                            $htmlHeaders->addCss($attributes);
-                            $item->parentNode->removeChild($item);
-                        } elseif ($this->config['CssIntegrateInline']) {
-                            $attributes['value'] = $item->nodeValue;
-                            $this->addCssInline($htmlHeaders, $item, $attributes);
-                        }
+    private function organizeCSS($htmlHeaders) {
+        $htmlContent = $this->DOMHtml->getContent();
+        $regex = '/(<link((.|\s)+?)(\/>|<\/link>))(.*?)/';
+        $config = $this->config;
+        $self = $this;
+        $content = preg_replace_callback($regex, function($link) use ($htmlHeaders, $config, $self) {
+            $dom = new \DOMDocument();
+            libxml_use_internal_errors(true);
+            $dom->loadHTML($link[0]);
+            $x = new \DOMXPath($dom);
+            foreach ($x->query("//link") as $item) {
+                if ($item->getAttribute('type') == 'text/css') {
+                    $attributes = array();
+                    foreach ($item->attributes as $attribute_name => $attribute_node) {
+                        $attributes[$attribute_name] = $attribute_node->nodeValue;
+                    }
+                    if ($item->getAttribute('href')) {
+                        $htmlHeaders->addCss($attributes);
+                    } elseif ($config['CssIntegrateInline']) {
+                        $attributes['value'] = $item->nodeValue;
+                        $self->addCssInline($htmlHeaders, $attributes);
                     }
                 }
             }
-        }
+            return;
+        }, $htmlContent
+        );
+        $this->DOMHtml->setContent($content);
     }
 
     private function jsAwaysInline($content) {
         return strpos($content, 'document.write');
     }
 
-    private function addJsInline($htmlHeaders, $item, $attributes) {
+    public function addJsInline($htmlHeaders, $attributes) {
         if (!$this->jsAwaysInline($attributes['value'])) {
             $file = 'inline' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.js';
             $completeFilePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $file;
@@ -71,11 +79,10 @@ class HtmlFormating {
             $attributes['src'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $file);
             unset($attributes['value']);
             $htmlHeaders->addJs($attributes);
-            $item->parentNode->removeChild($item);
         }
     }
 
-    private function addCssInline($htmlHeaders, $item, $attributes) {
+    public function addCssInline($htmlHeaders, $attributes) {
 
         $file = 'inline' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.css';
         $completeFilePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $file;
@@ -96,19 +103,20 @@ class HtmlFormating {
         }
         $attributes['href'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $file);
         unset($attributes['value']);
-        /*
-          $css = $htmlHeaders->getCss();
-          array_unshift($css, $attributes);
-          $htmlHeaders->setCss($css);
-         */
         $htmlHeaders->addCss($attributes);
-        $item->parentNode->removeChild($item);
     }
 
-    private function organizeJS($htmlHeaders, $dom) {
-        $s = new \DOMXPath($dom);
-        if ($s) {
-            foreach ($s->query("//script") as $item) {
+    private function organizeJS($htmlHeaders) {
+        $htmlContent = $this->DOMHtml->getContent();
+        $regex = '/(<script((.|\s)+?)(\/>|<\/script>))(.*?)/';
+        $config = $this->config;
+        $self = $this;
+        $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
+            $dom = new \DOMDocument();
+            libxml_use_internal_errors(true);
+            $dom->loadHTML($script[0]);
+            $x = new \DOMXPath($dom);
+            foreach ($x->query("//script") as $item) {
                 if ($item->getAttribute('type') == 'text/javascript') {
                     $attributes = array();
                     foreach ($item->attributes as $attribute_name => $attribute_node) {
@@ -119,14 +127,16 @@ class HtmlFormating {
                     }
                     if ($item->getAttribute('src')) {
                         $htmlHeaders->addJs($attributes);
-                        $item->parentNode->removeChild($item);
-                    } elseif ($this->config['JavascriptIntegrateInline']) {
+                    } elseif ($config['JavascriptIntegrateInline']) {
                         $attributes['value'] = $item->nodeValue;
-                        $this->addJsInline($htmlHeaders, $item, $attributes);
+                        $self->addJsInline($htmlHeaders, $attributes);
                     }
                 }
-            }
-        }
+            }            
+            return;
+        }, $htmlContent
+        );
+        $this->DOMHtml->setContent($content);
     }
 
     public function addDataMain($url) {
@@ -174,7 +184,7 @@ class HtmlFormating {
 
             $tidy = new \Tidy();
             $tidy->parseString($html, $config);
-            return str_replace('>' . "\n" . '</', '></', tidy_get_output($tidy));
+            return str_replace('>' . PHP_EOL . '</', '></', tidy_get_output($tidy));
         } else {
             return $html;
         }
@@ -224,18 +234,20 @@ class HtmlFormating {
     }
 
     private function removeMetaCharset() {
-        if ($this->config['RemoveMetaCharset']) {
-            $DOMHtml = DOMHtml::getInstance();
-            $dom = $DOMHtml->getDom();
-            $x = new \DOMXPath($dom);
-            if ($x) {
-                foreach ($x->query("//meta") as $item) {
-                    if ($item->getAttribute('charset')) {
-                        $item->parentNode->removeChild($item);
-                    }
-                }
-            }
-        }
+        /*
+          if ($this->config['RemoveMetaCharset']) {
+          $DOMHtml = DOMHtml::getInstance();
+          //$dom = $DOMHtml->getDom();
+          $x = new \DOMXPath($dom);
+          if ($x) {
+          foreach ($x->query("//meta") as $item) {
+          if ($item->getAttribute('charset')) {
+          $item->parentNode->removeChild($item);
+          }
+          }
+          }
+          }
+         */
     }
 
     private function lazyLoadHead() {
@@ -287,31 +299,43 @@ class HtmlFormating {
 
     private function imgLazyLoad() {
         if ($this->config['LazyLoadImages']) {
-            $DOMHtml = DOMHtml::getInstance();
-            $dom = $DOMHtml->getDom();
-            $x = new \DOMXPath($dom);
-            foreach ($x->query("//img") as $node) {
-                $img_attrs = array(
-                    'src' => Url::normalizeUrl($node->getAttribute('src')),
-                    'class' => $node->getAttribute('class')
-                );
-                if ($img_attrs['src']) {
-                    $img = $dom->createElement('img');
-                    if ($node->hasAttributes()) {
-                        foreach ($node->attributes as $attr) {
-                            $img->setAttribute($attr->nodeName, $attr->nodeValue);
+            $htmlContent = $this->DOMHtml->getContent();
+            $regex = '/(<img((.|\s)+?)(\/>|<\/img>))(.*?)/';
+            $config = $this->config;
+            $self = $this;
+            $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
+                $dom = new \DOMDocument();
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($script[0]);
+                $x = new \DOMXPath($dom);
+                foreach ($x->query("//img") as $node) {
+                    $img_attrs = array(
+                        'src' => Url::normalizeUrl($node->getAttribute('src')),
+                        'class' => $node->getAttribute('class')
+                    );
+                    if ($img_attrs['src']) {
+                        $img = $dom->createElement('img');
+                        if ($node->hasAttributes()) {
+                            foreach ($node->attributes as $attr) {
+                                $img->setAttribute($attr->nodeName, $attr->nodeValue);
+                            }
+                            $img->setAttribute('src', $img_attrs['src']);
                         }
-                        $img->setAttribute('src', $img_attrs['src']);
-                    }
-                    $node->setAttribute('class', rtrim(($this->config['LazyLoadClass']) . ' ' . $img_attrs['class']));
-                    $node->setAttribute('data-src', $img_attrs['src']);
-                    $node->setAttribute('src', $this->config['LazyLoadPlaceHolder']);
+                        $node->setAttribute('class', rtrim(($config['LazyLoadClass']) . ' ' . $img_attrs['class']));
+                        $node->setAttribute('data-src', $img_attrs['src']);
+                        $node->setAttribute('src', $config['LazyLoadPlaceHolder']);
 
-                    $noscript = $dom->createElement('noscript');
-                    $noscript->appendChild($img);
-                    $node->parentNode->insertBefore($noscript, $node);
+                        $noscript = $dom->createElement('noscript');
+                        $noscript->appendChild($img);
+                        $node->parentNode->insertBefore($noscript, $node);
+                    }
                 }
-            }
+                $content = $dom->saveHTML();
+                unset($dom);
+                return preg_replace('~<(?:!DOCTYPE|/?(?:\?xml|html|head|body))[^>]*>\s*~i', '', $content);
+            }, $htmlContent
+            );
+            $this->DOMHtml->setContent($content);
             $this->lazyLoadHead();
         }
     }
