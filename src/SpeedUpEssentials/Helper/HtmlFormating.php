@@ -28,34 +28,40 @@ class HtmlFormating {
     }
 
     private function organizeCSS($htmlHeaders) {
-        $htmlContent = $this->DOMHtml->getContent();
-        $regex = '/(<link((.|\s)+?)(\/>|<\/link>))(.*?)/';
+        $reg = array(
+            '/<link((?:.)*?)>(.*?)<\/link>/smix',
+            '/<link((?:.)*?)\/>/smix'
+        );
         $config = $this->config;
         $self = $this;
-        $content = preg_replace_callback($regex, function($link) use ($htmlHeaders, $config, $self) {
-            $dom = new \DOMDocument();
-            libxml_use_internal_errors(true);
-            $dom->loadHTML($link[0]);
-            libxml_use_internal_errors(false);
-            $x = new \DOMXPath($dom);
-            foreach ($x->query("//link") as $item) {
-                if ($item->getAttribute('type') == 'text/css') {
-                    $attributes = array();
-                    foreach ($item->attributes as $attribute_name => $attribute_node) {
-                        $attributes[$attribute_name] = $attribute_node->nodeValue;
-                    }
-                    if ($item->getAttribute('href')) {
-                        $htmlHeaders->addCss($attributes);
-                    } elseif ($config['CssIntegrateInline']) {
-                        $attributes['value'] = $item->nodeValue;
-                        $self->addCssInline($htmlHeaders, $attributes);
+        foreach ($reg AS $regex) {
+            $htmlContent = $this->DOMHtml->getContent();
+            $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
+                $regex_tribb = '/(\S+)=["\']((?:.(?!["\']\s+(?:\S+)=|[>"\']))+.)["\']/';
+                preg_match_all($regex_tribb, $script[1], $matches);
+                if (isset($matches[1]) && isset($matches[2])) {
+                    foreach ($matches[1] AS $k => $key) {
+                        $attributes[trim($key)] = trim($matches[2][$k]);
                     }
                 }
-            }
-            return;
-        }, $htmlContent
-        );
-        $this->DOMHtml->setContent($content);
+                if ($attributes['type'] == 'text/css') {
+                    if ($attributes['href']) {
+                        $htmlHeaders->addCss($attributes);
+                        return;
+                    } elseif ($config['CssIntegrateInline']) {
+                        $attributes['value'] = isset($script[2]) ? $script[2] : '';
+                        $self->addCssInline($htmlHeaders, $attributes);
+                        return;
+                    } else {
+                        return $script[0];
+                    }
+                } else {
+                    return $script[0];
+                }
+            }, $htmlContent
+            );
+            $this->DOMHtml->setContent($content? : $htmlContent);
+        }
     }
 
     private function jsAwaysInline($content) {
@@ -109,36 +115,38 @@ class HtmlFormating {
 
     private function organizeJS($htmlHeaders) {
         $htmlContent = $this->DOMHtml->getContent();
-        $regex = '/(<script((.|\s)+?)(\/>|<\/script>))(.*?)/';
+        $regex = '/<script((?:.)*?)>(.*?)<\/script>/smix';
         $config = $this->config;
         $self = $this;
         $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
-            $dom = new \DOMDocument();
-            libxml_use_internal_errors(true);
-            $dom->loadHTML($script[0]);
-            libxml_use_internal_errors(false);
-            $x = new \DOMXPath($dom);
-            foreach ($x->query("//script") as $item) {
-                if ($item->getAttribute('type') == 'text/javascript') {
-                    $attributes = array();
-                    foreach ($item->attributes as $attribute_name => $attribute_node) {
-                        if ($attribute_name == 'data-main') {
-                            $htmlHeaders->setMainJsScript($attribute_node->nodeValue);
-                        }
-                        $attributes[$attribute_name] = $attribute_node->nodeValue;
-                    }
-                    if ($item->getAttribute('src')) {
-                        $htmlHeaders->addJs($attributes);
-                    } elseif ($config['JavascriptIntegrateInline']) {
-                        $attributes['value'] = $item->nodeValue;
-                        $self->addJsInline($htmlHeaders, $attributes);
-                    }
+            $regex_tribb = '/(\S+)=["\']((?:.(?!["\']\s+(?:\S+)=|[>"\']))+.)["\']/';
+            preg_match_all($regex_tribb, $script[1], $matches);
+            if (isset($matches[1]) && isset($matches[2])) {
+                foreach ($matches[1] AS $k => $key) {
+                    $attributes[trim($key)] = trim($matches[2][$k]);
                 }
             }
-            return;
+            if ($attributes['type'] == 'text/javascript') {
+                if ($attributes['src']) {
+                    $htmlHeaders->addJs($attributes);
+                    return;
+                } elseif ($config['JavascriptIntegrateInline']) {
+                    $attributes['value'] = isset($script[2]) ? $script[2] : '';
+                    $self->addJsInline($htmlHeaders, $attributes);
+                    return;
+                } else {
+                    return $script[0];
+                }
+            } else {
+                return $script[0];
+            }
         }, $htmlContent
         );
-        $this->DOMHtml->setContent($content);
+        $this->DOMHtml->setContent($content? : $htmlContent);
+    }
+
+    public function normalizeImgUrl($content) {
+        return $content;
     }
 
     public function addDataMain($url) {
@@ -236,20 +244,23 @@ class HtmlFormating {
     }
 
     private function removeMetaCharset() {
-        /*
-          if ($this->config['RemoveMetaCharset']) {
-          $DOMHtml = DOMHtml::getInstance();
-          //$dom = $DOMHtml->getDom();
-          $x = new \DOMXPath($dom);
-          if ($x) {
-          foreach ($x->query("//meta") as $item) {
-          if ($item->getAttribute('charset')) {
-          $item->parentNode->removeChild($item);
-          }
-          }
-          }
-          }
-         */
+
+//        if ($this->config['RemoveMetaCharset']) {
+//            $dom = new \DOMDocument();
+//            libxml_use_internal_errors(true);
+//            $htmlContent = $this->DOMHtml->getContent();
+//            $dom->loadHTML($htmlContent);
+//            libxml_use_internal_errors(false);
+//            $x = new \DOMXPath($dom);
+//            if ($x) {
+//                foreach ($x->query("//meta") as $item) {
+//                    if ($item->getAttribute('charset')) {
+//                        $item->parentNode->removeChild($item);
+//                    }
+//                }
+//            }
+//            $this->DOMHtml->setContent($dom->saveHTML());
+//        }
     }
 
     private function lazyLoadHead() {
@@ -306,46 +317,27 @@ class HtmlFormating {
             $config = $this->config;
             $self = $this;
             $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
-                $dom = new \DOMDocument();
-                libxml_use_internal_errors(true);
-                $dom->loadHTML($script[0]);
-                libxml_use_internal_errors(false);
-                $x = new \DOMXPath($dom);
-
-                $regex = '/(\S+)=["\']?((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']?/';
-                preg_match_all($regex, $script[2], $matches);
-                print_r($matches[0]);
-
-                //die();
-
-                foreach ($x->query("//img") as $node) {
-                    $img_attrs = array(
-                        'src' => Url::normalizeUrl($node->getAttribute('src')),
-                        'class' => $node->getAttribute('class')
-                    );
-                    if ($img_attrs['src']) {
-                        $img = $dom->createElement('img');
-                        if ($node->hasAttributes()) {
-                            foreach ($node->attributes as $attr) {
-                                $img->setAttribute($attr->nodeName, $attr->nodeValue);
-                            }
-                            $img->setAttribute('src', $img_attrs['src']);
-                        }
-                        $node->setAttribute('class', rtrim(($config['LazyLoadClass']) . ' ' . $img_attrs['class']));
-                        $node->setAttribute('data-src', $img_attrs['src']);
-                        $node->setAttribute('src', $config['LazyLoadPlaceHolder']);
-
-                        $noscript = $dom->createElement('noscript');
-                        $noscript->appendChild($img);
-                        $node->parentNode->insertBefore($noscript, $node);
-                    }
+                $regex_img = '/(\S+)=["\']?((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']?/';
+                preg_match_all($regex_img, $script[2], $matches);
+                $content = '<noscript>';
+                $img = '<img';
+                foreach ($matches[0] AS $atributes) {
+                    $img .=' ' . $atributes;
                 }
-                $content = $dom->saveHTML();
-                unset($dom);
-                return preg_replace('~<(?:!DOCTYPE|/?(?:\?xml|html|head|body))[^>]*>\s*~i', '', $content);
+                $img .= '>';
+                $lazy_img = str_replace('src', 'data-src', $img);
+                $lazy_img = str_replace('<img', '<img src="' . $config['LazyLoadPlaceHolder'] . '"', $lazy_img);
+                /*
+                 * @todo Add class of Lazy Load
+                 */
+                //$config['LazyLoadClass']
+                $content .= $img;
+                $content .= '</noscript>';
+                $content .= $lazy_img;
+                return $content;
             }, $htmlContent
             );
-            $this->DOMHtml->setContent($content);
+            $this->DOMHtml->setContent($content? : $htmlContent);
             $this->lazyLoadHead();
         }
     }

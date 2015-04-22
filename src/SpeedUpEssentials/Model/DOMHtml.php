@@ -4,9 +4,6 @@ namespace SpeedUpEssentials\Model;
 
 class DOMHtml {
 
-    /**
-     * @var \DOMDocument
-     */
     private static $content;
     private static $instance;
     private static $charset;

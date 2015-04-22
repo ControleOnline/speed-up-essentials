@@ -95,7 +95,7 @@ class JSIntegrate {
         }
     }
 
-    protected function get_data($url) {
+    protected function get_data($url) {        
         if (is_file($this->config['PublicBasePath'] . Url::normalizeUrl($url))) {
             $url = $this->config['PublicBasePath'] . Url::normalizeUrl($url);
             try {
@@ -111,7 +111,7 @@ class JSIntegrate {
             }
         }
         if (!$data) {
-            $data .= '/*File: (' . $url . ') not found*/';
+            $data .= '/*File: (' . Url::url_decode($url) . ') not found*/';
         }
         return $data;
     }

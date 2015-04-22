@@ -142,7 +142,7 @@ class CSSIntegrate {
             }
         }
         if (!$data) {
-            $data = '/*File: (' . $url . ') not found*/';
+            $data = '/*File: (' . Url::url_decode($url) . ') not found*/';
         } else {
             $data = $this->removeImports($this->fixUrl($data, $cssUrl), $cssUrl);
         }
@@ -162,7 +162,7 @@ class CSSIntegrate {
                 }
                 return $content;
             } else {
-                return '@import url("' . $url . '")';
+                return '@import url("' . Url::url_decode($url) . '")';
             }
         }, $data
         );
