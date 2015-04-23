@@ -325,17 +325,25 @@ class HtmlFormating {
                         $attributes[trim($key)] = trim($matches[2][$k]);
                     }
                 }
-                $content = '<noscript>';
                 $img = '<img';
+                $lazy_img = '<img';
                 foreach ($attributes AS $key => $att) {
                     if (strtolower($key) == 'class') {
                         $att .=' ' . $config['LazyLoadClass'];
                     }
                     $img .= ' ' . $key . '="' . $att . '"';
+                    if (strtolower($key) == 'src') {
+                        $lazy_img .= ' ' . $key . '="' . $config['LazyLoadPlaceHolder'] . '"';
+                        $key = 'data-src';
+                    }
+                    $lazy_img .= ' ' . $key . '="' . $att . '"';
+                }
+                if (!array_key_exists("primeiro", $attributes)) {
+                    $img .= ' class="' . $config['LazyLoadClass'] . '"';
                 }
                 $img .= '>';
-                $lazy_img = str_replace('src', 'data-src', $img);
-                $lazy_img = str_replace('<img', '<img src="' . $config['LazyLoadPlaceHolder'] . '"', $lazy_img);
+                $lazy_img .= '>';
+                $content = '<noscript>';
                 $content .= $img;
                 $content .= '</noscript>';
                 $content .= $lazy_img;
