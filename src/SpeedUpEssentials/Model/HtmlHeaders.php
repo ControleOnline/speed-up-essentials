@@ -12,6 +12,7 @@ class HtmlHeaders {
     private function __construct() {
         
     }
+
     public function getMainJsScript() {
         return $this->mainJsScript;
     }

@@ -18,13 +18,19 @@ class HtmlFormating {
 
     public function __construct($config = null) {
         $this->config = $config;
+        $this->DOMHtml = DOMHtml::getInstance();
     }
 
     private function organizeHeaderOrder() {
         $htmlHeaders = HtmlHeaders::getInstance();
-        $this->DOMHtml = DOMHtml::getInstance();
-        $this->organizeCSS($htmlHeaders);
-        $this->organizeJS($htmlHeaders);
+        if ($this->config['CssIntegrate']) {                        
+            $this->organizeCSS($htmlHeaders);
+            $this->cssIntegrate();
+        }
+        if ($this->config['JavascriptIntegrate']) {                        
+            $this->organizeJS($htmlHeaders);
+            $this->javascriptIntegrate();
+        }
     }
 
     private function organizeCSS($htmlHeaders) {
@@ -41,7 +47,12 @@ class HtmlFormating {
                 preg_match_all($regex_tribb, $script[1], $matches);
                 if (isset($matches[1]) && isset($matches[2])) {
                     foreach ($matches[1] AS $k => $key) {
-                        $attributes[trim($key)] = trim($matches[2][$k]);
+                        if (trim($key) == 'href') {
+                            $v = File::url_decode(trim($matches[2][$k]));
+                        } else {
+                            $v = trim($matches[2][$k]);
+                        }
+                        $attributes[trim($key)] = $v;
                     }
                 }
                 if ($attributes['type'] == 'text/css') {
@@ -113,6 +124,9 @@ class HtmlFormating {
         $htmlHeaders->addCss($attributes);
     }
 
+    /**
+     * @param HtmlHeaders $htmlHeaders
+     */
     private function organizeJS($htmlHeaders) {
         $htmlContent = $this->DOMHtml->getContent();
         $regex = '/<script((?:.)*?)>(.*?)<\/script>/smix';
@@ -123,7 +137,12 @@ class HtmlFormating {
             preg_match_all($regex_tribb, $script[1], $matches);
             if (isset($matches[1]) && isset($matches[2])) {
                 foreach ($matches[1] AS $k => $key) {
-                    $attributes[trim($key)] = trim($matches[2][$k]);
+                    if (trim($key) == 'src') {
+                        $v = File::url_decode(trim($matches[2][$k]));
+                    } else {
+                        $v = trim($matches[2][$k]);
+                    }
+                    $attributes[trim($key)] = $v;
                 }
             }
             if ($attributes['type'] == 'text/javascript') {
@@ -225,12 +244,6 @@ class HtmlFormating {
         $this->organizeHeaderOrder();
         $this->removeMetaCharset();
         $this->imgLazyLoad();
-        if ($this->config['JavascriptIntegrate']) {
-            $this->javascriptIntegrate();
-        }
-        if ($this->config['CssIntegrate']) {
-            $this->cssIntegrate();
-        }
     }
 
     private function cssIntegrate() {
@@ -329,17 +342,20 @@ class HtmlFormating {
                 $lazy_img = '<img';
                 foreach ($attributes AS $key => $att) {
                     if (strtolower($key) == 'class') {
-                        $att .=' ' . $config['LazyLoadClass'];
+                        $att = $att . ' ' . $config['LazyLoadClass'];
                     }
-                    $img .= ' ' . $key . '="' . $att . '"';
                     if (strtolower($key) == 'src') {
-                        $lazy_img .= ' ' . $key . '="' . $config['LazyLoadPlaceHolder'] . '"';
+                        $att = Url::normalizeUrl($att);
+                        $img .= ' ' . $key . '=\'' . $att . '\'';
+                        $lazy_img .= ' ' . $key . '=\'' . $config['LazyLoadPlaceHolder'] . '\'';
                         $key = 'data-src';
+                    } else {
+                        $img .= ' ' . $key . '=\'' . $att . '\'';
                     }
-                    $lazy_img .= ' ' . $key . '="' . $att . '"';
+                    $lazy_img .= ' ' . $key . '=\'' . $att . '\'';
                 }
-                if (!array_key_exists("primeiro", $attributes)) {
-                    $img .= ' class="' . $config['LazyLoadClass'] . '"';
+                if (!array_key_exists('class', $attributes)) {
+                    $img .= ' class=\'' . $config['LazyLoadClass'] . '\'';
                 }
                 $img .= '>';
                 $lazy_img .= '>';
