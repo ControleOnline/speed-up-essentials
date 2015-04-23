@@ -313,30 +313,34 @@ class HtmlFormating {
     private function imgLazyLoad() {
         if ($this->config['LazyLoadImages']) {
             $htmlContent = $this->DOMHtml->getContent();
-            $regex = '/(<img((.|\s)+?)(\/>|<\/img>))(.*?)/';
+            $regex = '/<img((?:.)*?)>(.*?)>/smix';
             $config = $this->config;
             $self = $this;
             $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
-                $regex_img = '/(\S+)=["\']?((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']?/';
-                preg_match_all($regex_img, $script[2], $matches);
+                $regex_img = '/(\S+)=["\']((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']/';
+                preg_match_all($regex_img, $script[1], $matches);
+
+                if (isset($matches[1]) && isset($matches[2])) {
+                    foreach ($matches[1] AS $k => $key) {
+                        $attributes[trim($key)] = trim($matches[2][$k]);
+                    }
+                }
                 $content = '<noscript>';
                 $img = '<img';
-                foreach ($matches[0] AS $atributes) {
-                    $img .=' ' . $atributes;
+                foreach ($attributes AS $key => $att) {
+                    if (strtolower($key) == 'class') {
+                        $att .=' ' . $config['LazyLoadClass'];
+                    }
+                    $img .= ' ' . $key . '="' . $att . '"';
                 }
                 $img .= '>';
                 $lazy_img = str_replace('src', 'data-src', $img);
                 $lazy_img = str_replace('<img', '<img src="' . $config['LazyLoadPlaceHolder'] . '"', $lazy_img);
-                /*
-                 * @todo Add class of Lazy Load
-                 */
-                //$config['LazyLoadClass']
                 $content .= $img;
                 $content .= '</noscript>';
                 $content .= $lazy_img;
                 return $content;
-            }, $htmlContent
-            );
+            }, $htmlContent);
             $this->DOMHtml->setContent($content? : $htmlContent);
             $this->lazyLoadHead();
         }
