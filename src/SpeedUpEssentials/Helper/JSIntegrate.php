@@ -74,8 +74,7 @@ class JSIntegrate {
                 $this->config['JsMinifiedFilePath'] . $this->filename;
         $this->makeFilePath($this->filename);
         if (!file_exists($this->completeFilePath)) {
-            foreach ($this->jss as $item) {
-                $this->content .= '/*File: (' . $item['src'] . ')*/' . PHP_EOL;
+            foreach ($this->jss as $item) {                
                 $this->content .= $this->get_data($item['src']) . PHP_EOL;
             }
             $this->writeJsFile();
@@ -109,9 +108,6 @@ class JSIntegrate {
             } else {
                 $data = File::get_content($url);
             }
-        }
-        if (!$data) {
-            $data .= '/*File: (' . Url::url_decode($url) . ') not found*/';
         }
         return $data;
     }

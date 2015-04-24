@@ -35,17 +35,21 @@ class File {
             $data = curl_exec($ch);
             $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             if ($code != 200) {
-                $data = '/*Content of ' . $url_exec . ': <Empty>*/';
+                $data = '';
             }
             curl_close($ch);
         } else {
             $data = file_get_contents($url_exec);
         }
+        if (!$data) {
+            $data = '/*Content of ' . $url_exec . ': <Empty>*/' . PHP_EOL;
+        } else {
+            $data = '/*File: (' . $url_exec . ')*/' . PHP_EOL . $data;
+        }
         return $data;
     }
 
     public static function put_content($filename, $data) {
-
         $fp = fopen($filename, 'w');
         $return = fwrite($fp, $data);
         fclose($fp);

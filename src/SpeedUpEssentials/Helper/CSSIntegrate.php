@@ -8,11 +8,14 @@ use SpeedUpEssentials\Model\HtmlHeaders,
 
 class CSSIntegrate {
 
+    /**
+     * @var HtmlHeaders
+     */
+    protected $htmlHeaders;
     protected $config;
     protected $filename;
     protected $content;
     protected $completeFilePath;
-    protected $htmlHeaders;
     protected $csss;
     protected $cssImported;
     protected $font_extensions = array('eot', 'ttf', 'woff');
@@ -25,10 +28,12 @@ class CSSIntegrate {
 
     private function setCssFileName() {
         $css = '';
-        foreach ($this->csss as $item) {
-            $css .= Url::normalizeUrl($item['href']);
+        foreach ($this->csss AS $key => $csss) {
+            foreach ($csss as $item) {
+                $css .= Url::normalizeUrl($item['href']);
+            }
+            $this->filename[$key] = md5($css) . '.css';
         }
-        $this->filename = md5($css) . '.css';
     }
 
     public function integrate() {
@@ -36,19 +41,20 @@ class CSSIntegrate {
             if ($this->config['CssIntegrate']) {
                 $this->integrateAllCss();
             } else {
-                foreach ($this->csss as $key => $css) {
-                    $j[$key]['type'] = 'text/css';
-                    $j[$key]['rel'] = 'stylesheet';
-                    $j[$key]['media'] = 'screen';
-                    if ($this->config['CssMinify'] && is_file(realpath($this->config['PublicBasePath']) . '/' . $css['href'])) {
-                        $this->filename = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href'];
-                        if (!is_file($this->filename)) {
-                            $this->content = $this->get_data(realpath($this->config['PublicBasePath']) . '/' . $css['href']);
-                            $this->writeCssFile();
+                foreach ($this->csss AS $k => $csss) {
+                    foreach ($csss as $key => $css) {
+                        $j[$k][$key]['type'] = 'text/css';
+                        $j[$k][$key]['rel'] = 'stylesheet';
+                        if ($this->config['CssMinify'] && is_file(realpath($this->config['PublicBasePath']) . '/' . $css['href'])) {
+                            $this->filename[$k] = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href'];
+                            if (!is_file($this->filename[$k])) {
+                                $this->content[$key] = $this->get_data(realpath($this->config['PublicBasePath']) . '/' . $css['href']);
+                                $this->writeCssFile($k);
+                            }
+                            $j[$k][$key]['href'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href']);
+                        } elseif ($css['href']) {
+                            $j[$k][$key]['href'] = Url::normalizeUrl($css['href']);
                         }
-                        $j[$key]['href'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href']);
-                    } elseif ($css['href']) {
-                        $j[$key]['href'] = Url::normalizeUrl($css['href']);
                     }
                 }
                 $this->htmlHeaders->setCss($j);
@@ -58,31 +64,23 @@ class CSSIntegrate {
 
     protected function integrateAllCss() {
         $this->setCssFileName();
-        $this->htmlHeaders->setCss(
-                array(
-                    array(
-                        'href' =>
-                        Url::normalizeUrl($this->config['URIBasePath'] .
-                                $this->config['PublicCacheDir'] . $this->config['cacheId'] .
-                                $this->config['CssMinifiedFilePath'] .
-                                $this->filename),
-                        'type' => 'text/css',
-                        'rel' => 'stylesheet',
-                        'media' => 'screen'
-                    )
-                )
-        );
-        $this->filename = $this->config['PublicBasePath'] .
-                $this->config['PublicCacheDir'] . '/' . $this->config['cacheId'] .
-                $this->config['CssMinifiedFilePath'] . $this->filename;
-        $this->makeFilePath($this->filename);
-        if (!file_exists($this->completeFilePath)) {
-            foreach ($this->csss as $item) {
-                $this->content .= '/*File: (' . $item['href'] . ')*/' . PHP_EOL;
-                $this->content .= $this->fixUrlImages($this->get_data($item['href']), Url::normalizeUrl($item['href'])) . PHP_EOL;
+        foreach ($this->csss AS $key => $csss) {
+            $set_css[$key][] = array(
+                'href' => Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $this->config['CssMinifiedFilePath'] . $this->filename[$key]),
+                'type' => 'text/css',
+                'rel' => 'stylesheet',
+                'media' => $key
+            );
+            $this->filename[$key] = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . '/' . $this->config['cacheId'] . $this->config['CssMinifiedFilePath'] . $this->filename[$key];
+            $this->makeFilePath($this->filename[$key], $key);
+            if (!file_exists($this->completeFilePath[$key])) {
+                foreach ($csss as $item) {
+                    $this->content[$key] .= $this->fixUrlImages($this->get_data($item['href']), Url::normalizeUrl($item['href'])) . PHP_EOL;
+                }
+                $this->writeCssFile($key);
             }
-            $this->writeCssFile();
         }
+        $this->htmlHeaders->setCss($set_css);
     }
 
     protected function fixUrlImages($cssContent, $url) {
@@ -107,21 +105,25 @@ class CSSIntegrate {
         );
     }
 
-    protected function writeCssFile() {
-        $this->makeFilePath($this->filename);
-        if (!file_exists($this->completeFilePath)) {
-            if (!is_dir(dirname($this->completeFilePath))) {
-                mkdir(dirname($this->completeFilePath), 0777, true);
+    protected function writeCssFile($key) {
+        $this->makeFilePath($this->filename[$key], $key);
+
+        if (!file_exists($this->completeFilePath[$key])) {
+            if (!is_dir(dirname($this->completeFilePath[$key]))) {
+                mkdir(dirname($this->completeFilePath[$key]), 0777, true);
             }
             if ($this->config['CssMinify']) {
                 $cssmin = new \CSSmin();
-                $this->content = $cssmin->run($this->content);
+                $this->content[$key] = $cssmin->run($this->content[$key]);
             }
             if ($this->config['CssSpritify']) {
                 $spritify = new Spritify($this->config);
-                $this->content = $spritify->run($this->content);
+                $this->content[$key] = $spritify->run($this->content[$key]);
             }
-            File::put_content($this->completeFilePath, $this->content);
+            File::put_content($this->completeFilePath[$key], $this->content[$key]);
+        } else {
+            echo 'Existo:';
+            echo $this->completeFilePath[$key] . PHP_EOL;
         }
     }
 
@@ -141,9 +143,7 @@ class CSSIntegrate {
                 $data = File::get_content($url);
             }
         }
-        if (!$data) {
-            $data = '/*File: (' . Url::url_decode($url) . ') not found*/';
-        } else {
+        if ($data) {
             $data = $this->removeImports($this->fixUrl($data, $cssUrl), $cssUrl);
         }
         return $data;
@@ -183,8 +183,8 @@ class CSSIntegrate {
         );
     }
 
-    protected function makeFilePath($filename) {
-        $this->completeFilePath = $filename;
+    protected function makeFilePath($filename, $key) {
+        $this->completeFilePath[$key] = $filename;
     }
 
 }

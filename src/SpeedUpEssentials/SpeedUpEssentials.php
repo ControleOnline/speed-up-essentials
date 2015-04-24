@@ -132,19 +132,21 @@ class SpeedUpEssentials {
 
     private function addCssHeaders() {
         $htmlHeaders = Model\HtmlHeaders::getInstance();
-        $csss = $htmlHeaders->getCss();
-        if ($csss) {
+        $css_m = $htmlHeaders->getCss();
+        if ($css_m) {
             $DOMHtml = DOMHtml::getInstance();
-            foreach ($csss as $css) {
-                krsort($css);
-                $c = '<link';
-                foreach ($css as $key => $value) {
-                    $c .= ' ' . $key . '="' . $value . '"';
+            foreach ($css_m as $csss) {
+                foreach ($csss as $css) {
+                    krsort($css);
+                    $c = '<link';
+                    foreach ($css as $key => $value) {
+                        $c .= ' ' . $key . '="' . $value . '"';
+                    }
+                    $c .='>';
+                    $child = 'head';
+                    $new_html = preg_replace('~<(?:!DOCTYPE|/?(?:\?xml|html|head|body))[^>]*>\s*~i', '', $c);
+                    $DOMHtml->setContent(str_replace('</' . $child . '>', $new_html . '</' . $child . '>', $DOMHtml->getContent()));
                 }
-                $c .='>';
-                $child = 'head';
-                $new_html = preg_replace('~<(?:!DOCTYPE|/?(?:\?xml|html|head|body))[^>]*>\s*~i', '', $c);
-                $DOMHtml->setContent(str_replace('</' . $child . '>', $new_html . '</' . $child . '>', $DOMHtml->getContent()));
             }
         }
     }

@@ -23,13 +23,11 @@ class HtmlFormating {
 
     private function organizeHeaderOrder() {
         $htmlHeaders = HtmlHeaders::getInstance();
-        if ($this->config['CssIntegrate']) {                        
+        if ($this->config['CssIntegrate']) {
             $this->organizeCSS($htmlHeaders);
-            $this->cssIntegrate();
         }
-        if ($this->config['JavascriptIntegrate']) {                        
+        if ($this->config['JavascriptIntegrate']) {
             $this->organizeJS($htmlHeaders);
-            $this->javascriptIntegrate();
         }
     }
 
@@ -241,9 +239,15 @@ class HtmlFormating {
 
     public function format() {
         $this->sentHeaders();
+        $this->imgLazyLoad();
         $this->organizeHeaderOrder();
         $this->removeMetaCharset();
-        $this->imgLazyLoad();
+        if ($this->config['CssIntegrate']) {
+            $this->cssIntegrate();
+        }
+        if ($this->config['JavascriptIntegrate']) {
+            $this->javascriptIntegrate();
+        }
     }
 
     private function cssIntegrate() {
@@ -346,24 +350,24 @@ class HtmlFormating {
                     }
                     if (strtolower($key) == 'src') {
                         $att = Url::normalizeUrl($att);
-                        $img .= ' ' . $key . '=\'' . $att . '\'';
-                        $lazy_img .= ' ' . $key . '=\'' . $config['LazyLoadPlaceHolder'] . '\'';
+                        $img .= ' ' . $key . '="' . $att . '"';
+                        $lazy_img .= ' ' . $key . '="' . $config['LazyLoadPlaceHolder'] . '"';
                         $key = 'data-src';
                     } else {
-                        $img .= ' ' . $key . '=\'' . $att . '\'';
+                        $img .= ' ' . $key . '="' . $att . '"';
                     }
-                    $lazy_img .= ' ' . $key . '=\'' . $att . '\'';
+                    $lazy_img .= ' ' . $key . '="' . $att . '"';
                 }
                 if (!array_key_exists('class', $attributes)) {
-                    $img .= ' class=\'' . $config['LazyLoadClass'] . '\'';
+                    $img .= ' class="' . $config['LazyLoadClass'] . '"';
                 }
                 $img .= '>';
                 $lazy_img .= '>';
-                $content = '<noscript>';
-                $content .= $img;
-                $content .= '</noscript>';
-                $content .= $lazy_img;
-                return $content;
+                $content_img = $lazy_img;
+                $content_img .= '<noscript>';
+                $content_img .= $img;
+                $content_img .= '</noscript>';
+                return $content_img;
             }, $htmlContent);
             $this->DOMHtml->setContent($content? : $htmlContent);
             $this->lazyLoadHead();

@@ -53,8 +53,9 @@ class HtmlHeaders {
         return $this;
     }
 
-    public function addCss($css) {
-        $this->css[] = $css;
+    public function addCss($css) {        
+        $css['media'] = isset($css['media']) ? $css['media'] : 'all';
+        $this->css[$css['media']][] = $css;
         return $this;
     }
 
