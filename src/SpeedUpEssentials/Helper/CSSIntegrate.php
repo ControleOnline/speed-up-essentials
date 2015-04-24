@@ -151,18 +151,20 @@ class CSSIntegrate {
 
     protected function removeImports($data, $cssUrl) {
         $sBaseUrl = dirname($cssUrl) . '/';
+        $config = $this->config;
+        $self = $this;
         return preg_replace_callback(
-                '/@import url\(([^)]+)\)(;?)/', function($aMatches) use ($sBaseUrl) {
+                '/@import url\(([^)]+)\)(;?)/', function($aMatches) use ($sBaseUrl, $config, $self) {
             $url = str_replace(array('"', '\''), '', trim($aMatches[1]));
-            if (is_file($this->config['PublicBasePath'] . $url)) {
-                $newUrl = $this->config['PublicBasePath'] . $url;
-                if (!isset($this->cssImported[md5($newUrl)])) {
+            if (is_file($config['PublicBasePath'] . $url)) {
+                $newUrl = $config['PublicBasePath'] . $url;
+                if (!isset($self->cssImported[md5($newUrl)])) {
                     $content = File::get_content($newUrl);
-                    $this->cssImported[md5($newUrl)] = $newUrl;
+                    $self->cssImported[md5($newUrl)] = $newUrl;
                 }
                 return $content;
             } else {
-                return '@import url("' . Url::url_decode($url) . '")';
+                return '@import url("' . $url . '")';
             }
         }, $data
         );
