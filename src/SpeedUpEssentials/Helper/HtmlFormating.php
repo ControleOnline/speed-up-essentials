@@ -31,6 +31,26 @@ class HtmlFormating {
         }
     }
 
+    private function removeConditionals() {
+        $regex = '/\]><link(.*?)<\!/smix';
+        $htmlContent = $this->DOMHtml->getContent();
+        $content = preg_replace_callback($regex, function($script) {
+            return str_replace('<link', '<replace_conditional', $script[0]);
+        }, $htmlContent
+        );
+        $this->DOMHtml->setContent($content? : $htmlContent);
+    }
+
+    private function returnConditionals() {
+        $regex = '/\]><replace_conditional(.*?)<\!/smix';
+        $htmlContent = $this->DOMHtml->getContent();
+        $content = preg_replace_callback($regex, function($script) {
+            return str_replace('<replace_conditional', '<link', $script[0]);
+        }, $htmlContent
+        );
+        $this->DOMHtml->setContent($content? : $htmlContent);
+    }
+
     private function organizeCSS($htmlHeaders) {
         $reg = array(
             '/<link((?:.)*?)>(.*?)<\/link>/smix',
@@ -239,6 +259,7 @@ class HtmlFormating {
 
     public function format() {
         $this->sentHeaders();
+        $this->removeConditionals();
         $this->imgLazyLoad();
         $this->organizeHeaderOrder();
         $this->removeMetaCharset();
@@ -248,6 +269,7 @@ class HtmlFormating {
         if ($this->config['JavascriptIntegrate']) {
             $this->javascriptIntegrate();
         }
+        $this->returnConditionals();
     }
 
     private function cssIntegrate() {
