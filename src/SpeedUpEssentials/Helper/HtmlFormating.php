@@ -352,10 +352,11 @@ class HtmlFormating {
     private function imgLazyLoad() {
         if ($this->config['LazyLoadImages']) {
             $htmlContent = $this->DOMHtml->getContent();
-            $regex = '/<img((?:.)*?)>(.*?)>/smix';
+            $regex = '/<img((?:.)*?)>/smix';
             $config = $this->config;
             $self = $this;
             $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
+               
                 $regex_img = '/(\S+)=["\']((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']/';
                 preg_match_all($regex_img, $script[1], $matches);
 
@@ -386,9 +387,9 @@ class HtmlFormating {
                 $img .= '>';
                 $lazy_img .= '>';
                 $content_img = $lazy_img;
-                $content_img .= '<noscript>';
-                $content_img .= $img;
-                $content_img .= '</noscript>';
+                //$content_img .= '<noscript>';
+                //$content_img .= $img;
+                //$content_img .= '</noscript>';
                 return $content_img;
             }, $htmlContent);
             $this->DOMHtml->setContent($content? : $htmlContent);
