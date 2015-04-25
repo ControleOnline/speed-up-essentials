@@ -387,9 +387,9 @@ class HtmlFormating {
                 $img .= '>';
                 $lazy_img .= '>';
                 $content_img = $lazy_img;
-                //$content_img .= '<noscript>';
-                //$content_img .= $img;
-                //$content_img .= '</noscript>';
+                $content_img .= '<noscript>';
+                $content_img .= $img;
+                $content_img .= '</noscript>';
                 return $content_img;
             }, $htmlContent);
             $this->DOMHtml->setContent($content? : $htmlContent);
