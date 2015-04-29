@@ -220,7 +220,8 @@ class HtmlFormating {
     }
 
     public function removeHtmlComments(&$html) {
-        $html = preg_replace('/<!--[^\[].*-->/', '', $html);
+        //$html = preg_replace('/<!--[^\[].*-->/', '', $html);
+        $html = preg_replace('/<!--(?!<!)[^\[>](.|\n)*?-->/', '', $html);
         return $html;
     }
 
