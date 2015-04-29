@@ -25,13 +25,16 @@
         "php": ">=5.3.3",
         "zendframework/zendframework": "~2.0",
         "tubalmartin/cssmin": "*",
-        "patchwork/jsqueeze": "~2.0",        
-        "tedivm/jshrink": "~1.0"
+        "rgrove/jsmin-php": "*"
     },
     "repositories": [
         {
             "type": "vcs",
             "url": "git@github.com:tubalmartin/YUI-CSS-compressor-PHP-port.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:rgrove/jsmin-php.git"
         }
     ],
     "scripts": {

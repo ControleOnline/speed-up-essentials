@@ -7,23 +7,24 @@
  * Modified by Luiz Kim <luizkim@gmail.com>- http://controleonline.com
  */
 var lazyLoad = function () {
-    var addEventListener = window.addEventListener || function (n, f) {
+    var addEventListener = window.addEventListener || function (n, f, b) {
         window.attachEvent('on' + n, f);
-    },
-            removeEventListener = window.removeEventListener || function (n, f, b) {
-                window.detachEvent('on' + n, f);
-            };
-
+    };
+    var removeEventListener = window.removeEventListener || function (n, f, b) {
+        window.detachEvent('on' + n, f);
+    };
     var lazyLoader = {
         cache: [],
         mobileScreenSize: 500,
         addObservers: function () {
             addEventListener('scroll', lazyLoader.throttledLoad);
             addEventListener('resize', lazyLoader.throttledLoad);
+            addEventListener('DOMSubtreeModified', lazyLoader.throttledLoad);
         },
         removeObservers: function () {
             removeEventListener('scroll', lazyLoader.throttledLoad, false);
             removeEventListener('resize', lazyLoader.throttledLoad, false);
+            removeEventListener('DOMSubtreeModified', lazyLoader.throttledLoad, false);
         },
         throttleTimer: new Date().getTime(),
         throttledLoad: function () {
@@ -144,3 +145,41 @@ var lazyLoad = function () {
         });
     }
 })();
+
+function replace_text(id, text) {
+    var $id = new CustomEvent(id, {"detail": text});
+    var elem = document.getElementById(id);
+    elem.dispatchEvent($id);
+    /*
+     var elem = document.getElementById(id);
+     var src = 'https://www.googletagservices.com/tag/js/gpt.js';
+     if (1 === 1) {
+     loadScript(src, elem, function () {
+     });
+     } else {
+     var noscript = (text + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0').replace('</script>', '</s\' + \'cript>');
+     elem.innerHTML = elem.innerHTML + 'document.write(\'' + noscript + '\');';
+     }
+     */
+}
+/*
+ function loadScript(url, elem, callback) {
+ var script = document.createElement("script");
+ script.type = "text/javascript";
+ if (script.readyState) {  
+ script.onreadystatechange = function () {
+ if (script.readyState == "loaded" || script.readyState == "complete") {
+ script.onreadystatechange = null;
+ callback();
+ }
+ };
+ } else {  
+ script.onload = function () {
+ callback();
+ };
+ }
+ script.src = url;
+ elem.parentNode.insertBefore(script, elem.nextSibling);
+ elem.parentNode.removeChild(elem);
+ }
+ */

@@ -54,7 +54,8 @@ class HtmlFormating {
     private function organizeCSS($htmlHeaders) {
         $reg = array(
             '/<link((?:.)*?)>(.*?)<\/link>/smix',
-            '/<link((?:.)*?)\/>/smix'
+            '/<link((?:.)*?)\/>/smix',
+            '/<style((?:.)*?)>(.*?)<\/style>/smix'
         );
         $config = $this->config;
         $self = $this;
@@ -93,29 +94,28 @@ class HtmlFormating {
         }
     }
 
-    private function jsAwaysInline($content) {
+    public function jsAwaysInline($content) {
         return strpos($content, 'document.write');
     }
 
     public function addJsInline($htmlHeaders, $attributes) {
-        if (!$this->jsAwaysInline($attributes['value'])) {
-            $file = 'inline' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.js';
-            $completeFilePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $file;
 
-            if (!file_exists($completeFilePath)) {
-                if (!is_dir(dirname($completeFilePath))) {
-                    mkdir(dirname($completeFilePath), 0777, true);
-                }
-                if ($this->config['JavascriptMinify']) {
-                    $attributes['value'] = JSMin::minify($attributes['value']);
-                }
-                File::put_content($completeFilePath, $attributes['value']);
+        $file = 'inline' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.js';
+        $completeFilePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $file;
+
+        if (!file_exists($completeFilePath)) {
+            if (!is_dir(dirname($completeFilePath))) {
+                mkdir(dirname($completeFilePath), 0777, true);
             }
-
-            $attributes['src'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $file);
-            unset($attributes['value']);
-            $htmlHeaders->addJs($attributes);
+            if ($this->config['JavascriptMinify']) {
+                $attributes['value'] = JSMin::minify($attributes['value']);
+            }
+            File::put_content($completeFilePath, $attributes['value']);
         }
+
+        $attributes['src'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $file);
+        unset($attributes['value']);
+        $htmlHeaders->addJs($attributes);
     }
 
     public function addCssInline($htmlHeaders, $attributes) {
@@ -163,14 +163,33 @@ class HtmlFormating {
                     $attributes[trim($key)] = $v;
                 }
             }
-            if ($attributes['type'] == 'text/javascript') {
+            if ($attributes['type'] == 'text/javascript' || !$attributes['type']) {
                 if ($attributes['src']) {
                     $htmlHeaders->addJs($attributes);
                     return;
                 } elseif ($config['JavascriptIntegrateInline']) {
                     $attributes['value'] = isset($script[2]) ? $script[2] : '';
-                    $self->addJsInline($htmlHeaders, $attributes);
-                    return;
+                    if (!$self->jsAwaysInline($attributes['value'])) {
+                        $self->addJsInline($htmlHeaders, $attributes);
+                        return;
+                    } else {
+                        return $script[0];
+                        /**
+                         * @todo Adjust to work fine with document.write
+                         */
+                        /*
+                          $id = md5($script[0]);
+                          $attributes['value'] = str_replace('document.write(', 'replace_text("' . $id . '",', $attributes['value']);
+                          $self->addJsInline($htmlHeaders, $attributes);
+                          $replace = '<script type="text/javascript" id="' . $id . '">';
+                          $replace .= 'var elem = document.getElementById("' . $id . '");';
+                          $replace .= 'elem.addEventListener("' . $id . '", function (event) {';
+                          $replace .= 'document.write(event.detail);';
+                          $replace .= '});';
+                          $replace .= '</script>';
+                          return $replace;
+                         */
+                    }
                 } else {
                     return $script[0];
                 }
@@ -356,7 +375,7 @@ class HtmlFormating {
             $config = $this->config;
             $self = $this;
             $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
-               
+
                 $regex_img = '/(\S+)=["\']((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']/';
                 preg_match_all($regex_img, $script[1], $matches);
 
@@ -367,22 +386,24 @@ class HtmlFormating {
                 }
                 $img = '<img';
                 $lazy_img = '<img';
-                foreach ($attributes AS $key => $att) {
-                    if (strtolower($key) == 'class') {
-                        $att = $att . ' ' . $config['LazyLoadClass'];
+                if ($attributes) {
+                    foreach ($attributes AS $key => $att) {
+                        if (strtolower($key) == 'class') {
+                            $att = $att . ' ' . $config['LazyLoadClass'];
+                        }
+                        if (strtolower($key) == 'src') {
+                            $att = Url::normalizeUrl($att);
+                            $img .= ' ' . $key . '="' . $att . '"';
+                            $lazy_img .= ' ' . $key . '="' . $config['LazyLoadPlaceHolder'] . '"';
+                            $key = 'data-src';
+                        } else {
+                            $img .= ' ' . $key . '="' . $att . '"';
+                        }
+                        $lazy_img .= ' ' . $key . '="' . $att . '"';
                     }
-                    if (strtolower($key) == 'src') {
-                        $att = Url::normalizeUrl($att);
-                        $img .= ' ' . $key . '="' . $att . '"';
-                        $lazy_img .= ' ' . $key . '="' . $config['LazyLoadPlaceHolder'] . '"';
-                        $key = 'data-src';
-                    } else {
-                        $img .= ' ' . $key . '="' . $att . '"';
+                    if (!array_key_exists('class', $attributes)) {
+                        $img .= ' class="' . $config['LazyLoadClass'] . '"';
                     }
-                    $lazy_img .= ' ' . $key . '="' . $att . '"';
-                }
-                if (!array_key_exists('class', $attributes)) {
-                    $img .= ' class="' . $config['LazyLoadClass'] . '"';
                 }
                 $img .= '>';
                 $lazy_img .= '>';

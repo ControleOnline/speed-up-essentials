@@ -74,7 +74,7 @@ class JSIntegrate {
                 $this->config['JsMinifiedFilePath'] . $this->filename;
         $this->makeFilePath($this->filename);
         if (!file_exists($this->completeFilePath)) {
-            foreach ($this->jss as $item) {                
+            foreach ($this->jss as $item) {
                 $this->content .= $this->get_data($item['src']) . PHP_EOL;
             }
             $this->writeJsFile();
@@ -94,7 +94,7 @@ class JSIntegrate {
         }
     }
 
-    protected function get_data($url) {        
+    protected function get_data($url) {
         if (is_file($this->config['PublicBasePath'] . Url::normalizeUrl($url))) {
             $url = $this->config['PublicBasePath'] . Url::normalizeUrl($url);
             try {

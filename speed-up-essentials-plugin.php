@@ -11,8 +11,6 @@
  */
 require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'tubalmartin' . DIRECTORY_SEPARATOR . 'cssmin' . DIRECTORY_SEPARATOR . 'cssmin.php');
-require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'patchwork' . DIRECTORY_SEPARATOR . 'jsqueeze' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'JSqueeze.php');
-require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'tedivm' . DIRECTORY_SEPARATOR . 'jshrink' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'JShrink' . DIRECTORY_SEPARATOR . 'Minifier.php');
 require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'rgrove' . DIRECTORY_SEPARATOR . 'jsmin-php' . DIRECTORY_SEPARATOR . 'jsmin.php');
 
 
@@ -62,7 +60,7 @@ add_action('shutdown', function() {
 add_filter('final_output', function($output) {
     $config = array(
         'APP_ENV' => 'production', //Default configs to production or development
-        'CookieLessDomain' =>  str_replace('www.', '', $_SERVER['HTTP_HOST']),
+        'CookieLessDomain' => str_replace('www.', '', $_SERVER['HTTP_HOST']),
         'charset' => 'utf-8',
         'RemoveMetaCharset' => true,
         'URIBasePath' => '/',

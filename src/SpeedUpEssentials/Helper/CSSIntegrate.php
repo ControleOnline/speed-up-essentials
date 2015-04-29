@@ -17,7 +17,7 @@ class CSSIntegrate {
     protected $content;
     protected $completeFilePath;
     protected $csss;
-    protected $cssImported;
+    public $cssImported;
     protected $font_extensions = array('eot', 'ttf', 'woff');
 
     public function __construct($config) {
@@ -121,9 +121,6 @@ class CSSIntegrate {
                 $this->content[$key] = $spritify->run($this->content[$key]);
             }
             File::put_content($this->completeFilePath[$key], $this->content[$key]);
-        } else {
-            echo 'Existo:';
-            echo $this->completeFilePath[$key] . PHP_EOL;
         }
     }
 
