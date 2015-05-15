@@ -28,6 +28,15 @@ class JSMin {
         $buffer = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", PHP_EOL, $buffer);
         /* remove tabs, newlines, etc. */
         //$buffer = str_replace(array("\r\n", "\r", "\n", PHP_EOL), '', $buffer);
+        
+//        $regex = '/[^\/\/]+/ismix';
+//        $htmlContent = $this->DOMHtml->getContent();
+//        $content = preg_replace_callback($regex, function($script) {
+//            return str_replace('<link', '<replace_conditional', $script[0]);
+//        }, $htmlContent
+//        );
+        
+        
         /* remove other spaces before/after ) */
         //$buffer = preg_replace(array('(( )+\))', '(\)( )+)'), ')', $buffer);
 

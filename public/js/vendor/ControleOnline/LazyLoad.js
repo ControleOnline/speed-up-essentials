@@ -103,9 +103,11 @@ var lazyLoad = function () {
                 lazyLoader.cache.push(imageNode);
             }
 
-            lazyLoader.addObservers();                        
+            lazyLoader.addObservers();
             lazyLoader.loadVisibleImages();
-            setTimeout(function(){ lazyLoader.loadVisibleImages(); }, 250);
+            setInterval(function () {
+                lazyLoader.loadVisibleImages();
+            }, 300);
             //removeEventListener('load', _lazyLoaderInit, false);
             //});       
             var event = new Event('scroll');
@@ -214,22 +216,23 @@ var localCache = {
             callback(cachedData);
     }
 };
-
-$.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-    if (options.cache) {
-        var complete = originalOptions.complete || $.noop,
-                url = originalOptions.url;
-        //remove jQuery cache as we have our own localCache
-        options.cache = false;
-        options.beforeSend = function () {
-            if (localCache.exist(url)) {
-                complete(localCache.get(url));
-                return false;
-            }
-            return true;
-        };
-        options.complete = function (data, textStatus) {
-            localCache.set(url, data, complete);
-        };
-    }
-});
+/*
+ $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+ if (options.cache) {
+ var complete = originalOptions.complete || $.noop,
+ url = originalOptions.url;
+ //remove jQuery cache as we have our own localCache
+ options.cache = false;
+ options.beforeSend = function () {
+ if (localCache.exist(url)) {
+ complete(localCache.get(url));
+ return false;
+ }
+ return true;
+ };
+ options.complete = function (data, textStatus) {
+ localCache.set(url, data, complete);
+ };
+ }
+ });
+ */
