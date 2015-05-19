@@ -20,7 +20,7 @@ var lazyLoad = function () {
     };
     var lazyLoader = {
         cache: [],
-        mobileScreenSize: 500,
+        verify: null,
         addObservers: function () {
             addEventListener('scroll', lazyLoader.throttledLoad);
             addEventListener('resize', lazyLoader.throttledLoad);
@@ -52,17 +52,12 @@ var lazyLoad = function () {
                 var imagePosition = getOffsetTop(image);
                 var imageHeight = image.height || 0;
                 if ((imagePosition >= range.min - imageHeight) && (imagePosition <= range.max)) {
-                    var mobileSrc = image.getAttribute('data-src-mobile');
+                    var src = image.getAttribute('data-src');
                     image.onload = function () {
                         this.className = this.className.replace(/(^|\s+)lazy-load(\s+|$)/, '$1lazy-loaded$2');
                     };
-                    if (mobileSrc && screen.width <= lazyLoader.mobileScreenSize) {
-                        image.src = mobileSrc;
-                    } else {
-                        image.src = image.getAttribute('data-src');
-                    }
+                    image.src = src;
                     image.removeAttribute('data-src');
-                    image.removeAttribute('data-src-mobile');
                     lazyLoader.cache.splice(i, 1);
                     continue;
                 }
@@ -71,6 +66,7 @@ var lazyLoad = function () {
 
             if (lazyLoader.cache.length === 0) {
                 lazyLoader.removeObservers();
+                clearInterval(lazyLoader.verify);
             }
         },
         init: function () {
@@ -96,7 +92,7 @@ var lazyLoad = function () {
             }
             lazyLoader.addObservers();
             lazyLoader.loadVisibleImages();
-            setInterval(function () {
+            lazyLoader.verify = setInterval(function () {
                 window.dispatchEvent(new Event('resize'));
             }, 500);
         }
@@ -132,6 +128,7 @@ var lazyLoad = function () {
             }
         });
     }
+    lazyLoad();
 })();
 
 function replace_text(id, text) {

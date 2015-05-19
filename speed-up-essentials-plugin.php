@@ -70,7 +70,8 @@ add_filter('final_output', function($output) {
         'JavascriptIntegrateInline' => true,
         'CssIntegrateInline' => true,
         'CssSpritify' => false,
-        'LazyLoadBasePath' => 'wp-content/cache/'
+        'LazyLoadBasePath' => 'wp-content/cache/',
+        'LazyLoadPlaceHolder' => '/wp-content/plugins/speed-up-essentials/public/img/blank.png'
     );
 
 
