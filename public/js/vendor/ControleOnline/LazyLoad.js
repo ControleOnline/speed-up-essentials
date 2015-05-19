@@ -10,6 +10,11 @@ var lazyLoad = function () {
     var addEventListener = window.addEventListener || function (n, f, b) {
         window.attachEvent('on' + n, f);
     };
+    var addEventOnElement = function (e, n, f) {
+        e.attachEvent('on' + n, f);
+    };
+
+
     var removeEventListener = window.removeEventListener || function (n, f, b) {
         window.detachEvent('on' + n, f);
     };
@@ -41,13 +46,11 @@ var lazyLoad = function () {
                 min: scrollY - 200,
                 max: scrollY + pageHeight + 200
             };
-
             var i = 0;
             while (i < lazyLoader.cache.length) {
                 var image = lazyLoader.cache[i];
                 var imagePosition = getOffsetTop(image);
                 var imageHeight = image.height || 0;
-
                 if ((imagePosition >= range.min - imageHeight) && (imagePosition <= range.max)) {
                     var mobileSrc = image.getAttribute('data-src-mobile');
 
@@ -68,7 +71,6 @@ var lazyLoad = function () {
                     lazyLoader.cache.splice(i, 1);
                     continue;
                 }
-
                 i++;
             }
 
@@ -93,26 +95,12 @@ var lazyLoad = function () {
 
             //addEventListener('load', function _lazyLoaderInit() {
             var imageNodes = document.querySelectorAll('img[data-src]');
-
             for (var i = 0; i < imageNodes.length; i++) {
                 var imageNode = imageNodes[i];
-
-                // Add a placeholder if one doesn't exist
-                //imageNode.src = imageNode.src || lazyLoader.tinyGif;
-
                 lazyLoader.cache.push(imageNode);
             }
-
             lazyLoader.addObservers();
             lazyLoader.loadVisibleImages();
-            setInterval(function () {
-                lazyLoader.loadVisibleImages();
-            }, 300);
-            //removeEventListener('load', _lazyLoaderInit, false);
-            //});       
-            var event = new Event('scroll');
-            document.dispatchEvent(event);
-
         }
     };
 
