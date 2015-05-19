@@ -53,21 +53,16 @@ var lazyLoad = function () {
                 var imageHeight = image.height || 0;
                 if ((imagePosition >= range.min - imageHeight) && (imagePosition <= range.max)) {
                     var mobileSrc = image.getAttribute('data-src-mobile');
-
                     image.onload = function () {
                         this.className = this.className.replace(/(^|\s+)lazy-load(\s+|$)/, '$1lazy-loaded$2');
                     };
-
                     if (mobileSrc && screen.width <= lazyLoader.mobileScreenSize) {
                         image.src = mobileSrc;
-                    }
-                    else {
+                    } else {
                         image.src = image.getAttribute('data-src');
                     }
-
                     image.removeAttribute('data-src');
                     image.removeAttribute('data-src-mobile');
-
                     lazyLoader.cache.splice(i, 1);
                     continue;
                 }
@@ -101,6 +96,9 @@ var lazyLoad = function () {
             }
             lazyLoader.addObservers();
             lazyLoader.loadVisibleImages();
+            setInterval(function () {
+                window.dispatchEvent(new Event('resize'));
+            }, 500);
         }
     };
 
