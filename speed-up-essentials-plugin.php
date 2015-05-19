@@ -70,6 +70,7 @@ add_filter('final_output', function($output) {
         'JavascriptIntegrateInline' => true,
         'CssIntegrateInline' => true,
         'CssSpritify' => false,
+        'LazyLoadBasePath' => 'wp-content/cache/'
     );
 
 

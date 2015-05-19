@@ -43,6 +43,7 @@ class SpeedUpEssentials {
         $config['LazyLoadJsFile'] = (isset($config['LazyLoadJsFile']) ? $config['LazyLoadJsFile'] : true);
         $config['LazyLoadJsFilePath'] = (isset($config['LazyLoadJsFilePath']) ? $config['LazyLoadJsFilePath'] : 'js/vendor/ControleOnline/');
         $config['LazyLoadCssFilePath'] = (isset($config['LazyLoadCssFilePath']) ? $config['LazyLoadCssFilePath'] : 'css/vendor/ControleOnline/');
+        $config['LazyLoadBasePath'] = (isset($config['LazyLoadBasePath']) ? $config['LazyLoadBasePath'] : '/');
 
         /*
          * Html Formatter Config

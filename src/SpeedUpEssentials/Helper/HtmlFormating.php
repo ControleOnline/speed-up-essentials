@@ -325,12 +325,12 @@ class HtmlFormating {
     private function lazyLoadHead() {
         if ($this->config['LazyLoadJsFile'] || $this->config['LazyLoadFadeIn']) {
             $base = dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../public/';
-            $path = $this->config['URIBasePath'];
+            $path = $this->config['URIBasePath'] . $this->config['LazyLoadBasePath'] . $this->config['cacheId'] . DIRECTORY_SEPARATOR;
             if ($this->config['LazyLoadJsFile']) {
-                $file = $this->config['PublicBasePath'] . $this->config['LazyLoadJsFilePath'] . 'Lazyload.js';
+                $file = $this->config['PublicBasePath'] . $this->config['LazyLoadBasePath'] . $this->config['cacheId'] . DIRECTORY_SEPARATOR . $this->config['LazyLoadJsFilePath'] . 'Lazyload.js';
                 if (!file_exists($file)) {
                     try {
-                        mkdir($this->config['PublicBasePath'] . $this->config['LazyLoadJsFilePath'], 0777, true);
+                        mkdir(dirname($file), 0777, true);
                         copy($base . $this->config['LazyLoadJsFilePath'] . 'LazyLoad.js', $file);
                     } catch (Exception $ex) {
                         
@@ -347,10 +347,10 @@ class HtmlFormating {
             }
 
             if ($this->config['LazyLoadFadeIn']) {
-                $file = $this->config['PublicBasePath'] . $this->config['LazyLoadCssFilePath'] . 'LazyLoad.css';
+                $file = $this->config['PublicBasePath'] . $this->config['LazyLoadBasePath'] . $this->config['cacheId'] . DIRECTORY_SEPARATOR . $this->config['LazyLoadCssFilePath'] . 'LazyLoad.css';
                 if (!file_exists($file)) {
                     try {
-                        mkdir($this->config['PublicBasePath'] . $this->config['LazyLoadCssFilePath'], 0777, true);
+                        mkdir(dirname($file), 0777, true);
                         copy($base . $this->config['LazyLoadCssFilePath'] . 'LazyLoad.css', $file);
                     } catch (Exception $ex) {
                         
