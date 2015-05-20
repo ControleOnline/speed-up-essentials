@@ -59,7 +59,7 @@ add_action('shutdown', function() {
 add_filter('final_output', function($output) {
     $config = array(
         'APP_ENV' => 'production', //Default configs to production or development
-        'CookieLessDomain' => str_replace('www.', '', $_SERVER['HTTP_HOST']),
+        'CookieLessDomain' => 'static.' . str_replace('static.', '', str_replace('www.', '', $_SERVER['HTTP_HOST'])),
         'charset' => 'utf-8',
         'RemoveMetaCharset' => true,
         'URIBasePath' => '/',
@@ -71,7 +71,11 @@ add_filter('final_output', function($output) {
         'CssIntegrateInline' => true,
         'CssSpritify' => false,
         'LazyLoadBasePath' => 'wp-content/cache/',
-        'LazyLoadPlaceHolder' => '/wp-content/plugins/speed-up-essentials/public/img/blank.png'
+        'LazyLoadPlaceHolder' => '/wp-content/plugins/speed-up-essentials/public/img/blank.png',
+//        'JavascriptIntegrate' => false,
+//        'CssMinify' => false,
+//        'CssIntegrateInline' => false,
+//        'CssIntegrate' => false
     );
 
 

@@ -17,7 +17,7 @@ class SpeedUpEssentials {
         /*
          * CookielessDomain
          */
-        $config['CookieLessDomain'] = (isset($config['CookieLessDomain']) ? $config['CookieLessDomain'] : 'static.' . $_SERVER['HTTP_HOST']);
+        $config['CookieLessDomain'] = (isset($config['CookieLessDomain']) ? $config['CookieLessDomain'] : 'static.' . str_replace('static.', '', str_replace('www.', '', $_SERVER['HTTP_HOST'])));
 
         /*
          * Encoding

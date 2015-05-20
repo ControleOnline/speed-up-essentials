@@ -32,14 +32,14 @@ class File {
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_REFERER, 'http://controleonline.com/');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            $data = curl_exec($ch);
+            $data = @curl_exec($ch);
             $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             if ($code != 200) {
                 $data = '';
             }
             curl_close($ch);
         } else {
-            $data = file_get_contents($url_exec);
+            $data = @file_get_contents($url_exec);
         }
         if (!$data) {
             $data = '/*Content of ' . $url_exec . ': <Empty>*/' . PHP_EOL;

@@ -75,7 +75,7 @@ class CSSIntegrate {
             $this->makeFilePath($this->filename[$key], $key);
             if (!file_exists($this->completeFilePath[$key])) {
                 foreach ($csss as $item) {
-                    $this->content[$key] .= $this->fixUrlImages($this->get_data($item['href']), Url::normalizeUrl($item['href'])) . PHP_EOL;
+                    $this->content[$key] .= $this->fixUrl($this->get_data($item['href']), Url::normalizeUrl($item['href'])) . PHP_EOL;
                 }
                 $this->writeCssFile($key);
             }
@@ -83,23 +83,35 @@ class CSSIntegrate {
         $this->htmlHeaders->setCss($set_css);
     }
 
-    protected function fixUrlImages($cssContent, $url) {
-        $regex = '/url\s*\(\s*[\'\"]?([^\'\"\)]+)[\'\"]?\s*\)(.*?)(\))/';
+    protected function fixUrl($cssContent, $url) {        
+        
+        $regex = '/url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]?\s*\)/';
         $css_dir = explode($this->config['CookieLessDomain'], $url);
+        $options = $this->config;
         $options['relative_url'] = dirname($css_dir[1]? : $css_dir[0]) . '/';
         $options['font_extensions'] = $this->font_extensions;
+        $options['css_domain'] = parse_url($url, PHP_URL_HOST);
         return preg_replace_callback(
                 $regex, function($img) use($options) {
             $relative_url = $options['relative_url'];
+            $domain = $options['css_domain'];
             if (substr($img[1], 0, 5) != 'data:' && substr($img[1], 0, 2) != '//' && !preg_match('#^https?://#', $img[1])) {
-                $ext = pathinfo($img[1], PATHINFO_EXTENSION);
-                if (in_array($ext, $options['font_extensions'])) {
-                    $relative_url = '//' . $_SERVER['HTTP_HOST'] . $relative_url;
+                if ($domain == $_SERVER['HTTP_HOST'] || !$domain) {
+                    $domain = $options['CookieLessDomain'];
+                    $ext = pathinfo($img[1], PATHINFO_EXTENSION);
+                    if (in_array($ext, $options['font_extensions'])) {
+                        $domain = $_SERVER['HTTP_HOST'];
+                    }
+                }
+                if (substr($img[1], 0, 1) == '/') {
+                    $relative_url = '//' . $domain;
+                } else {
+                    $relative_url = '//' . $domain . $relative_url;
                 }
                 $url_img = $relative_url . $img[1];
-                return 'url("' . $url_img . '")' . $img[2] . $img[3];
+                return 'url("' . Url::normalizeUrl($url_img) . '")';
             } else {
-                return $img[0];
+                return 'url("' . Url::normalizeUrl($img[1]) . '")';
             }
         }, $cssContent
         );
@@ -137,11 +149,17 @@ class CSSIntegrate {
             if (is_file($this->config['PublicBasePath'] . $url)) {
                 $data = File::get_content($this->config['PublicBasePath'] . $url);
             } else {
+
+                if (substr($url, 0, 2) == '//') {
+                    $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === true ? 'https:' : 'http:';
+                    $url = $protocol . $url;
+                }
+
                 $data = File::get_content($url);
             }
         }
         if ($data) {
-            $data = $this->removeImports($this->fixUrl($data, $cssUrl), $cssUrl);
+            $data = $this->removeImports($data, $cssUrl);
         }
         return $data;
     }
@@ -149,35 +167,12 @@ class CSSIntegrate {
     protected function removeImports($data, $cssUrl) {
         $sBaseUrl = dirname($cssUrl) . '/';
         $config = $this->config;
+        $config['css_url'] = $cssUrl;
         $self = $this;
         return preg_replace_callback(
                 '/@import url\(([^)]+)\)(;?)/', function($aMatches) use ($sBaseUrl, $config, $self) {
-            $url = str_replace(array('"', '\''), '', trim($aMatches[1]));
-            if (is_file($config['PublicBasePath'] . $url)) {
-                $newUrl = $config['PublicBasePath'] . $url;
-                if (!isset($self->cssImported[md5($newUrl)])) {
-                    $content = File::get_content($newUrl);
-                    $self->cssImported[md5($newUrl)] = $newUrl;
-                }
-                return $content;
-            } else {
-                return '@import url("' . $url . '")';
-            }
-        }, $data
-        );
-    }
-
-    protected function fixUrl($data, $cssUrl) {
-        $sBaseUrl = dirname($cssUrl) . '/';
-        return preg_replace_callback(
-                '|url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]\s*\)|', function($aMatches) use ($sBaseUrl) {
-            $url = trim($aMatches[1]);
-            if ($url['0'] != '/' && !preg_match('#^https?://#', $url)) {
-                $newUrl = $sBaseUrl . $url;
-            } else {
-                $newUrl = $url;
-            }
-            return 'url("' . $newUrl . '")';
+            $url = Url::normalizeUrl(str_replace(array('"', '\''), '', trim($aMatches[1])));
+            return $self::removeImports($self->fixUrl(File::get_content($url)), $url);
         }, $data
         );
     }

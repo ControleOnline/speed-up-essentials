@@ -22,6 +22,7 @@ class Url {
     public static function setBaseUri($baseUri) {
         self::$baseUri = $baseUri;
     }
+
     public static function normalizeUrl($url, $remove_host = false) {
 
         $original_url = $url;
