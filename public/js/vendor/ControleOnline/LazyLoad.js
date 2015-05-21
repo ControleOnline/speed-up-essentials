@@ -93,8 +93,14 @@ var lazyLoad = function () {
             lazyLoader.addObservers();
             lazyLoader.loadVisibleImages();
             lazyLoader.verify = setInterval(function () {
-                window.dispatchEvent(new Event('resize'));
-            }, 500);
+                if (document.createEventObject) { // W3C                    
+                    window.dispatchEvent(new Event('resize'));
+                } else { // IE                                        
+                    var evt = document.createEvent('UIEvents');
+                    evt.initUIEvent('resize', true, false, window, 0);
+                    window.dispatchEvent(evt);
+                }
+            }, 1200);
         }
     };
 

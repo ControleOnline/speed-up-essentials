@@ -219,7 +219,7 @@ class HtmlFormating {
         return $html;
     }
 
-    public function removeHtmlComments(&$html) {        
+    public function removeHtmlComments(&$html) {
         $html = preg_replace('/<!--(?!<!)[^\[>](.|\n)*?-->/', '', $html);
         return $html;
     }
@@ -371,6 +371,11 @@ class HtmlFormating {
     private function imgLazyLoad() {
         if ($this->config['LazyLoadImages']) {
             $htmlContent = $this->DOMHtml->getContent();
+            /**
+             * @todo Adjust this regex to not get images inside a script tag
+             * Example:
+             * <script>var a = '<img src="test.png">';</script>            
+             */
             $regex = '/<img((?:.)*?)>/smix';
             $config = $this->config;
             $self = $this;

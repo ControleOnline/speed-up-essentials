@@ -24,9 +24,12 @@ class Url {
     }
 
     public static function normalizeUrl($url, $remove_host = false) {
-
         $original_url = $url;
-
+        $u = explode('?', $url);
+        $ext = pathinfo($u[0], PATHINFO_EXTENSION);
+        if ($ext == 'php') {
+            return $original_url;
+        }
         if (substr($url, 0, 5) != 'data:' && substr($url, 0, 2) != '//' && !preg_match('#^https?://#', $url)) {
             if ($url['0'] == '/') {
                 $url = '//' . self::$staticDomain . $url;
@@ -44,12 +47,7 @@ class Url {
         if ($remove_host) {
             $return = str_replace('//' . self::$staticDomain, '', $return);
         }
-        $ext = pathinfo($return, PATHINFO_EXTENSION);
-        if ($ext == 'php') {
-            return $original_url;
-        } else {
-            return $return;
-        }
+        return $return;
     }
 
 }
