@@ -17,6 +17,7 @@ var lazyLoad = function () {
         window.detachEvent('on' + n, f);
     };
     var lazyLoader = {
+        timer: document.querySelectorAll('[timer-ll]')[0] || 1200,
         cache: [],
         verify: null,
         addObservers: function () {
@@ -96,7 +97,7 @@ var lazyLoad = function () {
                     evt.initUIEvent('resize', true, false, window, 0);
                     window.dispatchEvent(evt);
                 }
-            }, 1200);
+            }, lazyLoader.timer);
         }
     };
     // For IE7 compatibility
