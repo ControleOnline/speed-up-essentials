@@ -13,8 +13,6 @@ var lazyLoad = function () {
     var addEventOnElement = function (e, n, f) {
         e.attachEvent('on' + n, f);
     };
-
-
     var removeEventListener = window.removeEventListener || function (n, f, b) {
         window.detachEvent('on' + n, f);
     };
@@ -47,16 +45,17 @@ var lazyLoad = function () {
                 max: scrollY + pageHeight + 200
             };
             var i = 0;
+            var ll;
             while (i < lazyLoader.cache.length) {
                 var image = lazyLoader.cache[i];
                 var imagePosition = getOffsetTop(image);
                 var imageHeight = image.height || 0;
                 if ((imagePosition >= range.min - imageHeight) && (imagePosition <= range.max)) {
-                    var src = image.getAttribute('data-ll');
+                    ll = image.getAttribute('data-ll');
                     image.onload = function () {
                         this.className = this.className.replace(/(^|\s+)lazy-load(\s+|$)/, '$1lazy-loaded$2');
                     };
-                    image.src = src;
+                    image.src = ll;
                     image.removeAttribute('data-ll');
                     lazyLoader.cache.splice(i, 1);
                     continue;
@@ -70,7 +69,6 @@ var lazyLoad = function () {
             }
         },
         init: function () {
-            // Patch IE7- (querySelectorAll)
             if (!document.querySelectorAll) {
                 document.querySelectorAll = function (selector) {
                     var doc = document,
@@ -83,8 +81,6 @@ var lazyLoad = function () {
                     return doc.__qsaels;
                 };
             }
-
-            //addEventListener('load', function _lazyLoaderInit() {
             var imageNodes = document.querySelectorAll('img[data-ll]');
             for (var i = 0; i < imageNodes.length; i++) {
                 var imageNode = imageNodes[i];
@@ -93,9 +89,9 @@ var lazyLoad = function () {
             lazyLoader.addObservers();
             lazyLoader.loadVisibleImages();
             lazyLoader.verify = setInterval(function () {
-                if (document.createEventObject) { // W3C                    
+                if (document.createEventObject) {
                     window.dispatchEvent(new Event('resize'));
-                } else { // IE                                        
+                } else {
                     var evt = document.createEvent('UIEvents');
                     evt.initUIEvent('resize', true, false, window, 0);
                     window.dispatchEvent(evt);
@@ -103,7 +99,6 @@ var lazyLoad = function () {
             }, 1200);
         }
     };
-
     // For IE7 compatibility
     // Adapted from http://www.quirksmode.org/js/findpos.html
     function getOffsetTop(el) {
@@ -123,10 +118,7 @@ var lazyLoad = function () {
             document.removeEventListener("DOMContentLoaded", arguments.callee, false);
             lazyLoad();
         }, false);
-
-        // If IE event model is used
     } else if (document.attachEvent) {
-        // ensure firing before onload
         document.attachEvent("onreadystatechange", function () {
             if (document.readyState === "complete") {
                 document.detachEvent("onreadystatechange", arguments.callee);
@@ -134,47 +126,7 @@ var lazyLoad = function () {
             }
         });
     }
-    lazyLoad();
 })();
-
-function replace_text(id, text) {
-    var $id = new CustomEvent(id, {"detail": text});
-    var elem = document.getElementById(id);
-    elem.dispatchEvent($id);
-    /*
-     var elem = document.getElementById(id);
-     var src = 'https://www.googletagservices.com/tag/js/gpt.js';
-     if (1 === 1) {
-     loadScript(src, elem, function () {
-     });
-     } else {
-     var noscript = (text + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0').replace('</script>', '</s\' + \'cript>');
-     elem.innerHTML = elem.innerHTML + 'document.write(\'' + noscript + '\');';
-     }
-     */
-}
-/*
- function loadScript(url, elem, callback) {
- var script = document.createElement("script");
- script.type = "text/javascript";
- if (script.readyState) {  
- script.onreadystatechange = function () {
- if (script.readyState == "loaded" || script.readyState == "complete") {
- script.onreadystatechange = null;
- callback();
- }
- };
- } else {  
- script.onload = function () {
- callback();
- };
- }
- script.src = url;
- elem.parentNode.insertBefore(script, elem.nextSibling);
- elem.parentNode.removeChild(elem);
- }
- */
-
 var localCache = {
     /**
      * timeout for cache in millis

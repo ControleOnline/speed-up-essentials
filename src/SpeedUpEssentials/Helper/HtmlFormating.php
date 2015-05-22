@@ -237,9 +237,8 @@ class HtmlFormating {
 
     public function htmlIndentation(&$html) {
         if (class_exists('tidy')) {
-
             $config = array(
-                "char-encoding" => "utf8",
+                'char-encoding' => 'utf8',
                 'vertical-space' => false,
                 'indent' => true,
                 'wrap' => 0,
