@@ -77,8 +77,8 @@ class SpeedUpEssentials {
          * Cache
          */
         if (!isset($config['cacheId'])) {
-            if (is_file('.version')) {
-                $contents = file_get_contents('.version');
+            if (is_file($config['PublicBasePath'].'.version')) {
+                $contents = file_get_contents($config['PublicBasePath'].'.version');
                 if ($contents) {
                     $content = array_values(preg_split('/\r\n|\r|\n/', $contents, 2));
                     $version = trim(array_shift($content));

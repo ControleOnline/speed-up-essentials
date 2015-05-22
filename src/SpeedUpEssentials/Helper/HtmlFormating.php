@@ -400,7 +400,7 @@ class HtmlFormating {
                             $att = Url::normalizeUrl($att);
                             $img .= ' ' . $key . '="' . $att . '"';
                             $lazy_img .= ' ' . $key . '="' . $config['LazyLoadPlaceHolder'] . '"';
-                            $key = 'data-src';
+                            $key = 'data-ll';
                         } else {
                             $img .= ' ' . $key . '="' . $att . '"';
                         }
@@ -413,7 +413,7 @@ class HtmlFormating {
                 $img .= '>';
                 $lazy_img .= '>';
                 $content_img = $lazy_img;
-                $content_img .= '<noscript>';
+                $content_img .= '<noscript class="ns-ll">';
                 $content_img .= $img;
                 $content_img .= '</noscript>';
                 return $content_img;

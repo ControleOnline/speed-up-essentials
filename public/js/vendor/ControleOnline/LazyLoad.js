@@ -52,12 +52,12 @@ var lazyLoad = function () {
                 var imagePosition = getOffsetTop(image);
                 var imageHeight = image.height || 0;
                 if ((imagePosition >= range.min - imageHeight) && (imagePosition <= range.max)) {
-                    var src = image.getAttribute('data-src');
+                    var src = image.getAttribute('data-ll');
                     image.onload = function () {
                         this.className = this.className.replace(/(^|\s+)lazy-load(\s+|$)/, '$1lazy-loaded$2');
                     };
                     image.src = src;
-                    image.removeAttribute('data-src');
+                    image.removeAttribute('data-ll');
                     lazyLoader.cache.splice(i, 1);
                     continue;
                 }
@@ -85,7 +85,7 @@ var lazyLoad = function () {
             }
 
             //addEventListener('load', function _lazyLoaderInit() {
-            var imageNodes = document.querySelectorAll('img[data-src]');
+            var imageNodes = document.querySelectorAll('img[data-ll]');
             for (var i = 0; i < imageNodes.length; i++) {
                 var imageNode = imageNodes[i];
                 lazyLoader.cache.push(imageNode);
