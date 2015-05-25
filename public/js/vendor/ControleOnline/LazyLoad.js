@@ -69,7 +69,15 @@ var lazyLoad = function () {
                 clearInterval(lazyLoader.verify);
             }
         },
+        removeScripts: function () {
+            var ns = document.querySelectorAll('.ns-ll');
+            for (var i = 0; i < ns.length; i++) {
+                var n = ns[i];
+                n.parentNode.removeChild(n);
+            }
+        },
         init: function () {
+            lazyLoader.removeScripts();
             if (!document.querySelectorAll) {
                 document.querySelectorAll = function (selector) {
                     var doc = document,
@@ -177,4 +185,4 @@ var localCache = {
  };
  }
  });
- */
+ */            

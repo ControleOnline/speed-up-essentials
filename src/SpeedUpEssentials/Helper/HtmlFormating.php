@@ -31,24 +31,34 @@ class HtmlFormating {
         }
     }
 
-    private function removeConditionals() {
-        $regex = '/\]><link(.*?)<\!/smix';
+    private function removeElements($type, $regex = false) {
+        $regex = $regex? : '/<' . $type . '(.*?)/smix';
         $htmlContent = $this->DOMHtml->getContent();
-        $content = preg_replace_callback($regex, function($script) {
-            return str_replace('<link', '<replace_conditional', $script[0]);
+        $content = preg_replace_callback($regex, function($script) use ($type) {
+            return str_replace('<' . $type, '<c_' . $type, $script[0]);
         }, $htmlContent
         );
         $this->DOMHtml->setContent($content? : $htmlContent);
     }
 
-    private function returnConditionals() {
-        $regex = '/\]><replace_conditional(.*?)<\!/smix';
+    private function returnElements($type, $regex = false) {
+        $regex = $regex? : '/<c_' . $type . '(.*?)/smix';
         $htmlContent = $this->DOMHtml->getContent();
-        $content = preg_replace_callback($regex, function($script) {
-            return str_replace('<replace_conditional', '<link', $script[0]);
+        $content = preg_replace_callback($regex, function($script)use ($type) {
+            return str_replace('<c_' . $type, '<' . $type, $script[0]);
         }, $htmlContent
         );
         $this->DOMHtml->setContent($content? : $htmlContent);
+    }
+
+    private function removeConditionals($type) {
+        $regex = '/\]><' . $type . '(.*?)<\!/smix';
+        $this->removeElements($type, $regex);
+    }
+
+    private function returnConditionals($type) {
+        $regex = '/\]><c_' . $type . '(.*?)<\!/smix';
+        $this->returnElements($type, $regex);
     }
 
     private function organizeCSS($htmlHeaders) {
@@ -277,8 +287,15 @@ class HtmlFormating {
 
     public function format() {
         $this->sentHeaders();
-        $this->removeConditionals();
+        $this->removeElements('textarea');
+        $this->removeElements('script');
+        $this->removeElements('noscript');
         $this->imgLazyLoad();
+        $this->returnElements('textarea');
+        $this->returnElements('script');
+        $this->returnElements('noscript');
+        $this->removeConditionals('link');
+        $this->removeConditionals('script');
         $this->organizeHeaderOrder();
         $this->removeMetaCharset();
         if ($this->config['CssIntegrate']) {
@@ -287,7 +304,8 @@ class HtmlFormating {
         if ($this->config['JavascriptIntegrate']) {
             $this->javascriptIntegrate();
         }
-        $this->returnConditionals();
+        $this->returnConditionals('link');
+        $this->returnConditionals('script');
     }
 
     private function cssIntegrate() {
