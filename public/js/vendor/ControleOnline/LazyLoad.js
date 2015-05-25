@@ -121,26 +121,9 @@ var lazyLoad = function () {
     }
     lazyLoader.init();
 };
-(function () {
-    if (document.addEventListener) {
-        document.addEventListener("DOMContentLoaded", function () {
-            document.removeEventListener("DOMContentLoaded", arguments.callee, false);
-            lazyLoad();
-        }, false);
-    } else if (document.attachEvent) {
-        document.attachEvent("onreadystatechange", function () {
-            if (document.readyState === "complete") {
-                document.detachEvent("onreadystatechange", arguments.callee);
-                lazyLoad();
-            }
-        });
-    } else {
-        window.onload = function () {
-            lazyLoad();
-        };
-    }
+if (document.readyState === "complete") {
     lazyLoad();
-})();
+}
 var localCache = {
     /**
      * timeout for cache in millis
