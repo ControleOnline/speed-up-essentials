@@ -121,9 +121,17 @@ var lazyLoad = function () {
     }
     lazyLoader.init();
 };
+
 if (document.readyState === "complete") {
     lazyLoad();
+} else {
+    window.onload = function () {
+        lazyLoad();
+    };
+
 }
+
+
 var localCache = {
     /**
      * timeout for cache in millis
