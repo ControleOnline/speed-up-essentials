@@ -32,7 +32,7 @@ class HtmlFormating {
     }
 
     private function removeElements($type, $regex = false) {
-        $regex = $regex? : '/<' . $type . '(.*?)/smix';
+        $regex = $regex? : '/<' . $type . '(.*?)[/>|</' . $type . '>]/smix';
         $htmlContent = $this->DOMHtml->getContent();
         $content = preg_replace_callback($regex, function($script) use ($type) {
             return str_replace('<' . $type, '<c_' . $type, $script[0]);
@@ -42,7 +42,7 @@ class HtmlFormating {
     }
 
     private function returnElements($type, $regex = false) {
-        $regex = $regex? : '/<c_' . $type . '(.*?)/smix';
+        $regex = $regex? : '/<c_' . $type . '(.*?)[/>|</' . $type . '>]/smix';
         $htmlContent = $this->DOMHtml->getContent();
         $content = preg_replace_callback($regex, function($script)use ($type) {
             return str_replace('<c_' . $type, '<' . $type, $script[0]);
@@ -88,7 +88,7 @@ class HtmlFormating {
                     if ($attributes['href']) {
                         $htmlHeaders->addCss($attributes);
                         return;
-                    } elseif ($config['CssIntegrateInline']) {
+                    } elseif ($config['CssIntegrateInline'] && $config['CssIntegrate']) {
                         $attributes['value'] = isset($script[2]) ? $script[2] : '';
                         $self->addCssInline($htmlHeaders, $attributes);
                         return;
@@ -177,7 +177,7 @@ class HtmlFormating {
                 if ($attributes['src']) {
                     $htmlHeaders->addJs($attributes);
                     return;
-                } elseif ($config['JavascriptIntegrateInline']) {
+                } elseif ($config['JavascriptIntegrateInline'] && $config['JavascriptIntegrate']) {
                     $attributes['value'] = isset($script[2]) ? $script[2] : '';
                     if (!$self->jsAwaysInline($attributes['value'])) {
                         $self->addJsInline($htmlHeaders, $attributes);
@@ -287,35 +287,29 @@ class HtmlFormating {
 
     public function format() {
         $this->sentHeaders();
-        $this->removeElements('textarea');
-        $this->removeElements('script');
-        $this->removeElements('noscript');
         $this->imgLazyLoad();
-        $this->returnElements('textarea');
-        $this->returnElements('script');
-        $this->returnElements('noscript');
-        $this->removeConditionals('link');
-        $this->removeConditionals('script');
         $this->organizeHeaderOrder();
         $this->removeMetaCharset();
-        if ($this->config['CssIntegrate']) {
-            $this->cssIntegrate();
-        }
-        if ($this->config['JavascriptIntegrate']) {
-            $this->javascriptIntegrate();
-        }
-        $this->returnConditionals('link');
-        $this->returnConditionals('script');
+        $this->cssIntegrate();
+        $this->javascriptIntegrate();
     }
 
     private function cssIntegrate() {
-        $CSSIntegrate = new CSSIntegrate($this->config);
-        $CSSIntegrate->integrate();
+        if ($this->config['CssIntegrate']) {
+            $this->removeConditionals('link');
+            $CSSIntegrate = new CSSIntegrate($this->config);
+            $CSSIntegrate->integrate();
+            $this->returnConditionals('link');
+        }
     }
 
     private function javascriptIntegrate() {
-        $JSIntegrate = new JSIntegrate($this->config);
-        $JSIntegrate->integrate();
+        if ($this->config['JavascriptIntegrate']) {
+            $this->removeConditionals('script');
+            $JSIntegrate = new JSIntegrate($this->config);
+            $JSIntegrate->integrate();
+            $this->returnConditionals('script');
+        }
     }
 
     private function removeMetaCharset() {
@@ -385,19 +379,57 @@ class HtmlFormating {
         }
     }
 
+    /**
+     *  Adjust this regex to not get images inside a script tag
+     * Example:
+     * <script>var a = '<img src="test.png">';</script>            
+     */
+    private function removeImagesFromScripts() {
+        $htmlContent = $this->DOMHtml->getContent();
+        $regex = '/<script((?:.)*?)>((?:.)*?)<\/script>/smix';
+        $config = $this->config;
+        $self = $this;
+        $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
+            if ($script[2]) {
+                $regimg = '/<img((?:.)*?)>/smix';
+                $img = preg_replace_callback($regimg, function($i) {
+                    return '<noimg' . $i[1] . '>';
+                }, $script[2]);
+                return $img ? '<script' . $script[1] . '>' . $img . '</script>' : $script[0];
+            } else {
+                return $script[0];
+            }
+        }, $htmlContent);
+        $this->DOMHtml->setContent($content? : $htmlContent);
+    }
+
+    private function returnImagesFromScripts() {
+        $htmlContent = $this->DOMHtml->getContent();
+        $regex = '/<script((?:.)*?)>((?:.)*?)<\/script>/smix';
+        $config = $this->config;
+        $self = $this;
+        $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
+            if ($script[2]) {
+                $regimg = '/<noimg((?:.)*?)>/smix';
+                $img = preg_replace_callback($regimg, function($i) {
+                    return '<img' . $i[1] . '>';
+                }, $script[2]);
+                return $img ? '<script' . $script[1] . '>' . $img . '</script>' : $script[0];
+            } else {
+                return $script[0];
+            }
+        }, $htmlContent);
+        $this->DOMHtml->setContent($content? : $htmlContent);
+    }
+
     private function imgLazyLoad() {
         if ($this->config['LazyLoadImages']) {
+            $this->removeImagesFromScripts();
             $htmlContent = $this->DOMHtml->getContent();
-            /**
-             * @todo Adjust this regex to not get images inside a script tag
-             * Example:
-             * <script>var a = '<img src="test.png">';</script>            
-             */
             $regex = '/<img((?:.)*?)>/smix';
             $config = $this->config;
             $self = $this;
             $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
-
                 $regex_img = '/(\S+)=["\']((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']/';
                 preg_match_all($regex_img, $script[1], $matches);
 
@@ -436,6 +468,7 @@ class HtmlFormating {
                 return $content_img;
             }, $htmlContent);
             $this->DOMHtml->setContent($content? : $htmlContent);
+            $this->returnImagesFromScripts();
             $this->lazyLoadHead();
         }
     }

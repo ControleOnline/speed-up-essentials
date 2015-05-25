@@ -10,6 +10,7 @@ use SpeedUpEssentials\Model\DOMHtml,
 class SpeedUpEssentials {
 
     protected $config;
+    protected $is_html;
 
     public function getConfig($config, $baseUri) {
 
@@ -77,8 +78,8 @@ class SpeedUpEssentials {
          * Cache
          */
         if (!isset($config['cacheId'])) {
-            if (is_file($config['PublicBasePath'].'.version')) {
-                $contents = file_get_contents($config['PublicBasePath'].'.version');
+            if (is_file($config['PublicBasePath'] . '.version')) {
+                $contents = file_get_contents($config['PublicBasePath'] . '.version');
                 if ($contents) {
                     $content = array_values(preg_split('/\r\n|\r|\n/', $contents, 2));
                     $version = trim(array_shift($content));
@@ -97,9 +98,21 @@ class SpeedUpEssentials {
         return $config;
     }
 
+    protected function is_html() {
+        $headers = headers_list();
+        $is_html = $headers ? false : true;
+        if ($headers) {
+            foreach ($headers as $key => $header) {
+                if (strpos($header, 'text/html') !== false) {
+                    $is_html = true;
+                }
+            }
+        }
+        return $is_html;
+    }
+
     public function __construct($config, $baseUri) {
         $this->env = getenv('APP_ENV') ? : 'production';
-
         $this->config = $this->getConfig(
                 (isset($config) ? $config : array()), $baseUri
         );
@@ -158,6 +171,9 @@ class SpeedUpEssentials {
     }
 
     public function render(&$html) {
+        if (!$this->is_html()) {
+            return $html;
+        }
         $HtmlFormating = new HtmlFormating($this->config);
         $HtmlFormating->prepareHtml($html);
         $DOMHtml = DOMHtml::getInstance();

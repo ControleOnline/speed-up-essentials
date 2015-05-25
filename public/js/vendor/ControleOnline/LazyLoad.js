@@ -17,7 +17,7 @@ var lazyLoad = function () {
         window.detachEvent('on' + n, f);
     };
     var lazyLoader = {
-        timer: document.querySelectorAll('[timer-ll]')[0] || 1200,
+        timer: document.querySelectorAll('[timer-ll]')[0] || 400,
         cache: [],
         verify: null,
         addObservers: function () {
@@ -99,10 +99,10 @@ var lazyLoad = function () {
             lazyLoader.loadVisibleImages();
             lazyLoader.verify = setInterval(function () {
                 if (document.createEventObject) {
-                    window.dispatchEvent(new Event('resize'));
+                    window.dispatchEvent(new Event('scroll'));
                 } else {
                     var evt = document.createEvent('UIEvents');
-                    evt.initUIEvent('resize', true, false, window, 0);
+                    evt.initUIEvent('scroll', true, false, window, 0);
                     window.dispatchEvent(evt);
                 }
             }, lazyLoader.timer);
@@ -134,7 +134,12 @@ var lazyLoad = function () {
                 lazyLoad();
             }
         });
+    } else {
+        window.onload = function () {
+            lazyLoad();
+        };
     }
+    lazyLoad();
 })();
 var localCache = {
     /**
