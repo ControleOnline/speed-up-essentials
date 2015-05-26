@@ -10,6 +10,11 @@ use SpeedUpEssentials\Model\DOMHtml,
 class HtmlFormating {
 
     protected $config;
+    protected $no_ll = array(
+        'script',
+        'noscript',
+        'textarea'
+    );
 
     /**
      * @var \SpeedUpEssentials\Model\DOMHtml
@@ -385,41 +390,46 @@ class HtmlFormating {
      * <script>var a = '<img src="test.png">';</script>            
      */
     private function removeImagesFromScripts() {
-        $htmlContent = $this->DOMHtml->getContent();
-        $regex = '/<script((?:.)*?)>((?:.)*?)<\/script>/smix';
-        $config = $this->config;
-        $self = $this;
-        $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
-            if ($script[2]) {
-                $regimg = '/<img((?:.)*?)>/smix';
-                $img = preg_replace_callback($regimg, function($i) {
-                    return '<noimg' . $i[1] . '>';
-                }, $script[2]);
-                return $img ? '<script' . $script[1] . '>' . $img . '</script>' : $script[0];
-            } else {
-                return $script[0];
-            }
-        }, $htmlContent);
-        $this->DOMHtml->setContent($content? : $htmlContent);
+
+        foreach ($this->no_ll as $no) {
+            $htmlContent = $this->DOMHtml->getContent();
+            $regex = '/<' . $no . '((?:.)*?)>((?:.)*?)<\/' . $no . '>/smix';
+            $config = $this->config;
+            $self = $this;
+            $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self, $no) {
+                if ($script[2]) {
+                    $regimg = '/<img((?:.)*?)>/smix';
+                    $img = preg_replace_callback($regimg, function($i) {
+                        return '<noimg' . $i[1] . '>';
+                    }, $script[2]);
+                    return $img ? '<' . $no . $script[1] . '>' . $img . '</' . $no . '>' : $script[0];
+                } else {
+                    return $script[0];
+                }
+            }, $htmlContent);
+            $this->DOMHtml->setContent($content? : $htmlContent);
+        }
     }
 
     private function returnImagesFromScripts() {
-        $htmlContent = $this->DOMHtml->getContent();
-        $regex = '/<script((?:.)*?)>((?:.)*?)<\/script>/smix';
-        $config = $this->config;
-        $self = $this;
-        $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
-            if ($script[2]) {
-                $regimg = '/<noimg((?:.)*?)>/smix';
-                $img = preg_replace_callback($regimg, function($i) {
-                    return '<img' . $i[1] . '>';
-                }, $script[2]);
-                return $img ? '<script' . $script[1] . '>' . $img . '</script>' : $script[0];
-            } else {
-                return $script[0];
-            }
-        }, $htmlContent);
-        $this->DOMHtml->setContent($content? : $htmlContent);
+        foreach ($this->no_ll as $no) {
+            $htmlContent = $this->DOMHtml->getContent();
+            $regex = '/<' . $no . '((?:.)*?)>((?:.)*?)<\/' . $no . '>/smix';
+            $config = $this->config;
+            $self = $this;
+            $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self, $no) {
+                if ($script[2]) {
+                    $regimg = '/<noimg((?:.)*?)>/smix';
+                    $img = preg_replace_callback($regimg, function($i) {
+                        return '<img' . $i[1] . '>';
+                    }, $script[2]);
+                    return $img ? '<' . $no . $script[1] . '>' . $img . '</' . $no . '>' : $script[0];
+                } else {
+                    return $script[0];
+                }
+            }, $htmlContent);
+            $this->DOMHtml->setContent($content? : $htmlContent);
+        }
     }
 
     private function imgLazyLoad() {
