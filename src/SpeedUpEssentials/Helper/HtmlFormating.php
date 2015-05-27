@@ -351,12 +351,8 @@ class HtmlFormating {
             if ($this->config['LazyLoadJsFile']) {
                 $file = $this->config['PublicBasePath'] . $this->config['LazyLoadBasePath'] . $this->config['cacheId'] . DIRECTORY_SEPARATOR . $this->config['LazyLoadJsFilePath'] . 'Lazyload.js';
                 if (!file_exists($file)) {
-                    try {
-                        mkdir(dirname($file), 0777, true);
-                        copy($base . $this->config['LazyLoadJsFilePath'] . 'LazyLoad.js', $file);
-                    } catch (Exception $ex) {
-                        
-                    }
+                    mkdir(dirname($file), 0777, true);
+                    copy($base . $this->config['LazyLoadJsFilePath'] . 'LazyLoad.js', $file);
                 }
                 $htmlHeaders = HtmlHeaders::getInstance();
                 $htmlHeaders->addJs(
@@ -370,12 +366,8 @@ class HtmlFormating {
             if ($this->config['LazyLoadFadeIn']) {
                 $file = $this->config['PublicBasePath'] . $this->config['LazyLoadBasePath'] . $this->config['cacheId'] . DIRECTORY_SEPARATOR . $this->config['LazyLoadCssFilePath'] . 'LazyLoad.css';
                 if (!file_exists($file)) {
-                    try {
-                        mkdir(dirname($file), 0777, true);
-                        copy($base . $this->config['LazyLoadCssFilePath'] . 'LazyLoad.css', $file);
-                    } catch (Exception $ex) {
-                        
-                    }
+                    mkdir(dirname($file), 0777, true);
+                    copy($base . $this->config['LazyLoadCssFilePath'] . 'LazyLoad.css', $file);
                 }
                 $htmlHeaders = HtmlHeaders::getInstance();
                 $htmlHeaders->addCss(
