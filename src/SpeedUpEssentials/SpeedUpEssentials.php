@@ -4,8 +4,7 @@ namespace SpeedUpEssentials;
 
 use SpeedUpEssentials\Model\DOMHtml,
     SpeedUpEssentials\Helper\HtmlFormating,
-    SpeedUpEssentials\Helper\Url,
-    SpeedUpEssentials\Helper\File;
+    SpeedUpEssentials\Helper\Url;
 
 class SpeedUpEssentials {
 
@@ -18,7 +17,7 @@ class SpeedUpEssentials {
         /*
          * CookielessDomain
          */
-        $config['CookieLessDomain'] = (isset($config['CookieLessDomain']) ? $config['CookieLessDomain'] : 'static.' . str_replace('static.', '', str_replace('www.', '', $_SERVER['HTTP_HOST'])));
+        $config['CookieLessDomain'] = (isset($config['CookieLessDomain']) ? $config['CookieLessDomain'] : $_SERVER['HTTP_HOST']);
 
         /*
          * Encoding
@@ -170,7 +169,7 @@ class SpeedUpEssentials {
         $this->addJsHeaders();
     }
 
-    public function render(&$html) {
+    public function render($html) {
         if (!$this->is_html()) {
             return $html;
         }

@@ -234,12 +234,19 @@ class HtmlFormating {
         return $html;
     }
 
-    public function removeHtmlComments(&$html) {
-        $html = preg_replace('/<!--(?!<!)[^\[>](.|\n)*?-->/', '', $html);
+    public function removeHtmlComments($html) {
+        $regex = '/<script((?:.)*?)>(.*?)<\/script>/smix';
+        $reg = '/<!--((?!<!)[^\[>](.|\n)*?)-->/';
+        $content = preg_replace_callback($regex, function($script) use ($reg) {
+            return preg_replace_callback($reg, function($s) {
+                return $s[1];
+            }, $script[0]);
+        }, $html);
+        $html = preg_replace('/<!--(?!<!)[^\[>](.|\n)*?-->/', '', $content);
         return $html;
     }
 
-    public function render(&$html) {
+    public function render($html) {
         $DOMHtml = DOMHtml::getInstance();
         $html = $DOMHtml->render();
         if ($this->config['HtmlMinify']) {
@@ -250,7 +257,7 @@ class HtmlFormating {
         return $html;
     }
 
-    public function htmlIndentation(&$html) {
+    public function htmlIndentation($html) {
         if (class_exists('tidy')) {
             $config = array(
                 'char-encoding' => 'utf8',
@@ -270,7 +277,7 @@ class HtmlFormating {
         }
     }
 
-    public function htmlCompress(&$html) {
+    public function htmlCompress($html) {
 
         $search = array(
             '/\>[^\S]+/s', //strip whitespaces after tags, except space
@@ -355,8 +362,7 @@ class HtmlFormating {
                 $htmlHeaders->addJs(
                         array(
                             'src' => $path . $this->config['LazyLoadJsFilePath'] . 'Lazyload.js',
-                            'type' => 'text/javascript',
-                            'async' => 'async'
+                            'type' => 'text/javascript'
                         )
                 );
             }
