@@ -6,5 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'CSSmin' => $vendorDir . '/tubalmartin/cssmin/cssmin.php',
     'SpeedUpEssentials\\Module' => $baseDir . '/Module.php',
 );

@@ -24,30 +24,36 @@ class Url {
     }
 
     public static function normalizeUrl($url, $remove_host = false) {
-        $original_url = $url;
+        $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === true ? 'https:' : 'http:';
+        //if data, return
+        if (substr($url, 0, 5) == 'data:') {
+            return $url;
+        }
+
+        //if php file, return
         $u = explode('?', $url);
         $ext = pathinfo($u[0], PATHINFO_EXTENSION);
         if ($ext == 'php') {
-            return $original_url;
+            return $url;
         }
-        if (substr($url, 0, 5) != 'data:' && substr($url, 0, 2) != '//' && !preg_match('#^https?://#', $url)) {
-            if ($url['0'] == '/') {
-                $url = '//' . self::$staticDomain . $url;
-            } else {
-                $url = '//' . self::$staticDomain . self::$baseUri . $url;
-            }
-        } elseif (preg_match('#^https?://' . $_SERVER['HTTP_HOST'] . '#', $url)) {
-            $url = preg_replace('#^https?://' . $_SERVER['HTTP_HOST'] . '#', '//' . self::$staticDomain, $url);
+        //if external URL, return
+        if ((substr($url, 0, 2) == '//' && !preg_match('#^//' . $_SERVER['HTTP_HOST'] . '#', $url)) || (preg_match('#^https?://#', $url) && !preg_match('#^https?://' . $_SERVER['HTTP_HOST'] . '#', $url))) {
+            return $url;
         }
-
-        if (self::$staticDomain == $_SERVER['HTTP_HOST']) {
-            $url = preg_replace('#^//' . $_SERVER['HTTP_HOST'] . '#', '', $url);
+        //if same domain, return static domain
+        if (preg_match('#^https?://' . $_SERVER['HTTP_HOST'] . '#', $url)) {
+            return preg_replace('#^https?://' . $_SERVER['HTTP_HOST'] . '#', $protocol . '//' . self::$staticDomain, $url);
         }
-        $return = preg_replace('#^https?://#', '//', $url);
-        if ($remove_host) {
-            $return = str_replace('//' . self::$staticDomain, '', $return);
+        //if same domain, return static domain
+        if (preg_match('#^//' . $_SERVER['HTTP_HOST'] . '#', $url)) {
+            return preg_replace('#^//' . $_SERVER['HTTP_HOST'] . '#', $protocol . '//' . self::$staticDomain, $url);
         }
-        return $return;
+        //if relative url
+        if ($url['0'] == '/') {
+            return $protocol . '//' . self::$staticDomain . $url;
+        } else {
+            return $protocol . '//' . self::$staticDomain . self::$baseUri . $url;
+        }
     }
 
 }

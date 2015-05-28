@@ -3,35 +3,62 @@
 namespace SpeedUpEssentials;
 
 //require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'tubalmartin' . DIRECTORY_SEPARATOR . 'cssmin' . DIRECTORY_SEPARATOR . 'cssmin.php');
-use SpeedUpEssentials\SpeedUpEssentials;
+use SpeedUpEssentials\SpeedUpEssentials,
+    Zend\View\Model\ViewModel,
+    Zend\View\Renderer\PhpRenderer,
+    Zend\View\Resolver\AggregateResolver,
+    Zend\View\Resolver\TemplateMapResolver,
+    Zend\View\Resolver\RelativeFallbackResolver,
+    Zend\View\Resolver\TemplatePathStack;
 
 class WPSpeedUpEssentials {
 
-    public function __construct() {
-        register_deactivation_hook(__FILE__, array($this, 'deactivateSpeedUpEssentials'));
-        register_activation_hook(__FILE__, array($this, 'activateSpeedUpEssentials'));
-        if (!is_admin()) {
-            add_action('shutdown', array($this, 'shutdown'), 0);
-            add_filter('final_output', array($this, 'final_output'));
-        } else {
-            add_action('admin_menu', array($this, 'menu'));
+    protected static $render;
+
+    public static function init() {
+        self::$render = new PhpRenderer();
+        self::getResolver(self::$render);
+        if (get_option('OptimizeAdmin') || !is_admin()) {
+            add_action('shutdown', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'shutdown'), 0);
+            add_filter('final_output', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'final_output'));
+        }
+        if (is_admin()) {
+            register_deactivation_hook(__FILE__, array('\SpeedUpEssentials\WPSpeedUpEssentials', 'deactivateSpeedUpEssentials'));
+            register_activation_hook(__FILE__, array('\SpeedUpEssentials\WPSpeedUpEssentials', 'activateSpeedUpEssentials'));
+            add_action('admin_menu', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'menu'));
         }
     }
 
-    public function menu() {
-        add_options_page('Speed Up Essentials', 'Speed Up Essentials', 'manage_options', 'SpeedUpEssentials', array($this, 'plugin_options'));
+    public static function menu() {
+        add_options_page('Speed Up Essentials', 'Speed Up Essentials', 'manage_options', 'SpeedUpEssentials', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'plugin_options'));
     }
 
-    public function plugin_options() {
+    private static function getResolver($renderer) {
+        $resolver = new AggregateResolver();
+        $renderer->setResolver($resolver);
+        $map = new TemplateMapResolver(array(
+            'layout' => __DIR__ . '/view/layout.phtml'
+        ));
+        $stack = new TemplatePathStack(array(
+            'script_paths' => array(
+                dirname(__FILE__) . '/View/'
+            )
+        ));
+
+        $resolver->attach($map)->attach($stack)->attach(new RelativeFallbackResolver($map))->attach(new RelativeFallbackResolver($stack));
+    }
+
+    public static function plugin_options() {
         if (!current_user_can('manage_options')) {
             wp_die(__('You do not have sufficient permissions to access this page.'));
         }
-        echo '<div class="wrap">';
-        echo '<p>Here is where the form would go if I actually had options.</p>';
-        echo '</div>';
+
+        $viewModel = new ViewModel(array('foo' => 'bar'));
+        $viewModel->setTerminal(true);
+        echo self::$render->partial('plugin/options.phtml', $viewModel);
     }
 
-    public function shutdown() {
+    public static function shutdown() {
         $final = '';
         $levels = count(ob_get_level());
         for ($i = 0; $i < $levels; $i++) {
@@ -40,7 +67,8 @@ class WPSpeedUpEssentials {
         echo apply_filters('final_output', $final);
     }
 
-    public function deactivateSpeedUpEssentials() {
+    public static function deactivateSpeedUpEssentials() {
+        delete_option('OptimizeAdmin');
         delete_option('APP_ENV');
         delete_option('charset');
         delete_option('RemoveMetaCharset');
@@ -58,25 +86,26 @@ class WPSpeedUpEssentials {
         delete_site_option('CookieLessDomain');
     }
 
-    public function activateSpeedUpEssentials() {
+    public static function activateSpeedUpEssentials() {
+        add_option('OptimizeAdmin', 1, '', 'yes');
         add_option('APP_ENV', 'production', '', 'yes');
         add_option('charset', 'utf-8', '', 'yes');
-        add_option('RemoveMetaCharset', true, '', 'yes');
+        add_option('RemoveMetaCharset', 1, '', 'yes');
         add_option('URIBasePath', '/', '', 'yes');
-        add_option('PublicBasePath', dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR, '', 'yes');
+        add_option('PublicBasePath', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR), '', 'yes');
         add_option('PublicCacheDir', 'wp-content/cache/', '', 'yes');
-        add_option('JsAllAsync', true, '', 'yes');
-        add_option('JavascriptIntegrateInline', true, '', 'yes');
+        add_option('JsAllAsync', 1, '', 'yes');
+        add_option('JavascriptIntegrateInline', 1, '', 'yes');
         add_option('CssSpritify', false, '', 'yes');
         add_option('LazyLoadBasePath', 'wp-content/cache/', '', 'yes');
         add_option('LazyLoadPlaceHolder', '/wp-content/plugins/speed-up-essentials/public/img/blank.png', '', 'yes');
-        add_option('JavascriptOnFooter', true, '', 'yes');
-        add_option('JavascriptIntegrate', true, '', 'yes');
-        add_option('CssMinify', true, '', 'yes');
+        add_option('JavascriptOnFooter', 1, '', 'yes');
+        add_option('JavascriptIntegrate', 1, '', 'yes');
+        add_option('CssMinify', 0, '', 'yes');
         add_site_option('CookieLessDomain', $_SERVER['HTTP_HOST']);
     }
 
-    public function final_output($output) {
+    public static function final_output($output) {
         $config = wp_load_alloptions();
         $config['CookieLessDomain'] = get_site_option('CookieLessDomain');
         $SpeedUpEssentials = new SpeedUpEssentials($config, $config['URIBasePath']);

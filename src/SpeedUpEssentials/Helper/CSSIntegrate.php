@@ -83,14 +83,15 @@ class CSSIntegrate {
         $this->htmlHeaders->setCss($set_css);
     }
 
-    protected function fixUrl($cssContent, $url) {        
-        
+    public function fixUrl($cssContent, $url) {
+
         $regex = '/url\s*\(\s*[\'"]?([^\'"\)]+)[\'"]?\s*\)/';
         $css_dir = explode($this->config['CookieLessDomain'], $url);
         $options = $this->config;
         $options['relative_url'] = dirname($css_dir[1]? : $css_dir[0]) . '/';
         $options['font_extensions'] = $this->font_extensions;
         $options['css_domain'] = parse_url($url, PHP_URL_HOST);
+        $options['protocol'] = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === true ? 'https:' : 'http:';
         return preg_replace_callback(
                 $regex, function($img) use($options) {
             $relative_url = $options['relative_url'];
@@ -104,9 +105,9 @@ class CSSIntegrate {
                     }
                 }
                 if (substr($img[1], 0, 1) == '/') {
-                    $relative_url = '//' . $domain;
+                    $relative_url = $options['protocol'] . '//' . $domain;
                 } else {
-                    $relative_url = '//' . $domain . $relative_url;
+                    $relative_url = $options['protocol'] . '//' . $domain . $relative_url;
                 }
                 $url_img = $relative_url . $img[1];
                 return 'url("' . Url::normalizeUrl($url_img) . '")';
@@ -164,7 +165,7 @@ class CSSIntegrate {
         return $data;
     }
 
-    protected function removeImports($data, $cssUrl) {
+    public function removeImports($data, $cssUrl) {
         $sBaseUrl = dirname($cssUrl) . '/';
         $config = $this->config;
         $config['css_url'] = $cssUrl;
@@ -172,7 +173,7 @@ class CSSIntegrate {
         return preg_replace_callback(
                 '/@import url\(([^)]+)\)(;?)/', function($aMatches) use ($sBaseUrl, $config, $self) {
             $url = Url::normalizeUrl(str_replace(array('"', '\''), '', trim($aMatches[1])));
-            return $self::removeImports($self->fixUrl(File::get_content($url)), $url);
+            return $self::removeImports($self->fixUrl(File::get_content($url), $url), $url);
         }, $data
         );
     }
