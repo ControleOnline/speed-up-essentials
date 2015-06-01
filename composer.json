@@ -1,0 +1,40 @@
+{
+    "name": "controleonline/speed-up-essentials",
+    "description": "HTML Validator. Beaultify your HTML on Dev and Compress on Production",
+    "license": "BSD-3-Clause",
+    "homepage": "http://controleonline.com/",
+    "type": "library",
+    "keywords": [
+        "html",
+        "compress",
+        "minify"
+    ],
+    "autoload": {
+        "psr-4": {
+            "SpeedUpEssentials\\": "src/SpeedUpEssentials"
+        },
+        "classmap": [
+            "Module.php"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist",
+        "component-dir": "public/components"
+    },
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zendframework": "~2.0",
+        "tubalmartin/cssmin": "*"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:tubalmartin/YUI-CSS-compressor-PHP-port.git"
+        }
+    ],
+    "scripts": {
+        "post-update-cmd": [
+            "git describe --abbrev=0 --tags > .version"
+        ]
+    }
+}
