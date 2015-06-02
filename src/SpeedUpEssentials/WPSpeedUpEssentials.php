@@ -96,7 +96,7 @@ class WPSpeedUpEssentials {
         add_option('charset', 'utf-8', '', 'yes');
         add_option('RemoveMetaCharset', 1, '', 'yes');
         add_option('URIBasePath', '/', '', 'yes');
-        add_option('PublicBasePath', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR), '', 'yes');
+        add_option('PublicBasePath', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, '', 'yes');
         add_option('PublicCacheDir', 'wp-content/cache/', '', 'yes');
         add_option('JsAllAsync', 1, '', 'yes');
         add_option('JavascriptIntegrateInline', 1, '', 'yes');
@@ -111,7 +111,7 @@ class WPSpeedUpEssentials {
 
     public static function final_output($output) {
         $config = wp_load_alloptions();
-        $config['CookieLessDomain'] = get_site_option('CookieLessDomain');
+        $config['CookieLessDomain'] = get_site_option('CookieLessDomain');        
         $SpeedUpEssentials = new SpeedUpEssentials($config, $config['URIBasePath']);
         return $SpeedUpEssentials->render($output);
     }

@@ -23,7 +23,6 @@ class SpeedUpEssentials {
          * Encoding
          */
         $config['charset'] = (isset($config['charset']) ? $config['charset'] : 'utf-8');
-        $config['RemoveMetaCharset'] = (isset($config['RemoveMetaCharset']) ? $config['RemoveMetaCharset'] : true);
 
         /*
          * Url Configs
@@ -44,6 +43,8 @@ class SpeedUpEssentials {
         $config['LazyLoadJsFilePath'] = (isset($config['LazyLoadJsFilePath']) ? $config['LazyLoadJsFilePath'] : 'js/vendor/ControleOnline/');
         $config['LazyLoadCssFilePath'] = (isset($config['LazyLoadCssFilePath']) ? $config['LazyLoadCssFilePath'] : 'css/vendor/ControleOnline/');
         $config['LazyLoadBasePath'] = (isset($config['LazyLoadBasePath']) ? $config['LazyLoadBasePath'] : '/');
+        $config['LazyLoadOnlyOnNoScript'] = (isset($config['LazyLoadOnlyOnNoScript']) ? $config['LazyLoadOnlyOnNoScript'] : array('itemprop'));
+        $config['LazyLoadExcludeTags'] = (isset($config['LazyLoadExcludeTags']) ? $config['LazyLoadExcludeTags'] : array('script', 'noscript', 'textarea'));
 
         /*
          * Html Formatter Config
@@ -179,7 +180,7 @@ class SpeedUpEssentials {
         $DOMHtml->setContent($html);
         $HtmlFormating->format();
         $this->addHtmlHeaders();
-        return $HtmlFormating->render($html);
+        return $HtmlFormating->render();
     }
 
 }

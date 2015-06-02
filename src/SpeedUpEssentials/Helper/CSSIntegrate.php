@@ -17,8 +17,8 @@ class CSSIntegrate {
     protected $content;
     protected $completeFilePath;
     protected $csss;
-    public $cssImported;
     protected $font_extensions = array('eot', 'ttf', 'woff');
+    public $cssImported;
 
     public function __construct($config) {
         $this->config = $config;
@@ -162,6 +162,12 @@ class CSSIntegrate {
         if ($data) {
             $data = $this->removeImports($data, $cssUrl);
         }
+
+        $open_tags = substr_count($data, '{');
+        $close_tags = substr_count($data, '}');
+        $data = '/*Closed Tags: ' . $close_tags . ' */' . PHP_EOL . $data;
+        $data = '/*Open Tags: ' . $open_tags . ' */' . PHP_EOL . $data;        
+
         return $data;
     }
 
