@@ -75,7 +75,12 @@ class CSSIntegrate {
             $this->makeFilePath($this->filename[$key], $key);
             if (!file_exists($this->completeFilePath[$key])) {
                 foreach ($csss as $item) {
-                    $this->content[$key] .= $this->fixUrl($this->get_data($item['href']), Url::normalizeUrl($item['href'])) . PHP_EOL;
+                    if ($item['data-type'] == 'inline') {
+                        $referer = $_SERVER['REQUEST_URI'];
+                    } else {
+                        $referer = $item['href'];
+                    }
+                    $this->content[$key] .= $this->fixUrl($this->get_data($item['href']), Url::normalizeUrl($referer)) . PHP_EOL;
                 }
                 $this->writeCssFile($key);
             }
@@ -166,7 +171,7 @@ class CSSIntegrate {
         $open_tags = substr_count($data, '{');
         $close_tags = substr_count($data, '}');
         $data = '/*Closed Tags: ' . $close_tags . ' */' . PHP_EOL . $data;
-        $data = '/*Open Tags: ' . $open_tags . ' */' . PHP_EOL . $data;        
+        $data = '/*Open Tags: ' . $open_tags . ' */' . PHP_EOL . $data;
 
         return $data;
     }

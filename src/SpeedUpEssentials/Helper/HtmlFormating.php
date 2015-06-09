@@ -23,6 +23,10 @@ class HtmlFormating {
 
     private function organizeHeaderOrder() {
         $htmlHeaders = HtmlHeaders::getInstance();
+
+        if ($this->config['CssIntegrateInline']) {
+            $this->replaceInline($htmlHeaders);
+        }
         if ($this->config['CssIntegrate']) {
             $this->organizeCSS($htmlHeaders);
         }
@@ -69,8 +73,6 @@ class HtmlFormating {
         $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
             $regex_tribb = '/(\S+)=["\']((?:.(?!["\']\s+(?:\S+)=|[>"\']))+.)["\']/';
             preg_match_all($regex_tribb, $script[1], $matches);
-            //print_r($script);
-
             if (isset($matches[1]) && isset($matches[2])) {
                 foreach ($matches[1] AS $k => $key) {
                     if (trim($key) == 'href') {
@@ -81,26 +83,22 @@ class HtmlFormating {
                     $attributes[trim($key)] = $v;
                 }
             }
-            if ($config['CssIntegrateInline']) {
-                $attributes['value'] = isset($script[2]) ? $script[2] : '';
-                $attributes = $self->addCssInline($htmlHeaders, $attributes);
-                $attributes['data-type'] = 'inline';
-                $attributes['type'] = isset($attributes['type'])?$attributes['type']:'text/css';
-                
-                foreach ($attributes as $key => $a) {
-                    $att .= ' ' . $key . '="' . $a . '"';
-                }
-                return '<link' . $att . '/>';
-            } else {
-                return $script[0];
+            $attributes['value'] = isset($script[2]) ? $script[2] : '';
+            $attributes['type'] = isset($attributes['type']) ? $attributes['type'] : 'text/css';
+            $attributes = $self->getCssInline($htmlHeaders, $attributes);
+            $attributes['data-type'] = 'inline';
+
+
+            foreach ($attributes as $key => $a) {
+                $att .= ' ' . $key . '="' . $a . '"';
             }
+            return '<link' . $att . '/>';
         }, $htmlContent
         );
         $this->DOMHtml->setContent($content? : $htmlContent);
     }
 
     private function organizeCSS($htmlHeaders) {
-        $this->replaceInline($htmlHeaders);
         $htmlContent = $this->DOMHtml->getContent();
         $regex = '/<link((?:.)*?)(>(.*?)<\/link>|\/>)/smix';
         $config = $this->config;
@@ -119,12 +117,8 @@ class HtmlFormating {
                 }
             }
             if ($attributes['type'] == 'text/css') {
-                if ($attributes['href'] && $attributes['data-type'] != 'inline') {
+                if ($attributes['href']) {
                     $htmlHeaders->addCss($attributes);
-                    return;
-                } elseif ($config['CssIntegrateInline'] && $config['CssIntegrate'] && $attributes['href'] && $attributes['data-type'] == 'inline') {
-                    $attributes['value'] = isset($script[2]) ? $script[2] : '';
-                    $htmlHeaders->addCss($self->addCssInline($htmlHeaders, $attributes), true);
                     return;
                 } else {
                     return $script[0];
@@ -161,7 +155,7 @@ class HtmlFormating {
         $htmlHeaders->addJs($attributes);
     }
 
-    public function addCssInline($htmlHeaders, $attributes) {
+    public function getCssInline($htmlHeaders, $attributes) {
 
         $file = 'inline' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.css';
         $completeFilePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $file;
@@ -321,12 +315,18 @@ class HtmlFormating {
 
     public function format() {
         $this->sentHeaders();
-        LazyLoad::imgLazyLoad($this->config);
+
         $this->removeConditionals('link');
+        $this->removeConditionals('style');
+        $this->removeConditionals('script');
+
+        LazyLoad::imgLazyLoad($this->config);
         $this->organizeHeaderOrder();
         $this->cssIntegrate();
-        $this->returnConditionals('link');
         $this->javascriptIntegrate();
+        $this->returnConditionals('link');
+        $this->returnConditionals('style');
+        $this->returnConditionals('script');
     }
 
     private function cssIntegrate() {
@@ -338,10 +338,8 @@ class HtmlFormating {
 
     private function javascriptIntegrate() {
         if ($this->config['JavascriptIntegrate']) {
-            $this->removeConditionals('script');
             $JSIntegrate = new JSIntegrate($this->config);
             $JSIntegrate->integrate();
-            $this->returnConditionals('script');
         }
     }
 
