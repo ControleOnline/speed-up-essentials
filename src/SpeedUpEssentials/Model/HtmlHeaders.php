@@ -53,8 +53,11 @@ class HtmlHeaders {
         return $this;
     }
 
-    public function addCss($css) {        
+    public function addCss($css, $inline = false) {
         $css['media'] = isset($css['media']) ? $css['media'] : 'all';
+        if ($inline) {
+            $css['data-type'] = 'inline';
+        }
         $this->css[$css['media']][] = $css;
         return $this;
     }

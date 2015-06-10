@@ -10,11 +10,6 @@ use SpeedUpEssentials\Model\DOMHtml,
 class HtmlFormating {
 
     protected $config;
-    protected $no_ll = array(
-        'script',
-        'noscript',
-        'textarea'
-    );
 
     /**
      * @var \SpeedUpEssentials\Model\DOMHtml
@@ -28,6 +23,10 @@ class HtmlFormating {
 
     private function organizeHeaderOrder() {
         $htmlHeaders = HtmlHeaders::getInstance();
+
+        if ($this->config['CssIntegrateInline']) {
+            $this->replaceInline($htmlHeaders);
+        }
         if ($this->config['CssIntegrate']) {
             $this->organizeCSS($htmlHeaders);
         }
@@ -37,9 +36,9 @@ class HtmlFormating {
     }
 
     private function removeElements($type, $regex = false) {
-        $regex = $regex? : '/<' . $type . '(.*?)[/>|</' . $type . '>]/smix';
+        $reg = $regex? : '/<' . $type . '(.*?)[/>|</' . $type . '>]/smix';
         $htmlContent = $this->DOMHtml->getContent();
-        $content = preg_replace_callback($regex, function($script) use ($type) {
+        $content = preg_replace_callback($reg, function($script) use ($type) {
             return str_replace('<' . $type, '<c_' . $type, $script[0]);
         }, $htmlContent
         );
@@ -47,9 +46,9 @@ class HtmlFormating {
     }
 
     private function returnElements($type, $regex = false) {
-        $regex = $regex? : '/<c_' . $type . '(.*?)[/>|</' . $type . '>]/smix';
+        $reg = $regex? : '/<c_' . $type . '(.*?)[/>|</' . $type . '>]/smix';
         $htmlContent = $this->DOMHtml->getContent();
-        $content = preg_replace_callback($regex, function($script)use ($type) {
+        $content = preg_replace_callback($reg, function($script)use ($type) {
             return str_replace('<c_' . $type, '<' . $type, $script[0]);
         }, $htmlContent
         );
@@ -57,56 +56,79 @@ class HtmlFormating {
     }
 
     private function removeConditionals($type) {
-        $regex = '/\]><' . $type . '(.*?)<\!/smix';
+        $regex = '/\]>(\s?)<' . $type . '(.*?)<\!/smix';
         $this->removeElements($type, $regex);
     }
 
     private function returnConditionals($type) {
-        $regex = '/\]><c_' . $type . '(.*?)<\!/smix';
+        $regex = '/\]>(\s?)<c_' . $type . '(.*?)<\!/smix';
         $this->returnElements($type, $regex);
     }
 
-    private function organizeCSS($htmlHeaders) {
-        $reg = array(
-            '/<link((?:.)*?)>(.*?)<\/link>/smix',
-            '/<link((?:.)*?)\/>/smix',
-            '/<style((?:.)*?)>(.*?)<\/style>/smix'
-        );
+    private function replaceInline($htmlHeaders) {
+        $htmlContent = $this->DOMHtml->getContent();
+        $regex = '/<style((?:.)*?)>(.*?)<\/style>/smix';
         $config = $this->config;
         $self = $this;
-        foreach ($reg AS $regex) {
-            $htmlContent = $this->DOMHtml->getContent();
-            $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
-                $regex_tribb = '/(\S+)=["\']((?:.(?!["\']\s+(?:\S+)=|[>"\']))+.)["\']/';
-                preg_match_all($regex_tribb, $script[1], $matches);
-                if (isset($matches[1]) && isset($matches[2])) {
-                    foreach ($matches[1] AS $k => $key) {
-                        if (trim($key) == 'href') {
-                            $v = File::url_decode(trim($matches[2][$k]));
-                        } else {
-                            $v = trim($matches[2][$k]);
-                        }
-                        $attributes[trim($key)] = $v;
-                    }
-                }
-                if ($attributes['type'] == 'text/css') {
-                    if ($attributes['href']) {
-                        $htmlHeaders->addCss($attributes);
-                        return;
-                    } elseif ($config['CssIntegrateInline'] && $config['CssIntegrate']) {
-                        $attributes['value'] = isset($script[2]) ? $script[2] : '';
-                        $self->addCssInline($htmlHeaders, $attributes);
-                        return;
+        $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
+            $regex_tribb = '/(\S+)=["\']((?:.(?!["\']\s+(?:\S+)=|[>"\']))+.)["\']/';
+            preg_match_all($regex_tribb, $script[1], $matches);
+            if (isset($matches[1]) && isset($matches[2])) {
+                foreach ($matches[1] AS $k => $key) {
+                    if (trim($key) == 'href') {
+                        $v = File::url_decode(trim($matches[2][$k]));
                     } else {
-                        return $script[0];
+                        $v = trim($matches[2][$k]);
                     }
+                    $attributes[trim($key)] = $v;
+                }
+            }
+            $attributes['value'] = isset($script[2]) ? $script[2] : '';
+            $attributes['type'] = isset($attributes['type']) ? $attributes['type'] : 'text/css';
+            $attributes = $self->getCssInline($htmlHeaders, $attributes);
+            $attributes['data-type'] = 'inline';
+
+
+            foreach ($attributes as $key => $a) {
+                $att .= ' ' . $key . '="' . $a . '"';
+            }
+            return '<link' . $att . '/>';
+        }, $htmlContent
+        );
+        $this->DOMHtml->setContent($content? : $htmlContent);
+    }
+
+    private function organizeCSS($htmlHeaders) {
+        $htmlContent = $this->DOMHtml->getContent();
+        $regex = '/<link((?:.)*?)(>(.*?)<\/link>|\/>)/smix';
+        $config = $this->config;
+        $self = $this;
+        $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
+            $regex_tribb = '/(\S+)=["\']((?:.(?!["\']\s+(?:\S+)=|[>"\']))+.)["\']/';
+            preg_match_all($regex_tribb, $script[1], $matches);
+            if (isset($matches[1]) && isset($matches[2])) {
+                foreach ($matches[1] AS $k => $key) {
+                    if (trim($key) == 'href') {
+                        $v = File::url_decode(trim($matches[2][$k]));
+                    } else {
+                        $v = trim($matches[2][$k]);
+                    }
+                    $attributes[trim($key)] = $v;
+                }
+            }
+            if ($attributes['type'] == 'text/css') {
+                if ($attributes['href']) {
+                    $htmlHeaders->addCss($attributes);
+                    return;
                 } else {
                     return $script[0];
                 }
-            }, $htmlContent
-            );
-            $this->DOMHtml->setContent($content? : $htmlContent);
-        }
+            } else {
+                return $script[0];
+            }
+        }, $htmlContent
+        );
+        $this->DOMHtml->setContent($content? : $htmlContent);
     }
 
     public function jsAwaysInline($content) {
@@ -133,7 +155,7 @@ class HtmlFormating {
         $htmlHeaders->addJs($attributes);
     }
 
-    public function addCssInline($htmlHeaders, $attributes) {
+    public function getCssInline($htmlHeaders, $attributes) {
 
         $file = 'inline' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.css';
         $completeFilePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $file;
@@ -154,7 +176,11 @@ class HtmlFormating {
         }
         $attributes['href'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $file);
         unset($attributes['value']);
-        $htmlHeaders->addCss($attributes);
+        if (!$attributes['rel']) {
+            $attributes['rel'] = 'stylesheet';
+        }
+
+        return $attributes;
     }
 
     /**
@@ -216,14 +242,6 @@ class HtmlFormating {
         $this->DOMHtml->setContent($content? : $htmlContent);
     }
 
-    public function normalizeImgUrl($content) {
-        return $content;
-    }
-
-    public function addDataMain($url) {
-        
-    }
-
     public function prepareHtml(&$html) {
         if ($this->config['HtmlRemoveComments']) {
             $this->removeHtmlComments($html);
@@ -242,11 +260,10 @@ class HtmlFormating {
                 return $s[1];
             }, $script[0]);
         }, $html);
-        $html = preg_replace('/<!--(?!<!)[^\[>](.|\n)*?-->/', '', $content);
-        return $html;
+        return preg_replace('/<!--(?!<!)[^\[>](.|\n)*?-->/', '', $content);
     }
 
-    public function render($html) {
+    public function render() {
         $DOMHtml = DOMHtml::getInstance();
         $html = $DOMHtml->render();
         if ($this->config['HtmlMinify']) {
@@ -289,8 +306,7 @@ class HtmlFormating {
             '<',
                 //'\\1'
         );
-        $html = str_replace('> <', '><', preg_replace($search, $replace, $html));
-        return $html;
+        return str_replace('> <', '><', preg_replace($search, $replace, $html));
     }
 
     private function sentHeaders() {
@@ -299,185 +315,31 @@ class HtmlFormating {
 
     public function format() {
         $this->sentHeaders();
-        $this->imgLazyLoad();
+
+        $this->removeConditionals('link');
+        $this->removeConditionals('style');
+        $this->removeConditionals('script');
+
+        LazyLoad::imgLazyLoad($this->config);
         $this->organizeHeaderOrder();
-        $this->removeMetaCharset();
         $this->cssIntegrate();
         $this->javascriptIntegrate();
+        $this->returnConditionals('link');
+        $this->returnConditionals('style');
+        $this->returnConditionals('script');
     }
 
     private function cssIntegrate() {
         if ($this->config['CssIntegrate']) {
-            $this->removeConditionals('link');
             $CSSIntegrate = new CSSIntegrate($this->config);
             $CSSIntegrate->integrate();
-            $this->returnConditionals('link');
         }
     }
 
     private function javascriptIntegrate() {
         if ($this->config['JavascriptIntegrate']) {
-            $this->removeConditionals('script');
             $JSIntegrate = new JSIntegrate($this->config);
             $JSIntegrate->integrate();
-            $this->returnConditionals('script');
-        }
-    }
-
-    private function removeMetaCharset() {
-
-//        if ($this->config['RemoveMetaCharset']) {
-//            $dom = new \DOMDocument();
-//            libxml_use_internal_errors(true);
-//            $htmlContent = $this->DOMHtml->getContent();
-//            $dom->loadHTML($htmlContent);
-//            libxml_use_internal_errors(false);
-//            $x = new \DOMXPath($dom);
-//            if ($x) {
-//                foreach ($x->query("//meta") as $item) {
-//                    if ($item->getAttribute('charset')) {
-//                        $item->parentNode->removeChild($item);
-//                    }
-//                }
-//            }
-//            $this->DOMHtml->setContent($dom->saveHTML());
-//        }
-    }
-
-    private function lazyLoadHead() {
-        if ($this->config['LazyLoadJsFile'] || $this->config['LazyLoadFadeIn']) {
-            $base = dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../public/';
-            $path = $this->config['URIBasePath'] . $this->config['LazyLoadBasePath'] . $this->config['cacheId'] . DIRECTORY_SEPARATOR;
-            if ($this->config['LazyLoadJsFile']) {
-                $file = $this->config['PublicBasePath'] . $this->config['LazyLoadBasePath'] . $this->config['cacheId'] . DIRECTORY_SEPARATOR . $this->config['LazyLoadJsFilePath'] . 'Lazyload.js';
-                if (!file_exists($file)) {
-                    mkdir(dirname($file), 0777, true);
-                    copy($base . $this->config['LazyLoadJsFilePath'] . 'LazyLoad.js', $file);
-                }
-                $htmlHeaders = HtmlHeaders::getInstance();
-                $htmlHeaders->addJs(
-                        array(
-                            'src' => $path . $this->config['LazyLoadJsFilePath'] . 'Lazyload.js',
-                            'type' => 'text/javascript'
-                        )
-                );
-            }
-
-            if ($this->config['LazyLoadFadeIn']) {
-                $file = $this->config['PublicBasePath'] . $this->config['LazyLoadBasePath'] . $this->config['cacheId'] . DIRECTORY_SEPARATOR . $this->config['LazyLoadCssFilePath'] . 'LazyLoad.css';
-                if (!file_exists($file)) {
-                    mkdir(dirname($file), 0777, true);
-                    copy($base . $this->config['LazyLoadCssFilePath'] . 'LazyLoad.css', $file);
-                }
-                $htmlHeaders = HtmlHeaders::getInstance();
-                $htmlHeaders->addCss(
-                        array(
-                            'href' => $path . $this->config['LazyLoadCssFilePath'] . 'LazyLoad.css',
-                            'rel' => 'stylesheet',
-                            'type' => 'text/css',
-                            'media' => 'screen'
-                        )
-                );
-            }
-        }
-    }
-
-    /**
-     *  Adjust this regex to not get images inside a script tag
-     * Example:
-     * <script>var a = '<img src="test.png">';</script>            
-     */
-    private function removeImagesFromScripts() {
-
-        foreach ($this->no_ll as $no) {
-            $htmlContent = $this->DOMHtml->getContent();
-            $regex = '/<' . $no . '((?:.)*?)>((?:.)*?)<\/' . $no . '>/smix';
-            $config = $this->config;
-            $self = $this;
-            $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self, $no) {
-                if ($script[2]) {
-                    $regimg = '/<img((?:.)*?)>/smix';
-                    $img = preg_replace_callback($regimg, function($i) {
-                        return '<noimg' . $i[1] . '>';
-                    }, $script[2]);
-                    return $img ? '<' . $no . $script[1] . '>' . $img . '</' . $no . '>' : $script[0];
-                } else {
-                    return $script[0];
-                }
-            }, $htmlContent);
-            $this->DOMHtml->setContent($content? : $htmlContent);
-        }
-    }
-
-    private function returnImagesFromScripts() {
-        foreach ($this->no_ll as $no) {
-            $htmlContent = $this->DOMHtml->getContent();
-            $regex = '/<' . $no . '((?:.)*?)>((?:.)*?)<\/' . $no . '>/smix';
-            $config = $this->config;
-            $self = $this;
-            $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self, $no) {
-                if ($script[2]) {
-                    $regimg = '/<noimg((?:.)*?)>/smix';
-                    $img = preg_replace_callback($regimg, function($i) {
-                        return '<img' . $i[1] . '>';
-                    }, $script[2]);
-                    return $img ? '<' . $no . $script[1] . '>' . $img . '</' . $no . '>' : $script[0];
-                } else {
-                    return $script[0];
-                }
-            }, $htmlContent);
-            $this->DOMHtml->setContent($content? : $htmlContent);
-        }
-    }
-
-    private function imgLazyLoad() {
-        if ($this->config['LazyLoadImages']) {
-            $this->removeImagesFromScripts();
-            $htmlContent = $this->DOMHtml->getContent();
-            $regex = '/<img((?:.)*?)>/smix';
-            $config = $this->config;
-            $self = $this;
-            $content = preg_replace_callback($regex, function($script) use ($htmlHeaders, $config, $self) {
-                $regex_img = '/(\S+)=["\']((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']/';
-                preg_match_all($regex_img, $script[1], $matches);
-
-                if (isset($matches[1]) && isset($matches[2])) {
-                    foreach ($matches[1] AS $k => $key) {
-                        $attributes[trim($key)] = trim($matches[2][$k]);
-                    }
-                }
-                $img = '<img';
-                $lazy_img = '<img';
-                if ($attributes) {
-                    foreach ($attributes AS $key => $att) {
-                        if (strtolower($key) == 'class') {
-                            $att = $att . ' ' . $config['LazyLoadClass'];
-                        }
-                        if (strtolower($key) == 'src') {
-                            $att = Url::normalizeUrl($att);
-                            $img .= ' ' . $key . '="' . $att . '"';
-                            $lazy_img .= ' ' . $key . '="' . $config['LazyLoadPlaceHolder'] . '"';
-                            $key = 'data-ll';
-                        } else {
-                            $img .= ' ' . $key . '="' . $att . '"';
-                        }
-                        $lazy_img .= ' ' . $key . '="' . $att . '"';
-                    }
-                    if (!array_key_exists('class', $attributes)) {
-                        $img .= ' class="' . $config['LazyLoadClass'] . '"';
-                    }
-                }
-                $img .= '>';
-                $lazy_img .= '>';
-                $content_img = $lazy_img;
-                $content_img .= '<noscript class="ns-ll">';
-                $content_img .= $img;
-                $content_img .= '</noscript>';
-                return $content_img;
-            }, $htmlContent);
-            $this->DOMHtml->setContent($content? : $htmlContent);
-            $this->returnImagesFromScripts();
-            $this->lazyLoadHead();
         }
     }
 
