@@ -19,8 +19,9 @@ class File {
 
     public static function get_content($URL) {
 
+        $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === true ? 'https:' : 'http:';
         if (substr($URL, 0, 2) == '//') {
-            $URL = 'http:' . $URL;
+            $URL = $protocol . $URL;
         }
         $url_exec = self::encode_url($URL);
         if (preg_match('#^https?://#', $url_exec)) {
@@ -30,7 +31,7 @@ class File {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($ch, CURLOPT_HEADER, false);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_REFERER, 'http://controleonline.com/');
+            curl_setopt($ch, CURLOPT_REFERER, $protocol . '//' . $_SERVER['HTTP_HOST'] . '/');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             $data = @curl_exec($ch);
             $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
