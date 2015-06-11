@@ -123,7 +123,7 @@ class WPSpeedUpEssentials {
 //            deactivate_plugins(plugin_basename(__FILE__));
 //            wp_die('This plugin requires PHP Version , >= 5.4.  Sorry about that.');
 //        }
-        add_option('OptimizeAdmin', 1, '', 'yes');
+        add_option('OptimizeAdmin', 0, '', 'yes');
         add_option('APP_ENV', 'production', '', 'yes');
         add_option('charset', 'utf-8', '', 'yes');
         add_option('RemoveMetaCharset', 1, '', 'yes');
