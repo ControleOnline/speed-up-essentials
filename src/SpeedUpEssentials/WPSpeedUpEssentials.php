@@ -130,14 +130,14 @@ class WPSpeedUpEssentials {
         add_option('URIBasePath', '/', '', 'yes');
         add_option('BasePath', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, '', 'yes');
         add_option('PublicCacheDir', 'wp-content/cache/', '', 'yes');
-        add_option('JsAllAsync', 1, '', 'yes');
-        add_option('JavascriptIntegrateInline', 1, '', 'yes');
+        add_option('JsAllAsync', 0, '', 'yes');
+        add_option('JavascriptIntegrateInline', 0, '', 'yes');
         add_option('CssSpritify', false, '', 'yes');
         add_option('LazyLoadBasePath', 'wp-content/cache/', '', 'yes');
         add_option('LazyLoadPlaceHolder', '/wp-content/plugins/speed-up-essentials/public/img/blank.png', '', 'yes');
         add_option('JavascriptOnFooter', 1, '', 'yes');
-        add_option('JavascriptIntegrate', 1, '', 'yes');
-        add_option('CssMinify', 0, '', 'yes');
+        add_option('JavascriptIntegrate', 0, '', 'yes');
+        add_option('CssMinify', 1, '', 'yes');
         add_site_option('CookieLessDomain', filter_input(INPUT_SERVER, 'HTTP_HOST'));
     }
 
