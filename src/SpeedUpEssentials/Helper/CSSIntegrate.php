@@ -76,7 +76,7 @@ class CSSIntegrate {
             if (!file_exists($this->completeFilePath[$key])) {
                 foreach ($csss as $item) {
                     if ($item['data-type'] == 'inline') {
-                        $referer = $_SERVER['REQUEST_URI'];
+                        $referer = filter_input(INPUT_SERVER, 'REQUEST_URI');
                     } else {
                         $referer = $item['href'];
                     }
@@ -101,11 +101,11 @@ class CSSIntegrate {
             $relative_url = $options['relative_url'];
             $domain = $options['css_domain'];
             if (substr($img[1], 0, 5) != 'data:' && substr($img[1], 0, 2) != '//' && !preg_match('#^https?://#', $img[1])) {
-                if ($domain == $_SERVER['HTTP_HOST'] || !$domain) {
+                if ($domain == filter_input(INPUT_SERVER, 'HTTP_HOST') || !$domain) {
                     $domain = $options['CookieLessDomain'];
                     $ext = pathinfo($img[1], PATHINFO_EXTENSION);
                     if (in_array($ext, $options['font_extensions'])) {
-                        $domain = $_SERVER['HTTP_HOST'];
+                        $domain = filter_input(INPUT_SERVER, 'HTTP_HOST');
                     }
                 }
                 if (substr($img[1], 0, 1) == '/') {
