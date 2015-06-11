@@ -37,16 +37,16 @@ class Url {
             return $url;
         }
         //if external URL, return
-        if ((substr($url, 0, 2) == '//' && !preg_match('#^//' . $_SERVER['HTTP_HOST'] . '#', $url)) || (preg_match('#^https?://#', $url) && !preg_match('#^https?://' . $_SERVER['HTTP_HOST'] . '#', $url))) {
+        if ((substr($url, 0, 2) == '//' && !preg_match('#^//' . filter_input(INPUT_SERVER, 'HTTP_HOST') . '#', $url)) || (preg_match('#^https?://#', $url) && !preg_match('#^https?://' . filter_input(INPUT_SERVER, 'HTTP_HOST') . '#', $url))) {
             return $url;
         }
         //if same domain, return static domain
-        if (preg_match('#^https?://' . $_SERVER['HTTP_HOST'] . '#', $url)) {
-            return preg_replace('#^https?://' . $_SERVER['HTTP_HOST'] . '#', $protocol . '//' . self::$staticDomain, $url);
+        if (preg_match('#^https?://' . filter_input(INPUT_SERVER, 'HTTP_HOST') . '#', $url)) {
+            return preg_replace('#^https?://' . filter_input(INPUT_SERVER, 'HTTP_HOST') . '#', $protocol . '//' . self::$staticDomain, $url);
         }
         //if same domain, return static domain
-        if (preg_match('#^//' . $_SERVER['HTTP_HOST'] . '#', $url)) {
-            return preg_replace('#^//' . $_SERVER['HTTP_HOST'] . '#', $protocol . '//' . self::$staticDomain, $url);
+        if (preg_match('#^//' . filter_input(INPUT_SERVER, 'HTTP_HOST') . '#', $url)) {
+            return preg_replace('#^//' . filter_input(INPUT_SERVER, 'HTTP_HOST') . '#', $protocol . '//' . self::$staticDomain, $url);
         }
         //if relative url
         if ($url['0'] == '/') {

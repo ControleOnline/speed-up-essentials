@@ -1,8 +1,7 @@
 <div class="wrap">
     <h2>Settings</h2>
-    <form method="post" action="<?= strtok($_SERVER["REQUEST_URI"], '?') ?>">
-        <?php settings_fields('my-plugin-settings-group'); ?>
-        <?php do_settings_sections('my-plugin-settings-group'); ?>
+    <form method="post" action="<?= filter_input(INPUT_SERVER, 'REQUEST_URI') ?>">
+        <input type="hidden" id="update_options" name="update_options" value="true">
         <table class="form-table">            
             <tr valign="top">     
                 <th scope="row">Optimize Admin?</th>
@@ -13,8 +12,9 @@
             </tr>
             <tr valign="top">
                 <th scope="row">App Environment:</th>
-                <td>
-                    <input type="text" name="APP_ENV" value="<?php echo esc_attr(get_option('APP_ENV')); ?>" />
+                <td>                    
+                    <input type="radio" id="APP_ENV" name="APP_ENV" <?= (esc_attr(get_option('APP_ENV')) == 'production') ? 'checked="checked"' : ''; ?> value="production" />Production
+                    <input type="radio" id="APP_ENV" name="APP_ENV" <?= (esc_attr(get_option('APP_ENV')) == 'production') ? '' : 'checked="checked"'; ?> value="development" />Development
                 </td>
             </tr>
             <tr valign="top">

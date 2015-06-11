@@ -14,8 +14,29 @@ use SpeedUpEssentials\SpeedUpEssentials,
 class WPSpeedUpEssentials {
 
     protected static $render;
+    protected static $myOptions = array(
+        'OptimizeAdmin',
+        'APP_ENV',
+        'charset',
+        'RemoveMetaCharset',
+        'URIBasePath',
+        'BasePath',
+        'PublicCacheDir',
+        'JsAllAsync',
+        'JavascriptIntegrateInline',
+        'CssSpritify',
+        'LazyLoadBasePath',
+        'LazyLoadPlaceHolder',
+        'JavascriptOnFooter',
+        'JavascriptIntegrate',
+        'CssMinify',
+        'CookieLessDomain'
+    );
 
     public static function init() {
+        if (filter_input(INPUT_POST, 'update_options')) {
+            self::update_options();
+        }
         self::$render = new PhpRenderer();
         self::getResolver(self::$render);
         if (get_option('OptimizeAdmin') || !is_admin()) {
@@ -24,6 +45,16 @@ class WPSpeedUpEssentials {
         }
         if (is_admin()) {
             add_action('admin_menu', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'menu'));
+        }
+    }
+
+    private static function update_options() {
+        $options = filter_input_array(INPUT_POST)? : array();
+        foreach ($options as $key => $option) {
+            if (in_array($key, self::$myOptions)) {
+                $o = get_option($key);
+                ($o || $o === '0') ? update_option($key, $option) : add_option($key, $option, '', 'yes');
+            }
         }
     }
 
@@ -107,7 +138,7 @@ class WPSpeedUpEssentials {
         add_option('JavascriptOnFooter', 1, '', 'yes');
         add_option('JavascriptIntegrate', 1, '', 'yes');
         add_option('CssMinify', 0, '', 'yes');
-        add_site_option('CookieLessDomain', $_SERVER['HTTP_HOST']);
+        add_site_option('CookieLessDomain', filter_input(INPUT_SERVER, 'HTTP_HOST'));
     }
 
     public static function final_output($output) {
