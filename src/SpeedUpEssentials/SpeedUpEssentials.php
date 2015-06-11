@@ -18,6 +18,8 @@ class SpeedUpEssentials {
          * CookielessDomain
          */
         $config['CookieLessDomain'] = (isset($config['CookieLessDomain']) ? $config['CookieLessDomain'] : $_SERVER['HTTP_HOST']);
+        $config['Protocol'] = isset($config['Protocol']) ? $config['Protocol'] : ($_SERVER['HTTPS'] == 'on' ? 'https:' : 'http:');
+        defined('PROTOCOL')? : define('PROTOCOL', $config['Protocol']);
 
         /*
          * Encoding
