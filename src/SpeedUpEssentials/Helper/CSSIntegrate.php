@@ -96,7 +96,6 @@ class CSSIntegrate {
         $options['relative_url'] = dirname($css_dir[1]? : $css_dir[0]) . '/';
         $options['font_extensions'] = $this->font_extensions;
         $options['css_domain'] = parse_url($url, PHP_URL_HOST);
-        $options['protocol'] = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === true ? 'https:' : 'http:';
         return preg_replace_callback(
                 $regex, function($img) use($options) {
             $relative_url = $options['relative_url'];
@@ -110,9 +109,9 @@ class CSSIntegrate {
                     }
                 }
                 if (substr($img[1], 0, 1) == '/') {
-                    $relative_url = $options['protocol'] . '//' . $domain;
+                    $relative_url = $options['Protocol'] . '//' . $domain;
                 } else {
-                    $relative_url = $options['protocol'] . '//' . $domain . $relative_url;
+                    $relative_url = $options['Protocol'] . '//' . $domain . $relative_url;
                 }
                 $url_img = $relative_url . $img[1];
                 return 'url("' . Url::normalizeUrl($url_img) . '")';
@@ -157,8 +156,7 @@ class CSSIntegrate {
             } else {
 
                 if (substr($url, 0, 2) == '//') {
-                    $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === true ? 'https:' : 'http:';
-                    $url = $protocol . $url;
+                    $url = $this->config['Protocol'] . $url;
                 }
 
                 $data = File::get_content($url);

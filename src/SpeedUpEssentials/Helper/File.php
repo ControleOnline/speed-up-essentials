@@ -19,7 +19,7 @@ class File {
 
     public static function get_content($URL) {
 
-        $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === true ? 'https:' : 'http:';
+        $protocol = PROTOCOL? : 'http:';
         if (substr($URL, 0, 2) == '//') {
             $URL = $protocol . $URL;
         }

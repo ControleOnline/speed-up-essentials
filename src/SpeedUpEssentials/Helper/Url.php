@@ -24,7 +24,7 @@ class Url {
     }
 
     public static function normalizeUrl($url, $remove_host = false) {
-        $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === true ? 'https:' : 'http:';
+        $protocol = PROTOCOL? : 'http:';
         //if data, return
         if (substr($url, 0, 5) == 'data:') {
             return $url;
