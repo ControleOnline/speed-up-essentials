@@ -13,3 +13,5 @@ ob_start();
 chdir(dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../');
 require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 $WPSpeedUpEssentials = \SpeedUpEssentials\WPSpeedUpEssentials::init();
+add_action( 'activated_plugin', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'activateSpeedUpEssentials'), 10 );
+add_action( 'deactivated_plugin', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'deactivateSpeedUpEssentials'), 10 );
