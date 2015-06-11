@@ -137,7 +137,7 @@ class LazyLoad {
         return $return;
     }
 
-    protected static function prepareImg($script) {
+    public static function prepareImg($script) {
         $regex_img = '/(\S+)=["\']((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']/';
         preg_match_all($regex_img, $script[1], $matches);
         if (isset($matches[1]) && isset($matches[2])) {

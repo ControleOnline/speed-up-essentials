@@ -23,8 +23,6 @@ class WPSpeedUpEssentials {
             add_filter('final_output', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'final_output'));
         }
         if (is_admin()) {
-            register_deactivation_hook(__FILE__, array('\SpeedUpEssentials\WPSpeedUpEssentials', 'deactivateSpeedUpEssentials'));
-            register_activation_hook(__FILE__, array('\SpeedUpEssentials\WPSpeedUpEssentials', 'activateSpeedUpEssentials'));
             add_action('admin_menu', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'menu'));
         }
     }
@@ -111,7 +109,7 @@ class WPSpeedUpEssentials {
 
     public static function final_output($output) {
         $config = wp_load_alloptions();
-        $config['CookieLessDomain'] = get_site_option('CookieLessDomain');        
+        $config['CookieLessDomain'] = get_site_option('CookieLessDomain');
         $SpeedUpEssentials = new SpeedUpEssentials($config, $config['URIBasePath']);
         return $SpeedUpEssentials->render($output);
     }
