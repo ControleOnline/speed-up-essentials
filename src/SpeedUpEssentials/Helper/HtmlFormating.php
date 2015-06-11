@@ -138,7 +138,7 @@ class HtmlFormating {
     public function addJsInline($htmlHeaders, $attributes) {
 
         $file = 'inline' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.js';
-        $completeFilePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $file;
+        $completeFilePath = $this->config['BasePath'] . $this->config['PublicCacheDir'] . $file;
 
         if (!file_exists($completeFilePath)) {
             if (!is_dir(dirname($completeFilePath))) {
@@ -158,7 +158,7 @@ class HtmlFormating {
     public function getCssInline($htmlHeaders, $attributes) {
 
         $file = 'inline' . DIRECTORY_SEPARATOR . md5($attributes['value']) . '.css';
-        $completeFilePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $file;
+        $completeFilePath = $this->config['BasePath'] . $this->config['PublicCacheDir'] . $file;
 
         if (!file_exists($completeFilePath)) {
             if (!is_dir(dirname($completeFilePath))) {

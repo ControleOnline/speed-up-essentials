@@ -39,7 +39,7 @@ class LazyLoad {
 
     protected static function addJsFile() {
         if (self::$config['LazyLoadJsFile']) {
-            $file = self::$config['PublicBasePath'] . self::$config['LazyLoadBasePath'] . self::$config['cacheId'] . DIRECTORY_SEPARATOR . self::$config['LazyLoadJsFilePath'] . 'LazyLoad.js';
+            $file = self::$config['BasePath'] . self::$config['LazyLoadBasePath'] . self::$config['cacheId'] . DIRECTORY_SEPARATOR . self::$config['LazyLoadJsFilePath'] . 'LazyLoad.js';
             if (!file_exists($file)) {
                 @mkdir(dirname($file), 0777, true);
                 copy(self::$base . self::$config['LazyLoadJsFilePath'] . 'LazyLoad.js', $file);
@@ -55,7 +55,7 @@ class LazyLoad {
 
     protected static function fadeIn() {
         if (self::$config['LazyLoadFadeIn']) {
-            $file = self::$config['PublicBasePath'] . self::$config['LazyLoadBasePath'] . self::$config['cacheId'] . DIRECTORY_SEPARATOR . self::$config['LazyLoadCssFilePath'] . 'LazyLoad.css';
+            $file = self::$config['BasePath'] . self::$config['LazyLoadBasePath'] . self::$config['cacheId'] . DIRECTORY_SEPARATOR . self::$config['LazyLoadCssFilePath'] . 'LazyLoad.css';
             if (!file_exists($file)) {
                 @mkdir(dirname($file), 0777, true);
                 copy(self::$base . self::$config['LazyLoadCssFilePath'] . 'LazyLoad.css', $file);

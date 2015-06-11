@@ -71,7 +71,7 @@ class WPSpeedUpEssentials {
         delete_option('charset');
         delete_option('RemoveMetaCharset');
         delete_option('URIBasePath');
-        delete_option('PublicBasePath');
+        delete_option('BasePath');
         delete_option('PublicCacheDir');
         delete_option('JsAllAsync');
         delete_option('JavascriptIntegrateInline');
@@ -85,16 +85,19 @@ class WPSpeedUpEssentials {
     }
 
     public static function activateSpeedUpEssentials() {
-        if (check_version(PHP_VERSION, '5.4', '>=') >= 0) {
-            deactivate_plugins(plugin_basename(__FILE__));
-            wp_die('This plugin requires PHP Version , >= 5.4.  Sorry about that.');
-        }
+        /*
+         * @todo Deactivate plugin if php version is < 5.4
+         */
+//        if (check_version(PHP_VERSION, '5.4', '>=') >= 0) {
+//            deactivate_plugins(plugin_basename(__FILE__));
+//            wp_die('This plugin requires PHP Version , >= 5.4.  Sorry about that.');
+//        }
         add_option('OptimizeAdmin', 1, '', 'yes');
         add_option('APP_ENV', 'production', '', 'yes');
         add_option('charset', 'utf-8', '', 'yes');
         add_option('RemoveMetaCharset', 1, '', 'yes');
         add_option('URIBasePath', '/', '', 'yes');
-        add_option('PublicBasePath', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, '', 'yes');
+        add_option('BasePath', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, '', 'yes');
         add_option('PublicCacheDir', 'wp-content/cache/', '', 'yes');
         add_option('JsAllAsync', 1, '', 'yes');
         add_option('JavascriptIntegrateInline', 1, '', 'yes');

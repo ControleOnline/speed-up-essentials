@@ -45,10 +45,10 @@ class CSSIntegrate {
                     foreach ($csss as $key => $css) {
                         $j[$k][$key]['type'] = 'text/css';
                         $j[$k][$key]['rel'] = 'stylesheet';
-                        if ($this->config['CssMinify'] && is_file(realpath($this->config['PublicBasePath']) . '/' . $css['href'])) {
-                            $this->filename[$k] = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href'];
+                        if ($this->config['CssMinify'] && is_file(realpath($this->config['BasePath']) . '/' . $css['href'])) {
+                            $this->filename[$k] = $this->config['BasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href'];
                             if (!is_file($this->filename[$k])) {
-                                $this->content[$key] = $this->get_data(realpath($this->config['PublicBasePath']) . '/' . $css['href']);
+                                $this->content[$key] = $this->get_data(realpath($this->config['BasePath']) . '/' . $css['href']);
                                 $this->writeCssFile($k);
                             }
                             $j[$k][$key]['href'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $css['href']);
@@ -71,7 +71,7 @@ class CSSIntegrate {
                 'rel' => 'stylesheet',
                 'media' => $key
             );
-            $this->filename[$key] = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . '/' . $this->config['cacheId'] . $this->config['CssMinifiedFilePath'] . $this->filename[$key];
+            $this->filename[$key] = $this->config['BasePath'] . $this->config['PublicCacheDir'] . '/' . $this->config['cacheId'] . $this->config['CssMinifiedFilePath'] . $this->filename[$key];
             $this->makeFilePath($this->filename[$key], $key);
             if (!file_exists($this->completeFilePath[$key])) {
                 foreach ($csss as $item) {
@@ -143,16 +143,16 @@ class CSSIntegrate {
 
     protected function get_data($url) {
         $cssUrl = $url;
-        if (is_file($this->config['PublicBasePath'] . Url::normalizeUrl($url))) {
-            $url = $this->config['PublicBasePath'] . Url::normalizeUrl($url);
+        if (is_file($this->config['BasePath'] . Url::normalizeUrl($url))) {
+            $url = $this->config['BasePath'] . Url::normalizeUrl($url);
             try {
                 $data = File::get_content($url);
             } catch (Exception $ex) {
                 
             }
         } else {
-            if (is_file($this->config['PublicBasePath'] . $url)) {
-                $data = File::get_content($this->config['PublicBasePath'] . $url);
+            if (is_file($this->config['BasePath'] . $url)) {
+                $data = File::get_content($this->config['BasePath'] . $url);
             } else {
 
                 if (substr($url, 0, 2) == '//') {

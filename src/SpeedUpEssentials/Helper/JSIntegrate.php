@@ -39,10 +39,10 @@ class JSIntegrate {
                 foreach ($this->jss as $key => $js) {
                     $j[$key] = $async;
                     $j[$key]['type'] = 'text/javascript';
-                    if ($this->config['JavascriptMinify'] && is_file(realpath($this->config['PublicBasePath']) . '/' . $js['src'])) {
-                        $this->filename = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $js['src'];
+                    if ($this->config['JavascriptMinify'] && is_file(realpath($this->config['BasePath']) . '/' . $js['src'])) {
+                        $this->filename = $this->config['BasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $js['src'];
                         if (!is_file($this->filename)) {
-                            $this->content = $this->get_data(realpath($this->config['PublicBasePath']) . '/' . $js['src']);
+                            $this->content = $this->get_data(realpath($this->config['BasePath']) . '/' . $js['src']);
                             $this->writeJsFile();
                         }
                         $j[$key]['src'] = Url::normalizeUrl($this->config['URIBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . $js['src']);
@@ -69,7 +69,7 @@ class JSIntegrate {
         }
 
         $this->htmlHeaders->setJs(array($element));
-        $this->filename = $this->config['PublicBasePath'] .
+        $this->filename = $this->config['BasePath'] .
                 $this->config['PublicCacheDir'] . $this->config['cacheId'] .
                 $this->config['JsMinifiedFilePath'] . $this->filename;
         $this->makeFilePath($this->filename);
@@ -95,16 +95,16 @@ class JSIntegrate {
     }
 
     protected function get_data($url) {
-        if (is_file($this->config['PublicBasePath'] . Url::normalizeUrl($url))) {
-            $url = $this->config['PublicBasePath'] . Url::normalizeUrl($url);
+        if (is_file($this->config['BasePath'] . Url::normalizeUrl($url))) {
+            $url = $this->config['BasePath'] . Url::normalizeUrl($url);
             try {
                 $data = File::get_content($url);
             } catch (Exception $ex) {
                 
             }
         } else {
-            if (is_file($this->config['PublicBasePath'] . $url)) {
-                $data = File::get_content($this->config['PublicBasePath'] . $url);
+            if (is_file($this->config['BasePath'] . $url)) {
+                $data = File::get_content($this->config['BasePath'] . $url);
             } else {
                 $data = File::get_content($url);
             }

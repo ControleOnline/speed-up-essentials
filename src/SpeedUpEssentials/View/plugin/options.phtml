@@ -1,21 +1,114 @@
 <div class="wrap">
-    <h2>Staff Details</h2>
-    <form method="post" action="options.php">
+    <h2>Settings</h2>
+    <form method="post" action="<?= strtok($_SERVER["REQUEST_URI"], '?') ?>">
         <?php settings_fields('my-plugin-settings-group'); ?>
         <?php do_settings_sections('my-plugin-settings-group'); ?>
-        <table class="form-table">
-            <tr valign="top">
-                <th scope="row">Accountant Name</th>
-                <td><input type="text" name="accountant_name" value="<?php echo esc_attr(get_option('accountant_name')); ?>" /></td>
+        <table class="form-table">            
+            <tr valign="top">     
+                <th scope="row">Optimize Admin?</th>
+                <td>
+                    <input type="radio" id="OptimizeAdmin" name="OptimizeAdmin" <?= esc_attr(get_option('OptimizeAdmin')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="OptimizeAdmin" name="OptimizeAdmin" <?= esc_attr(get_option('OptimizeAdmin')) ? '' : 'checked="checked"'; ?> value="0" />No
+                </td>
             </tr>
             <tr valign="top">
-                <th scope="row">Accountant Phone Number</th>
-                <td><input type="text" name="accountant_phone" value="<?php echo esc_attr(get_option('accountant_phone')); ?>" /></td>
+                <th scope="row">App Environment:</th>
+                <td>
+                    <input type="text" name="APP_ENV" value="<?php echo esc_attr(get_option('APP_ENV')); ?>" />
+                </td>
             </tr>
             <tr valign="top">
-                <th scope="row">Accountant Email</th>
-                <td><input type="text" name="accountant_email" value="<?php echo esc_attr(get_option('accountant_email')); ?>" /></td>
+                <th scope="row">Charset:</th>
+                <td>
+                    <input type="text" name="charset" value="<?php echo esc_attr(get_option('charset')); ?>" />
+                </td>
             </tr>
+            <tr valign="top">
+                <th scope="row">Remove Meta Charset?</th>
+                <td>
+                    <input type="radio" id="RemoveMetaCharset" name="RemoveMetaCharset" <?= esc_attr(get_option('RemoveMetaCharset')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="RemoveMetaCharset" name="RemoveMetaCharset" <?= esc_attr(get_option('RemoveMetaCharset')) ? '' : 'checked="checked"'; ?> value="0" />No                    
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">URI Base Path:</th>
+                <td>
+                    <input type="text" name="URIBasePath" value="<?php echo esc_attr(get_option('URIBasePath')); ?>" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Base Path:</th>
+                <td>
+                    <input type="text" name="BasePath" value="<?php echo esc_attr(get_option('BasePath')); ?>" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Public Cache Dir:</th>
+                <td>
+                    <input type="text" name="PublicCacheDir" value="<?php echo esc_attr(get_option('PublicCacheDir')); ?>" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Async All Js?</th>
+                <td>                    
+                    <input type="radio" id="JsAllAsync" name="JsAllAsync" <?= esc_attr(get_option('JsAllAsync')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="JsAllAsync" name="JsAllAsync" <?= esc_attr(get_option('JsAllAsync')) ? '' : 'checked="checked"'; ?> value="0" />No
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Integrate All Inline Javascript?</th>
+                <td>                    
+                    <input type="radio" id="JavascriptIntegrateInline" name="JavascriptIntegrateInline" <?= esc_attr(get_option('JavascriptIntegrateInline')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="JavascriptIntegrateInline" name="JavascriptIntegrateInline" <?= esc_attr(get_option('JavascriptIntegrateInline')) ? '' : 'checked="checked"'; ?> value="0" />No
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Css Spritify?</th>
+                <td>                    
+                    <input type="radio" id="CssSpritify" name="CssSpritify" <?= esc_attr(get_option('CssSpritify')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="CssSpritify" name="CssSpritify" <?= esc_attr(get_option('CssSpritify')) ? '' : 'checked="checked"'; ?> value="0" />No
+                </td>
+            </tr>                                        
+            <tr valign="top">
+                <th scope="row">Lazy Load Base Path:</th>
+                <td>
+                    <input type="text" name="LazyLoadBasePath" value="<?php echo esc_attr(get_option('LazyLoadBasePath')); ?>" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Lazy Load Place Holder:</th>
+                <td>
+                    <input type="text" name="LazyLoadPlaceHolder" value="<?php echo esc_attr(get_option('LazyLoadPlaceHolder')); ?>" />
+                </td>
+            </tr>                                
+            <tr valign="top">
+                <th scope="row">Move All Javascript to Footer?</th>
+                <td>
+                    <input type="radio" id="JavascriptOnFooter" name="JavascriptOnFooter" <?= esc_attr(get_option('JavascriptOnFooter')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="JavascriptOnFooter" name="JavascriptOnFooter" <?= esc_attr(get_option('JavascriptOnFooter')) ? '' : 'checked="checked"'; ?> value="0" />No                                        
+                </td>
+            </tr>                                
+            <tr valign="top">
+                <th scope="row">Integrate All Javascript?</th>
+                <td>                    
+                    <input type="radio" id="JavascriptIntegrate" name="JavascriptIntegrate" <?= esc_attr(get_option('JavascriptIntegrate')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="JavascriptIntegrate" name="JavascriptIntegrate" <?= esc_attr(get_option('JavascriptIntegrate')) ? '' : 'checked="checked"'; ?> value="0" />No                                        
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Minify All Css?</th>
+                <td>                    
+                    <input type="radio" id="CssMinify" name="CssMinify" <?= esc_attr(get_option('CssMinify')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="CssMinify" name="CssMinify" <?= esc_attr(get_option('CssMinify')) ? '' : 'checked="checked"'; ?> value="0" />No                                                            
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">CookieLess Domain:</th>
+                <td>
+                    <input type="text" name="CookieLessDomain" value="<?php echo esc_attr(get_site_option('CookieLessDomain')); ?>" />
+                </td>
+            </tr>
+            </tr>            
         </table>
         <?php submit_button(); ?>
     </form>

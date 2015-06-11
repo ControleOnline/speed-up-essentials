@@ -29,7 +29,7 @@ class Spritify {
 
     public function __construct($config) {
         $this->config = $config;
-        $this->spritePath = $this->config['PublicBasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . 'img/';
+        $this->spritePath = $this->config['BasePath'] . $this->config['PublicCacheDir'] . $this->config['cacheId'] . 'img/';
         if (!is_dir(realpath($this->spritePath))) {
             mkdir($this->spritePath, 0777, true);
         }
@@ -46,7 +46,7 @@ class Spritify {
         preg_match_all($regex, $cssContent, $matches);
         if ($matches[2]) {
             foreach ($matches[2] as $key => $img) {
-                $this->add_image(realpath($this->config['PublicBasePath'] . $img), $this->getImgId($img));
+                $this->add_image(realpath($this->config['BasePath'] . $img), $this->getImgId($img));
             }
         }
         $this->setSpriteFilename();
@@ -54,7 +54,7 @@ class Spritify {
 
         $cssContent = preg_replace_callback(
                 $regex, function($img) {
-            if (file_exists($this->config['PublicBasePath'] . $img[2])) {
+            if (file_exists($this->config['BasePath'] . $img[2])) {
                 $return = '';
                 /*
                  * @todo Descobrir como resolver o problema de imagens com divs não exclusivas
