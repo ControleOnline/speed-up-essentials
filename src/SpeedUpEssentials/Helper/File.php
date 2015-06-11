@@ -31,7 +31,7 @@ class File {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($ch, CURLOPT_HEADER, false);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_REFERER, $protocol . '//' . filter_input(INPUT_SERVER, 'HTTP_HOST') . '/');
+            curl_setopt($ch, CURLOPT_REFERER, $protocol . '//' . $_SERVER['HTTP_HOST'] . '/');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             $data = @curl_exec($ch);
             $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);

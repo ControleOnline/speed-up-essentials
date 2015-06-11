@@ -138,7 +138,7 @@ class WPSpeedUpEssentials {
         add_option('JavascriptOnFooter', 1, '', 'yes');
         add_option('JavascriptIntegrate', 0, '', 'yes');
         add_option('CssMinify', 1, '', 'yes');
-        add_site_option('CookieLessDomain', filter_input(INPUT_SERVER, 'HTTP_HOST'));
+        add_site_option('CookieLessDomain', $_SERVER['HTTP_HOST']);
     }
 
     public static function final_output($output) {
