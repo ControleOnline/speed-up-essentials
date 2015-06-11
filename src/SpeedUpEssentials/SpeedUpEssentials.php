@@ -31,7 +31,7 @@ class SpeedUpEssentials {
          */
 
         $config['URIBasePath'] = (isset($config['URIBasePath']) ? $config['URIBasePath'] : $baseUri);
-        $config['PublicBasePath'] = realpath(isset($config['PublicBasePath']) ? $config['PublicBasePath'] : 'public/') . DIRECTORY_SEPARATOR;
+        $config['BasePath'] = realpath(isset($config['BasePath']) ? $config['BasePath'] : 'public/') . DIRECTORY_SEPARATOR;
         $config['PublicCacheDir'] = (isset($config['PublicCacheDir']) ? $config['PublicCacheDir'] : 'cache/');
 
         /*
@@ -80,8 +80,8 @@ class SpeedUpEssentials {
          * Cache
          */
         if (!isset($config['cacheId'])) {
-            if (is_file($config['PublicBasePath'] . '.version')) {
-                $contents = file_get_contents($config['PublicBasePath'] . '.version');
+            if (is_file($config['BasePath'] . '.version')) {
+                $contents = file_get_contents($config['BasePath'] . '.version');
                 if ($contents) {
                     $content = array_values(preg_split('/\r\n|\r|\n/', $contents, 2));
                     $version = trim(array_shift($content));
