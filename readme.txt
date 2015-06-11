@@ -11,7 +11,7 @@ License URI: https://github.com/ControleOnline/speed-up-essentials
 Short Desc
 
 == Description ==
-Long Desc
+Long Desc 
 
 == Installation ==
 Installation
