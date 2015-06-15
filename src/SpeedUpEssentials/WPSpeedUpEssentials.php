@@ -134,7 +134,7 @@ class WPSpeedUpEssentials {
         add_option('JavascriptIntegrateInline', 0, '', 'yes');
         add_option('CssSpritify', false, '', 'yes');
         add_option('LazyLoadBasePath', 'wp-content/cache/', '', 'yes');
-        add_option('LazyLoadPlaceHolder', '/wp-content/plugins/speed-up-essentials/public/img/blank.png', '', 'yes');
+        add_option('LazyLoadPlaceHolder', '/wp-content/plugins/speedupessentials/public/img/blank.png', '', 'yes');
         add_option('JavascriptOnFooter', 1, '', 'yes');
         add_option('JavascriptIntegrate', 0, '', 'yes');
         add_option('CssMinify', 1, '', 'yes');
