@@ -29,10 +29,12 @@ class WPSpeedUpEssentials {
         'JavascriptIntegrateInline',
         'JsAllAsync',
         'CssMinify',
-        'CookieLessDomain',
         'CssIntegrateInline',
         'CssIntegrate',
         'CssSpritify'
+    );
+    protected static $mySiteOptions = array(
+        'CookieLessDomain'
     );
 
     public static function init() {
@@ -56,6 +58,10 @@ class WPSpeedUpEssentials {
             if (in_array($key, self::$myOptions)) {
                 $o = get_option($key);
                 ($o || $o === '0') ? update_option($key, $option) : add_option($key, $option, '', 'yes');
+            }
+            if (in_array($key, self::$mySiteOptions)) {
+                $o = get_site_option($key);
+                ($o || $o === '0') ? update_site_option($key, $option) : add_site_option($key, $option, '', 'yes');
             }
         }
     }
