@@ -2,7 +2,6 @@
 
 namespace SpeedUpEssentials;
 
-//require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'tubalmartin' . DIRECTORY_SEPARATOR . 'cssmin' . DIRECTORY_SEPARATOR . 'cssmin.php');
 use SpeedUpEssentials\SpeedUpEssentials,
     Zend\View\Model\ViewModel,
     Zend\View\Renderer\PhpRenderer,
