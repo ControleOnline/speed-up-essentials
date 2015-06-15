@@ -167,11 +167,18 @@ class CSSIntegrate {
         }
 
         $open_tags = substr_count($data, '{');
-        $close_tags = substr_count($data, '}');
-        $data = '/*Closed Tags: ' . $close_tags . ' */' . PHP_EOL . $data;
+        $closed_tags = substr_count($data, '}');
+        $data = '/*Closed Tags: ' . $closed_tags . ' */' . PHP_EOL . $data;
         $data = '/*Open Tags: ' . $open_tags . ' */' . PHP_EOL . $data;
+        $data .= $this->fixUnclosedTags($open_tags, $closed_tags);
 
         return $data;
+    }
+
+    private function fixUnclosedTags($open_tags, $closed_tags) {
+        if ($open_tags > $closed_tags) {
+            return PHP_EOL . str_repeat('}', ($open_tags - $closed_tags));
+        }
     }
 
     public function removeImports($data, $cssUrl) {
