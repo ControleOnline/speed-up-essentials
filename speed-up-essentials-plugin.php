@@ -2,9 +2,9 @@
 
 /**
  * Plugin Name: Speed Up Essentials
- * Plugin URI: http://www.controleonline.com
+ * Plugin URI: https://github.com/ControleOnline/speed-up-essentials
  * Description: Minify and Merge HTML,CSS,JS. LazyLoad Images,Spritify CSS Images,Remove (Unify) CSS Imports,Static files on cookieless domain
- * Version: 1.11.9
+ * Version: 1.11.10
  * Author: Controle Online
  * Author URI: http://www.controleonline.com
  * License: GPL2
