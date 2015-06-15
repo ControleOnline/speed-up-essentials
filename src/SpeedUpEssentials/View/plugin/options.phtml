@@ -49,6 +49,18 @@
                 </td>
             </tr>
             <tr valign="top">
+                <th scope="row">Lazy Load Base Path:</th>
+                <td>
+                    <input type="text" name="LazyLoadBasePath" value="<?php echo esc_attr(get_option('LazyLoadBasePath')); ?>" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Lazy Load Place Holder:</th>
+                <td>
+                    <input type="text" name="LazyLoadPlaceHolder" value="<?php echo esc_attr(get_option('LazyLoadPlaceHolder')); ?>" />
+                </td>
+            </tr>               
+            <tr valign="top">
                 <th scope="row">Async All Js?</th>
                 <td>                    
                     <input type="radio" id="JsAllAsync" name="JsAllAsync" <?= esc_attr(get_option('JsAllAsync')) ? 'checked="checked"' : ''; ?> value="1" />Yes
@@ -61,26 +73,7 @@
                     <input type="radio" id="JavascriptIntegrateInline" name="JavascriptIntegrateInline" <?= esc_attr(get_option('JavascriptIntegrateInline')) ? 'checked="checked"' : ''; ?> value="1" />Yes
                     <input type="radio" id="JavascriptIntegrateInline" name="JavascriptIntegrateInline" <?= esc_attr(get_option('JavascriptIntegrateInline')) ? '' : 'checked="checked"'; ?> value="0" />No
                 </td>
-            </tr>
-            <tr valign="top">
-                <th scope="row">Css Spritify?</th>
-                <td>                    
-                    <input type="radio" id="CssSpritify" name="CssSpritify" <?= esc_attr(get_option('CssSpritify')) ? 'checked="checked"' : ''; ?> value="1" />Yes
-                    <input type="radio" id="CssSpritify" name="CssSpritify" <?= esc_attr(get_option('CssSpritify')) ? '' : 'checked="checked"'; ?> value="0" />No
-                </td>
-            </tr>                                        
-            <tr valign="top">
-                <th scope="row">Lazy Load Base Path:</th>
-                <td>
-                    <input type="text" name="LazyLoadBasePath" value="<?php echo esc_attr(get_option('LazyLoadBasePath')); ?>" />
-                </td>
-            </tr>
-            <tr valign="top">
-                <th scope="row">Lazy Load Place Holder:</th>
-                <td>
-                    <input type="text" name="LazyLoadPlaceHolder" value="<?php echo esc_attr(get_option('LazyLoadPlaceHolder')); ?>" />
-                </td>
-            </tr>                                
+            </tr>            
             <tr valign="top">
                 <th scope="row">Move All Javascript to Footer?</th>
                 <td>
@@ -102,6 +95,27 @@
                     <input type="radio" id="CssMinify" name="CssMinify" <?= esc_attr(get_option('CssMinify')) ? '' : 'checked="checked"'; ?> value="0" />No                                                            
                 </td>
             </tr>
+            <tr valign="top">
+                <th scope="row">Integrate All CSS Inline?</th>
+                <td>                    
+                    <input type="radio" id="CssIntegrateInline" name="CssIntegrateInline" <?= esc_attr(get_option('CssIntegrateInline')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="CssIntegrateInline" name="CssIntegrateInline" <?= esc_attr(get_option('CssIntegrateInline')) ? '' : 'checked="checked"'; ?> value="0" />No                                                            
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Integrate All Css?</th>
+                <td>                    
+                    <input type="radio" id="CssMinify" name="CssIntegrate" <?= esc_attr(get_option('CssIntegrate')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="CssMinify" name="CssIntegrate" <?= esc_attr(get_option('CssIntegrate')) ? '' : 'checked="checked"'; ?> value="0" />No                                                            
+                </td>
+            </tr>            
+            <tr valign="top">
+                <th scope="row">Css Spritify?</th>
+                <td>                    
+                    <input type="radio" id="CssSpritify" name="CssSpritify" <?= esc_attr(get_option('CssSpritify')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="CssSpritify" name="CssSpritify" <?= esc_attr(get_option('CssSpritify')) ? '' : 'checked="checked"'; ?> value="0" />No
+                </td>
+            </tr>                                        
             <tr valign="top">
                 <th scope="row">CookieLess Domain:</th>
                 <td>

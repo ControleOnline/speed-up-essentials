@@ -22,15 +22,17 @@ class WPSpeedUpEssentials {
         'URIBasePath',
         'BasePath',
         'PublicCacheDir',
-        'JsAllAsync',
-        'JavascriptIntegrateInline',
-        'CssSpritify',
         'LazyLoadBasePath',
         'LazyLoadPlaceHolder',
         'JavascriptOnFooter',
         'JavascriptIntegrate',
+        'JavascriptIntegrateInline',
+        'JsAllAsync',
         'CssMinify',
-        'CookieLessDomain'
+        'CookieLessDomain',
+        'CssIntegrateInline',
+        'CssIntegrate',
+        'CssSpritify'
     );
 
     public static function init() {
@@ -106,12 +108,14 @@ class WPSpeedUpEssentials {
         delete_option('PublicCacheDir');
         delete_option('JsAllAsync');
         delete_option('JavascriptIntegrateInline');
-        delete_option('CssSpritify');
-        delete_option('LazyLoadBasePath');
-        delete_option('LazyLoadPlaceHolder');
         delete_option('JavascriptOnFooter');
         delete_option('JavascriptIntegrate');
+        delete_option('LazyLoadBasePath');
+        delete_option('LazyLoadPlaceHolder');
+        delete_option('CssSpritify');
         delete_option('CssMinify');
+        delete_option('CssIntegrateInline');
+        delete_option('CssIntegrate');
         delete_site_option('CookieLessDomain');
     }
 
@@ -130,14 +134,16 @@ class WPSpeedUpEssentials {
         add_option('URIBasePath', '/', '', 'yes');
         add_option('BasePath', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, '', 'yes');
         add_option('PublicCacheDir', 'wp-content/cache/', '', 'yes');
-        add_option('JsAllAsync', 0, '', 'yes');
-        add_option('JavascriptIntegrateInline', 0, '', 'yes');
-        add_option('CssSpritify', false, '', 'yes');
         add_option('LazyLoadBasePath', 'wp-content/cache/', '', 'yes');
         add_option('LazyLoadPlaceHolder', '/wp-content/plugins/speedupessentials/public/img/blank.png', '', 'yes');
         add_option('JavascriptOnFooter', 1, '', 'yes');
         add_option('JavascriptIntegrate', 0, '', 'yes');
+        add_option('JsAllAsync', 0, '', 'yes');
+        add_option('JavascriptIntegrateInline', 0, '', 'yes');
         add_option('CssMinify', 1, '', 'yes');
+        add_option('CssSpritify', false, '', 'yes');
+        add_option('CssIntegrateInline', 1, '', 'yes');
+        add_option('CssIntegrate', 1, '', 'yes');
         add_site_option('CookieLessDomain', $_SERVER['HTTP_HOST']);
     }
 
