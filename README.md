@@ -145,3 +145,7 @@ $config = array(); // If you do not use any configuration, all will be enabled.
 $SpeedUpEssentials = new \SpeedUpEssentials($config);
 echo  $SpeedUpEssentials->render(ob_get_contents());
 ```
+
+##Wordpress Plugin##
+
+[Download plugin](https://wordpress.org/plugins/speedupessentials/)
