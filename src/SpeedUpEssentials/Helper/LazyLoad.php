@@ -114,7 +114,7 @@ class LazyLoad {
         }
     }
 
-    public static function normalizeAttributes($attributes = array()) {
+    public static function normalizeAttributes(array $attributes = array()) {
         foreach ($attributes AS $key => $att) {
             if (strtolower($key) == 'class') {
                 $att = $att . ' ' . self::$config['LazyLoadClass'];
@@ -145,18 +145,22 @@ class LazyLoad {
                 $attributes[trim($key)] = trim($matches[2][$k]);
             }
         }
-        $img = '<img';
-        $lazy_img = '<img';
-        $att = self::normalizeAttributes($attributes);
-        $img .= $att['img'];
-        $lazy_img .= $att['lazy_img'];
-        $img .= '>';
-        $lazy_img .= '>';
-        $content_img = $lazy_img;
-        $content_img .= '<noscript class="ns-ll">';
-        $content_img .= $img;
-        $content_img .= '</noscript>';
-        return $content_img;
+        if (isset($attributes) && is_array($attributes)) {
+            $img = '<img';
+            $lazy_img = '<img';
+            $att = self::normalizeAttributes($attributes);
+            $img .= $att['img'];
+            $lazy_img .= $att['lazy_img'];
+            $img .= '>';
+            $lazy_img .= '>';
+            $content_img = $lazy_img;
+            $content_img .= '<noscript class="ns-ll">';
+            $content_img .= $img;
+            $content_img .= '</noscript>';
+            return $content_img;
+        } else {
+            return $matches[0];
+        }
     }
 
     public static function imgLazyLoad($config) {
