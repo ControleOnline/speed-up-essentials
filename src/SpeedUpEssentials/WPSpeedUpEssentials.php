@@ -2,7 +2,6 @@
 
 namespace SpeedUpEssentials;
 
-//require_once (dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'tubalmartin' . DIRECTORY_SEPARATOR . 'cssmin' . DIRECTORY_SEPARATOR . 'cssmin.php');
 use SpeedUpEssentials\SpeedUpEssentials,
     Zend\View\Model\ViewModel,
     Zend\View\Renderer\PhpRenderer,
@@ -40,6 +39,9 @@ class WPSpeedUpEssentials {
     public static function init() {
         if (filter_input(INPUT_POST, 'update_options')) {
             self::update_options();
+        }
+        if (!get_option('BasePath')) {
+            self::activateSpeedUpEssentials();
         }
         self::$render = new PhpRenderer();
         self::getResolver(self::$render);
@@ -126,13 +128,6 @@ class WPSpeedUpEssentials {
     }
 
     public static function activateSpeedUpEssentials() {
-        /*
-         * @todo Deactivate plugin if php version is < 5.4
-         */
-//        if (check_version(PHP_VERSION, '5.4', '>=') >= 0) {
-//            deactivate_plugins(plugin_basename(__FILE__));
-//            wp_die('This plugin requires PHP Version , >= 5.4.  Sorry about that.');
-//        }
         add_option('OptimizeAdmin', 0, '', 'yes');
         add_option('APP_ENV', 'production', '', 'yes');
         add_option('charset', 'utf-8', '', 'yes');
@@ -146,10 +141,10 @@ class WPSpeedUpEssentials {
         add_option('JavascriptIntegrate', 0, '', 'yes');
         add_option('JsAllAsync', 0, '', 'yes');
         add_option('JavascriptIntegrateInline', 0, '', 'yes');
-        add_option('CssMinify', 1, '', 'yes');
-        add_option('CssSpritify', false, '', 'yes');
-        add_option('CssIntegrateInline', 1, '', 'yes');
-        add_option('CssIntegrate', 1, '', 'yes');
+        add_option('CssMinify', 0, '', 'yes');
+        add_option('CssSpritify', 0, '', 'yes');
+        add_option('CssIntegrateInline', 0, '', 'yes');
+        add_option('CssIntegrate', 0, '', 'yes');
         add_site_option('CookieLessDomain', $_SERVER['HTTP_HOST']);
     }
 
