@@ -8,18 +8,18 @@ Stable tag: trunk
 License: Apache
 License URI: https://github.com/ControleOnline/speed-up-essentials
 
-Short Desc
+This software aims to be engaged in any system and without any additional line programming is required, the final code is automatically optimized.
 
 == Description ==
-Long Desc 
+This software aims to be engaged in any system and without any additional line programming is required, the final code is automatically optimized.
 
-== Installation ==
-Installation
-
-== Frequently Asked Questions ==
-FAQ
-
-== Screenshots ==
-1. http://controleonline.com/wp-content/themes/enigma/images/1.png
-2. http://controleonline.com/wp-content/themes/enigma/images/2.png
-3. http://controleonline.com/wp-content/themes/enigma/images/3.png
+## Features ##
+* Minify HTML
+* Minify CSS
+* Unify CSS
+* Minify JavaScript
+* Unify Javascript
+* LazyLoad Images
+* Spritify CSS Images
+* Remove (Unify) CSS Imports
+* Static files on cookieless domain
