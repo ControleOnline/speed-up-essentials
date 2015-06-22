@@ -56,7 +56,7 @@ class HtmlHeaders {
     public function addCss($css, $inline = false) {
         $css['media'] = isset($css['media']) ? $css['media'] : 'all';
         if ($inline) {
-            $css['data-type'] = 'inline';
+            $css['data-type'] = 'inline';            
         }
         $this->css[$css['media']][] = $css;
         return $this;

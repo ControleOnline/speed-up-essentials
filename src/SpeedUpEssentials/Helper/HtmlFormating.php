@@ -36,7 +36,7 @@ class HtmlFormating {
     }
 
     private function removeElements($type, $regex = false) {
-        $reg = $regex? : '/<' . $type . '(.*?)[/>|</' . $type . '>]/smix';
+        $reg = $regex? : '/<' . $type . '(.*?)[\/>|<\/' . $type . '>]/smix';
         $htmlContent = $this->DOMHtml->getContent();
         $content = preg_replace_callback($reg, function($script) use ($type) {
             return str_replace('<' . $type, '<c_' . $type, $script[0]);
@@ -46,7 +46,7 @@ class HtmlFormating {
     }
 
     private function returnElements($type, $regex = false) {
-        $reg = $regex? : '/<c_' . $type . '(.*?)[/>|</' . $type . '>]/smix';
+        $reg = $regex? : '/<c_' . $type . '(.*?)[\/>|<\/' . $type . '>]/smix';
         $htmlContent = $this->DOMHtml->getContent();
         $content = preg_replace_callback($reg, function($script)use ($type) {
             return str_replace('<c_' . $type, '<' . $type, $script[0]);
@@ -56,12 +56,12 @@ class HtmlFormating {
     }
 
     private function removeConditionals($type) {
-        $regex = '/\]>(\s?)<' . $type . '(.*?)<\!/smix';
+        $regex = '/]>(.*?)<!/smix';
         $this->removeElements($type, $regex);
     }
 
     private function returnConditionals($type) {
-        $regex = '/\]>(\s?)<c_' . $type . '(.*?)<\!/smix';
+        $regex = '/]>(.*?)<!/smix';
         $this->returnElements($type, $regex);
     }
 
@@ -179,7 +179,7 @@ class HtmlFormating {
         if (!$attributes['rel']) {
             $attributes['rel'] = 'stylesheet';
         }
-
+        $attributes['media'] = $attributes['media'] ? $attributes['media'] . '_inline' : 'all_inline';
         return $attributes;
     }
 
