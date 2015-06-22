@@ -156,6 +156,10 @@ class SpeedUpEssentials {
                     krsort($css);
                     $c = '<link';
                     foreach ($css as $key => $value) {
+                        if ($key == 'media' && strpos($value, '_inline')) {
+                            $c .= ' data-type="inline"';
+                            $value = str_replace('_inline', '', $value);
+                        }
                         $c .= ' ' . $key . '="' . $value . '"';
                     }
                     $c .='>';
