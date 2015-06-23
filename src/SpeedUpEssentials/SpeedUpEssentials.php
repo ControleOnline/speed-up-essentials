@@ -75,6 +75,7 @@ class SpeedUpEssentials {
         $config['CssRemoveImports'] = (isset($config['CssRemoveImports']) ? $config['CssRemoveImports'] : true);
         $config['CssSpritify'] = (isset($config['CssSpritify']) ? $config['CssSpritify'] : true);
         $config['CssIntegrateInline'] = (isset($config['CssIntegrateInline']) ? $config['CssIntegrateInline'] : true);
+        $config['CSSSeparateInline'] = (isset($config['CSSSeparateInline']) ? $config['CSSSeparateInline'] : false);
 
         /*
          * Cache

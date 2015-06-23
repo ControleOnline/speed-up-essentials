@@ -179,7 +179,9 @@ class HtmlFormating {
         if (!$attributes['rel']) {
             $attributes['rel'] = 'stylesheet';
         }
-        $attributes['media'] = $attributes['media'] ? $attributes['media'] . '_inline' : 'all_inline';
+        if ($this->config['CSSSeparateInline']) {
+            $attributes['media'] = $attributes['media'] ? $attributes['media'] . '_inline' : 'all_inline';
+        }
         return $attributes;
     }
 
@@ -315,11 +317,9 @@ class HtmlFormating {
 
     public function format() {
         $this->sentHeaders();
-
         $this->removeConditionals('link');
         $this->removeConditionals('style');
         $this->removeConditionals('script');
-
         LazyLoad::imgLazyLoad($this->config);
         $this->organizeHeaderOrder();
         $this->cssIntegrate();
@@ -327,15 +327,23 @@ class HtmlFormating {
         $this->returnConditionals('link');
         $this->returnConditionals('style');
         $this->returnConditionals('script');
-        $this->removeHttpProtocol();
+        //$this->removeHttpProtocol();
     }
 
     private function removeHttpProtocol() {
-        $content = $this->DOMHtml->getContent();
-        $this->DOMHtml->setContent(preg_replace('#src="https?://' . $_SERVER['HTTP_HOST'] . '#', 'src="//' . $this->config['CookieLessDomain'], $content));
-        $this->DOMHtml->setContent(preg_replace('#src=\'https?://' . $_SERVER['HTTP_HOST'] . '#', 'src=\'//' . $this->config['CookieLessDomain'], $content));
-        $this->DOMHtml->setContent(preg_replace('#src="https?://' . $this->config['CookieLessDomain'] . '#', 'src="//' . $this->config['CookieLessDomain'], $content));
-        $this->DOMHtml->setContent(preg_replace('#src=\'https?://' . $this->config['CookieLessDomain'] . '#', 'src=\'//' . $this->config['CookieLessDomain'], $content));
+        $hosts = array($_SERVER['HTTP_HOST'], $this->config['CookieLessDomain']);
+        $aspas = array('\'', '"');
+        foreach ($hosts as $host) {
+            foreach ($aspas as $aspa) {
+                $html = $this->DOMHtml->getContent();
+                $regex = '#(href|src|data-ll)(.*?)=(.*?)' . $aspa . '(.*?)https?://' . $host . '(.*?)' . $aspa . '#';
+                $content = preg_replace_callback($regex, function($script) use ($host, $aspa) {
+                    $script['final'] = $script[1] . '=' . $aspa . '//' . $host . $script[4] . $aspa;
+                    return $script[1] . '=' . $aspa . '//' . $host . $script[4] . $aspa;
+                }, $html);
+                $this->DOMHtml->setContent($content? : $html);
+            }
+        }
     }
 
     private function cssIntegrate() {

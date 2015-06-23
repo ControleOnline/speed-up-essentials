@@ -30,7 +30,8 @@ class WPSpeedUpEssentials {
         'CssMinify',
         'CssIntegrateInline',
         'CssIntegrate',
-        'CssSpritify'
+        'CssSpritify',
+        'CSSSeparateInline'
     );
     protected static $mySiteOptions = array(
         'CookieLessDomain'
@@ -124,6 +125,7 @@ class WPSpeedUpEssentials {
         delete_option('CssMinify');
         delete_option('CssIntegrateInline');
         delete_option('CssIntegrate');
+        delete_option('CSSSeparateInline');
         delete_site_option('CookieLessDomain');
     }
 
@@ -145,6 +147,7 @@ class WPSpeedUpEssentials {
         add_option('CssSpritify', 0, '', 'yes');
         add_option('CssIntegrateInline', 0, '', 'yes');
         add_option('CssIntegrate', 0, '', 'yes');
+        add_option('CSSSeparateInline', 0, '', 'yes');
         add_site_option('CookieLessDomain', $_SERVER['HTTP_HOST']);
     }
 

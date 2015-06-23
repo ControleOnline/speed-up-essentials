@@ -115,7 +115,14 @@
                     <input type="radio" id="CssSpritify" name="CssSpritify" <?= esc_attr(get_option('CssSpritify')) ? 'checked="checked"' : ''; ?> value="1" />Yes
                     <input type="radio" id="CssSpritify" name="CssSpritify" <?= esc_attr(get_option('CssSpritify')) ? '' : 'checked="checked"'; ?> value="0" />No
                 </td>
-            </tr>                                        
+            </tr>
+            <tr valign="top">
+                <th scope="row">Separate CSS Inline?</th>
+                <td>                    
+                    <input type="radio" id="CSSSeparateInline" name="CSSSeparateInline" <?= esc_attr(get_option('CSSSeparateInline')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="CSSSeparateInline" name="CSSSeparateInline" <?= esc_attr(get_option('CSSSeparateInline')) ? '' : 'checked="checked"'; ?> value="0" />No
+                </td>
+            </tr>
             <tr valign="top">
                 <th scope="row">CookieLess Domain:</th>
                 <td>
