@@ -24,7 +24,6 @@ class Url {
     }
 
     public static function normalizeUrl($url, $remove_host = false) {
-        $protocol = PROTOCOL? : 'http:';
         //if data, return
         if (substr($url, 0, 5) == 'data:') {
             return $url;
@@ -40,17 +39,17 @@ class Url {
         }
         //if same domain, return static domain
         if (preg_match('#^https?://' . $_SERVER['HTTP_HOST'] . '#', $url)) {
-            return preg_replace('#^https?://' . $_SERVER['HTTP_HOST'] . '#', $protocol . '//' . self::$staticDomain, $url);
+            return preg_replace('#^https?://' . $_SERVER['HTTP_HOST'] . '#', '//' . self::$staticDomain, $url);
         }
         //if same domain, return static domain
         if (preg_match('#^//' . $_SERVER['HTTP_HOST'] . '#', $url)) {
-            return preg_replace('#^//' . $_SERVER['HTTP_HOST'] . '#', $protocol . '//' . self::$staticDomain, $url);
+            return preg_replace('#^//' . $_SERVER['HTTP_HOST'] . '#', '//' . self::$staticDomain, $url);
         }
         //if relative url
         if ($url['0'] == '/') {
-            return $protocol . '//' . self::$staticDomain . $url;
+            return '//' . self::$staticDomain . $url;
         } else {
-            return $protocol . '//' . self::$staticDomain . self::$baseUri . $url;
+            return '//' . self::$staticDomain . self::$baseUri . $url;
         }
     }
 
