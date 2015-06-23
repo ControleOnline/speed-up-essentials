@@ -329,6 +329,12 @@ class HtmlFormating {
         $this->returnConditionals('script');
     }
 
+    private function removeHttpProtocol($content) {
+        $this->DOMHtml->setContent(
+                preg_replace('#^https?://' . $_SERVER['HTTP_HOST'] . '#', '//' . self::$staticDomain, $content)
+        );
+    }
+
     private function cssIntegrate() {
         if ($this->config['CssIntegrate']) {
             $CSSIntegrate = new CSSIntegrate($this->config);
