@@ -332,12 +332,10 @@ class HtmlFormating {
 
     private function removeHttpProtocol() {
         $content = $this->DOMHtml->getContent();
-        $this->DOMHtml->setContent(
-                preg_replace('#src="https?://' . $_SERVER['HTTP_HOST'] . '#', 'src="//' . $this->config['CookieLessDomain'], $content)
-        );
-        $this->DOMHtml->setContent(
-                preg_replace('#src=\'https?://' . $_SERVER['HTTP_HOST'] . '#', 'src=\'//' . $this->config['CookieLessDomain'], $content)
-        );
+        $this->DOMHtml->setContent(preg_replace('#src="https?://' . $_SERVER['HTTP_HOST'] . '#', 'src="//' . $this->config['CookieLessDomain'], $content));
+        $this->DOMHtml->setContent(preg_replace('#src=\'https?://' . $_SERVER['HTTP_HOST'] . '#', 'src=\'//' . $this->config['CookieLessDomain'], $content));
+        $this->DOMHtml->setContent(preg_replace('#src="https?://' . $this->config['CookieLessDomain'] . '#', 'src="//' . $this->config['CookieLessDomain'], $content));
+        $this->DOMHtml->setContent(preg_replace('#src=\'https?://' . $this->config['CookieLessDomain'] . '#', 'src=\'//' . $this->config['CookieLessDomain'], $content));
     }
 
     private function cssIntegrate() {
