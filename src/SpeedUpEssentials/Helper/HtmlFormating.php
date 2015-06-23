@@ -327,11 +327,16 @@ class HtmlFormating {
         $this->returnConditionals('link');
         $this->returnConditionals('style');
         $this->returnConditionals('script');
+        $this->removeHttpProtocol();
     }
 
-    private function removeHttpProtocol($content) {
+    private function removeHttpProtocol() {
+        $content = $this->DOMHtml->getContent();
         $this->DOMHtml->setContent(
-                preg_replace('#^https?://' . $_SERVER['HTTP_HOST'] . '#', '//' . self::$staticDomain, $content)
+                preg_replace('#src="https?://' . $_SERVER['HTTP_HOST'] . '#', 'src="//' . self::$staticDomain, $content)
+        );
+        $this->DOMHtml->setContent(
+                preg_replace('#src=\'https?://' . $_SERVER['HTTP_HOST'] . '#', 'src=\'//' . self::$staticDomain, $content)
         );
     }
 
