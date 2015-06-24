@@ -327,22 +327,41 @@ class HtmlFormating {
         $this->returnConditionals('link');
         $this->returnConditionals('style');
         $this->returnConditionals('script');
-        //$this->removeHttpProtocol();
+        $this->removeHttpProtocol();
     }
 
     private function removeHttpProtocol() {
-        $hosts = array($_SERVER['HTTP_HOST'], $this->config['CookieLessDomain']);
-        $aspas = array('\'', '"');
-        foreach ($hosts as $host) {
-            foreach ($aspas as $aspa) {
-                $html = $this->DOMHtml->getContent();
-                $regex = '#(href|src|data-ll)(.*?)=(.*?)' . $aspa . '(.*?)https?://' . $host . '(.*?)' . $aspa . '#';
-                $content = preg_replace_callback($regex, function($script) use ($host, $aspa) {
-                    $script['final'] = $script[1] . '=' . $aspa . '//' . $host . $script[4] . $aspa;
-                    return $script[1] . '=' . $aspa . '//' . $host . $script[4] . $aspa;
-                }, $html);
-                $this->DOMHtml->setContent($content? : $html);
-            }
+        $scripts = array('img', 'link', 'script');
+        $attr = array('src', 'href', 'data-ll');
+        foreach ($scripts as $script) {
+            $html = $this->DOMHtml->getContent();
+            $regex = '/<' . $script . '((?:.)*?)>/smix';
+            $content = preg_replace_callback($regex, function($srcpt) use ($attr, $script) {
+                $regex_img = '/(\S+)=["\']((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']/';
+                preg_match_all($regex_img, $srcpt[1], $matches);
+                if (isset($matches[1]) && isset($matches[2])) {
+                    foreach ($matches[1] AS $k => $key) {
+                        $attributes[trim($key)] = trim($matches[2][$k]);
+                    }
+                }
+                if (isset($attributes) && is_array($attributes)) {
+                    foreach ($attr as $att) {
+                        if (isset($attributes[$att]) && $attributes[$att]) {
+                            $attributes[$att] = Url::normalizeUrl($attributes[$att]);
+                        }
+                    }
+                    $return = '<' . $script;
+                    foreach ($attributes as $key => $a) {
+                        $return .= ' ' . $key . '="' . $a . '"';
+                    }
+                    $return .= '>';
+                    return $return;
+                } else {
+                    return $srcpt[0];
+                }
+            }, $html);
+
+            $this->DOMHtml->setContent($content? : $html);
         }
     }
 
