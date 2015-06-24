@@ -360,7 +360,6 @@ class HtmlFormating {
                     return $srcpt[0];
                 }
             }, $html);
-
             $this->DOMHtml->setContent($content? : $html);
         }
     }
