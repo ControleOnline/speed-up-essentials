@@ -47,8 +47,8 @@ class WPSpeedUpEssentials {
         self::$render = new PhpRenderer();
         self::getResolver(self::$render);
         if (get_option('OptimizeAdmin') || !is_admin()) {
-            add_action('shutdown', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'shutdown'), 0);
-            add_filter('final_output', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'final_output'));
+            add_action('shutdown', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'shutdown'), -999999);
+            add_filter('final_output', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'final_output'), -999999);
         }
         if (is_admin()) {
             add_action('admin_menu', array('\SpeedUpEssentials\WPSpeedUpEssentials', 'menu'));
