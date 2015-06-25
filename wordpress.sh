@@ -35,7 +35,6 @@ fi
 
 cd $GITPATH
 
-echo 
 echo "Creating local copy of SVN repo ..."
 svn co $SVNURL $SVNPATH
 
