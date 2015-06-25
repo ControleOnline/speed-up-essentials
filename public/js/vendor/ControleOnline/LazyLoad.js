@@ -122,7 +122,7 @@ var lazyLoad = function () {
     lazyLoader.init();
 };
 document.addEventListener("DOMContentLoaded", function () {
-    DFP();
+    lazyLoad();
 });
 if (document.readyState === "complete") {
     lazyLoad();
