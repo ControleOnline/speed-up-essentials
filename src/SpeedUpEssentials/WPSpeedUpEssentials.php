@@ -22,6 +22,7 @@ class WPSpeedUpEssentials {
         'BasePath',
         'PublicCacheDir',
         'LazyLoadBasePath',
+        'LazyLoad',
         'LazyLoadPlaceHolder',
         'JavascriptOnFooter',
         'JavascriptIntegrate',
@@ -126,6 +127,7 @@ class WPSpeedUpEssentials {
         delete_option('CssIntegrateInline');
         delete_option('CssIntegrate');
         delete_option('CSSSeparateInline');
+        delete_option('LazyLoad');
         delete_site_option('CookieLessDomain');
     }
 
@@ -137,6 +139,7 @@ class WPSpeedUpEssentials {
         add_option('URIBasePath', '/', '', 'yes');
         add_option('BasePath', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, '', 'yes');
         add_option('PublicCacheDir', 'wp-content/cache/', '', 'yes');
+        add_option('LazyLoad', 0, '', 'yes');
         add_option('LazyLoadBasePath', 'wp-content/cache/', '', 'yes');
         add_option('LazyLoadPlaceHolder', '/wp-content/plugins/speedupessentials/public/img/blank.png', '', 'yes');
         add_option('JavascriptOnFooter', 1, '', 'yes');
@@ -148,6 +151,7 @@ class WPSpeedUpEssentials {
         add_option('CssIntegrateInline', 0, '', 'yes');
         add_option('CssIntegrate', 0, '', 'yes');
         add_option('CSSSeparateInline', 0, '', 'yes');
+        
         add_site_option('CookieLessDomain', $_SERVER['HTTP_HOST']);
     }
 

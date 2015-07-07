@@ -47,6 +47,13 @@
                 <td>
                     <input type="text" name="PublicCacheDir" value="<?php echo esc_attr(get_option('PublicCacheDir')); ?>" />
                 </td>
+            </tr>                                    
+            <tr valign="top">
+                <th scope="row">LazyLoad:</th>
+                <td>
+                    <input type="radio" id="LazyLoad" name="LazyLoad" <?= esc_attr(get_option('LazyLoad')) ? 'checked="checked"' : ''; ?> value="1" />Yes
+                    <input type="radio" id="LazyLoad" name="LazyLoad" <?= esc_attr(get_option('LazyLoad')) ? '' : 'checked="checked"'; ?> value="0" />No                    
+                </td>
             </tr>
             <tr valign="top">
                 <th scope="row">Lazy Load Base Path:</th>
@@ -128,8 +135,7 @@
                 <td>
                     <input type="text" name="CookieLessDomain" value="<?php echo esc_attr(get_site_option('CookieLessDomain')); ?>" />
                 </td>
-            </tr>
-            </tr>            
+            </tr>                        
         </table>
         <?php submit_button(); ?>
     </form>
