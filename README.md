@@ -133,7 +133,6 @@ echo  $SpeedUpEssentials->render('<html>.....</html>');
 
 ** Taking the buffer **
 ```
-
 <?php
 ob_start();
 
@@ -149,3 +148,8 @@ echo  $SpeedUpEssentials->render(ob_get_contents());
 ##Wordpress Plugin##
 
 [Download plugin](https://wordpress.org/plugins/speedupessentials/)
+
+To avoid nextgen-gallery bugs, add this on wp-config.php:
+```
+define('NGG_DISABLE_RESOURCE_MANAGER', true);
+```

@@ -51,11 +51,15 @@ class File {
     }
 
     public static function put_content($filename, $data) {
-        $fp = fopen($filename, 'w');
-        $return = fwrite($fp, $data);
-        fclose($fp);
-        return $return;
         //return file_put_contents($filename, stripslashes($data));
+        try {
+            $fp = fopen($filename, 'w');
+            $return = fwrite($fp, $data);
+            fclose($fp);
+            return $return;
+        } catch (Exception $ex) {
+            
+        }
     }
 
 }

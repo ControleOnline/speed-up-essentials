@@ -23,3 +23,7 @@ This software aims to be engaged in any system and without any additional line p
 * Spritify CSS Images
 * Remove (Unify) CSS Imports
 * Static files on cookieless domain
+
+
+To avoid nextgen-gallery bugs, add this on wp-config.php:
+define('NGG_DISABLE_RESOURCE_MANAGER', true);

@@ -4,7 +4,8 @@ namespace SpeedUpEssentials;
 
 use SpeedUpEssentials\Model\DOMHtml,
     SpeedUpEssentials\Helper\HtmlFormating,
-    SpeedUpEssentials\Helper\Url;
+    SpeedUpEssentials\Helper\Url,
+    SpeedUpEssentials\Helper\Cache;
 
 class SpeedUpEssentials {
 
@@ -80,6 +81,8 @@ class SpeedUpEssentials {
         /*
          * Cache
          */
+        $config['StaticCache'] = (isset($config['StaticCache']) ? $config['StaticCache'] : false);
+        $config['StaticCacheDir'] = (isset($config['StaticCacheDir']) ? $config['StaticCacheDir'] : $config['BasePath'] . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'html' );
         if (!isset($config['cacheId'])) {
             if (is_file($config['BasePath'] . '.version')) {
                 $contents = file_get_contents($config['BasePath'] . '.version');
@@ -177,7 +180,7 @@ class SpeedUpEssentials {
         $this->addJsHeaders();
     }
 
-    public function render($html) {
+    public function render($html, $nocache = false) {
         if (!$this->is_html()) {
             return $html;
         }
@@ -187,7 +190,12 @@ class SpeedUpEssentials {
         $DOMHtml->setContent($html);
         $HtmlFormating->format();
         $this->addHtmlHeaders();
-        return $HtmlFormating->render();
+        $output = $HtmlFormating->render();
+        if ($this->config['StaticCache'] && !$nocache) {
+            Cache::init($this->config);
+            Cache::generate($output);
+        }        
+        return $output;
     }
 
 }

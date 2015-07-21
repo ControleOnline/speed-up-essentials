@@ -39,4 +39,18 @@
 <IfModule mod_deflate.c>
   SetEnvIfNoCase Request_URI \.gz$ no-gzip
 </IfModule>
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    AddDefaultCharset UTF-8
+    RewriteCond %{REQUEST_URI} !^.*[^/]$
+    RewriteCond %{REQUEST_URI} !^.*//.*$
+    RewriteCond %{REQUEST_METHOD} !POST
+    RewriteCond %{QUERY_STRING} !.*=.*
+    RewriteCond %{HTTP:Cookie} !^.*(comment_author_|wordpress_logged_in|wp-postpass_).*$
+    RewriteCond %{HTTP:X-Wap-Profile} !^[a-z0-9\"]+ [NC]
+    RewriteCond %{HTTP:Profile} !^[a-z0-9\"]+ [NC]
+    RewriteCond %{DOCUMENT_ROOT}/wp-content/cache/html/%{SERVER_NAME}/$1/index.html -f
+    RewriteRule ^(.*) "/wp-content/cache/html/%{SERVER_NAME}/$1/index.html" [L]
+</IfModule>
 # END SpeedUpEssentials

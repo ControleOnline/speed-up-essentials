@@ -23,6 +23,10 @@ class Url {
         self::$baseUri = $baseUri;
     }
 
+    public static function getUri($url, $domain) {
+        return str_replace($domain, '', $url)? : '/';
+    }
+
     public static function normalizeUrl($url, $remove_host = false) {
         //if data, return
         if (substr($url, 0, 5) == 'data:') {
