@@ -12,10 +12,33 @@ var lazyLoad = {
     verify: null,
     throttleTimer: new Date().getTime(),
     __construct: (function () {
+        /*
+         var sc = document.querySelectorAll('*'), scr = [];
+         for (var i = 0; i < sc.length; i++) {
+         var e = sc[i];
+         if (e.clientHeight != e.scrollHeight) {
+         scr.push(e);
+         document.getElementById("s").addEventListener("scroll", lazyLoad.throttledLoad);
+         console.log(e.clientHeight + 'x' + e.scrollHeight);
+         }
+         }
+         console.log(scr);
+         */
         document.addEventListener("DOMContentLoaded", function () {
             lazyLoad.init();
         });
-    })(),
+    })(),    
+    forceLoadImages: function (selector) {
+        /*
+         * Example: lazyLoad.forceLoadImages('img[data-ll]');
+         */
+        var imageNodes = document.querySelectorAll(selector);
+        for (var i = 0; i < imageNodes.length; i++) {
+            var imageNode = imageNodes[i];
+            imageNode.src = imageNode.getAttribute('data-ll');
+            imageNode.className = imageNode.className.replace(/(^|\s+)lazy-load(\s+|$)/, '$1lazy-loaded$2');
+        }
+    },
     addObservers: function () {
         addEventListener('scroll', lazyLoad.throttledLoad);
         addEventListener('resize', lazyLoad.throttledLoad);

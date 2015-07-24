@@ -163,11 +163,15 @@ class LazyLoad {
         }
     }
 
+    private static function ignoreLazyLoad($htmlContent) {
+        return preg_match('/ignore-ll=["|\']true["|\']/', $htmlContent);
+    }
+
     public static function imgLazyLoad($config) {
         self::init($config);
-        if (self::$config['LazyLoadImages']) {
+        $htmlContent = self::$DOMHtml->getContent();
+        if (self::$config['LazyLoadImages'] && !self::ignoreLazyLoad($htmlContent)) {
             self::removeImagesFromScripts();
-            $htmlContent = self::$DOMHtml->getContent();
             $regex = '/<img((?:.)*?)>/smix';
             $content = preg_replace_callback($regex, function($script) {
                 return LazyLoad::prepareImg($script);
