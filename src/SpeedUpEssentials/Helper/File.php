@@ -17,7 +17,7 @@ class File {
         return htmlspecialchars_decode(urldecode($url));
     }
 
-    public static function get_content($URL) {
+    public static function get_content($URL, $showcomments = true) {
 
         $protocol = PROTOCOL? : 'http:';
         if (substr($URL, 0, 2) == '//') {
@@ -43,9 +43,9 @@ class File {
             $data = @file_get_contents($url_exec);
         }
         if (!$data) {
-            $data = '/*Content of ' . $url_exec . ': <Empty>*/' . PHP_EOL;
+            $data = $showcomments ? '/*Content of ' . $url_exec . ': <Empty>*/' . PHP_EOL : '';
         } else {
-            $data = '/*File: (' . $url_exec . ')*/' . PHP_EOL . $data;
+            $data = $showcomments ? '/*File: (' . $url_exec . ')*/' . PHP_EOL . $data : $data;
         }
         return $data;
     }

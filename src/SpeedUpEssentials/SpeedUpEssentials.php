@@ -15,6 +15,8 @@ class SpeedUpEssentials {
     public function getConfig($config, $baseUri) {
 
         $env = isset($config['APP_ENV']) ? $config['APP_ENV'] : (getenv('APP_ENV') ? : 'production');
+        $config['AppDir'] = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..') . DIRECTORY_SEPARATOR;
+
         /*
          * CookielessDomain
          */
@@ -191,10 +193,11 @@ class SpeedUpEssentials {
         $HtmlFormating->format();
         $this->addHtmlHeaders();
         $output = $HtmlFormating->render();
+        Cache::init($this->config);
         if ($this->config['StaticCache'] && !$nocache) {
-            Cache::init($this->config);
             Cache::generate($output);
-        }        
+        }
+        Cache::checkHtaccess();
         return $output;
     }
 
